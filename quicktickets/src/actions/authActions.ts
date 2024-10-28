@@ -4,7 +4,7 @@ import { signIn, signOut } from "@/auth";
 
 export async function login(credentials: { email: string; password: string; }){
     try {
-        const result = await fetch(`http://localhost:3001/api/users/login`, {
+        const result = await fetch(`endpoint`, {
             method:"POST",
             headers: {
                 "Content-Type":"application/json",
@@ -28,7 +28,7 @@ export async function logOut(){
 
 export async function getUserByMail(email:string) {
     try {
-        const result = await fetch(`http://localhost:3001/api/users/?email=${email}`)
+        const result = await fetch(`endpoint`)
         const data = await result.json();
             return {
                 userId:data._id,
