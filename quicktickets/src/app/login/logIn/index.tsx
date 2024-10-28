@@ -50,7 +50,10 @@ export default function LogIn(){
     return(
         <main className="flex items-center h-screen">
            <div className="flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
-                <Image src="/assets/images/Logo.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image>
+            <div>
+                <a href="/"><Image src="/assets/images/icon.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image></a>
+                <Image src="/assets/images/quickticketswhite.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image>
+            </div>
                 <h2 className="font-bold text-4xl text-white p-8 leading-[1.5]">Discover Tailored <br /> events.<br /> Sign up for personalized <br />  recommendations <br />  today!</h2>
            </div> 
            <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] pl-16 pr-16 gap-5">
