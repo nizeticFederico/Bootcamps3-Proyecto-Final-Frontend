@@ -7,7 +7,7 @@ import Image from "next/image"
 
 export default function SignIn(){
 
-    const [values, setValues] = useState({name:"", email:"", password:""});
+    const [values, setValues] = useState({name:"", lastname:"" , email:"", number:"", password:""});
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [status , setStatus] = useState<number | null >(null)
@@ -19,8 +19,10 @@ export default function SignIn(){
         setLoading(true);
 
         const data = {
-            name: values.name,
+            name: values.name.toLocaleLowerCase(),
+            lastname: values.lastname,
             email: values.email,
+            number: Number(values.number),
             password: values.password
         }
 
@@ -66,21 +68,32 @@ export default function SignIn(){
     return(
         <main className="flex items-center h-screen">
            <div className="flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
-                <Image src="/assets/images/icon.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image>
+            <div>
+                <a href="/"><Image src="/assets/images/icon.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image></a>
                 <Image src="/assets/images/quickticketswhite.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image>
+            </div>
                 <h2 className="font-bold text-4xl text-white p-8 leading-[1.5]">Discover Tailored <br /> events.<br /> Sign up for personalized <br />  recommendations <br />  today!</h2>
            </div> 
            <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] pl-16 pr-16 ">
            <h1 className="font-bold  text-3xl mt-4 pl-32">Create Account</h1>
             <form className="flex flex-col gap-2 p-32 pb-4 pt-4" onSubmit={handleSubmit}>
                 
-                <label htmlFor="name">Full Name</label>
+                <label htmlFor="name">Name</label>
                 <input  type="text" 
                         name="name" 
-                        placeholder="Enter your full-name" 
+                        placeholder="Enter your name" 
                         value={values.name}  
                         onChange = {handleChange} 
-                        className="border rounded-md p-3 focus:outline-none border-gray-300 focus:border-gray-500"
+                        className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
+                        required/>
+
+                <label htmlFor="name">Lastname</label>
+                <input  type="text" 
+                        name="lastname" 
+                        placeholder="Enter your lastname" 
+                        value={values.lastname}  
+                        onChange = {handleChange} 
+                        className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
                         required/>
                         
                 <label htmlFor="email">E-mail Adress</label>
@@ -89,9 +102,18 @@ export default function SignIn(){
                         pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 
                         placeholder="Enter your e-mail" value={values.email}  
                         onChange = {handleChange} 
-                        className="border rounded-md p-3 focus:outline-none border-gray-300 focus:border-gray-500 peer"
+                        className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500 peer"
                         />
                 <span className="hidden peer-invalid:flex text-xs text-red-500">*Invalid e-mail</span>
+
+                <label htmlFor="name">Phone Number</label>
+                <input  type="number" 
+                        name="number" 
+                        placeholder="Enter your Phone Number" 
+                        value={values.number}  
+                        onChange = {handleChange} 
+                        className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
+                        required/>
 
                 <label htmlFor="password">Password</label>
                 <div className="relative">
@@ -100,7 +122,7 @@ export default function SignIn(){
                         placeholder="Enter your password" 
                         value={values.password} 
                         onChange = {handleChange} 
-                        className="border w-full rounded-md p-3 focus:outline-none border-gray-300 focus:border-gray-500"
+                        className="border w-full rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
                         required/>
 
                 <button 
@@ -123,7 +145,7 @@ export default function SignIn(){
                 </button>
                 
                 <p className="text-sm my-4">Already have an account? 
-                    <a href="/" className="text-gray-500"> Login</a>
+                    <a href="/login" className="text-gray-500"> Login</a>
                 </p>
                 <Message status={status}/>
             </form>
