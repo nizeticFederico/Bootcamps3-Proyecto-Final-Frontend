@@ -39,7 +39,7 @@ const NavBar = () => {
           Login
         </Link>
         <Link
-          href="/signup"
+          href="/register"
           className="bg-yellow-400 text-black font-bold py-2 px-4 rounded hover:bg-yellow-300"
         >
           Sign Up
