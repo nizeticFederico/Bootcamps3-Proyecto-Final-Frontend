@@ -5,12 +5,18 @@ const NavBar = () => {
   return (
     <nav className="bg-[#2D2A3E] p-4 flex justify-between items-center">
       {/* Logo */}
-      <div className="flex items-center">
-        <Image
-          src="/assets/images/Logo.svg"
+      <div className="flex items-center text-white">
+      <Image
+          src="/assets/images/icon.svg"
           width={128}
           height={38}
-          alt="QuickTickets"
+          alt="IconoQuickTickets"
+        />
+        <Image
+          src="/assets/images/quickticketswhite.svg"
+          width={128}
+          height={38}
+          alt="LogoQuickTickets"
         />
       </div>
 
