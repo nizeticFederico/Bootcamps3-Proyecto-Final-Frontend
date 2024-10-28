@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Footer from "@/components/UI/Footer";
 import NavBar from "@/components/UI/Header";
+import ScrollToTopButton from "@/components/UI/ScrollToTopButton";
 
 
 
@@ -21,6 +22,7 @@ export default function RootLayout({
       >
         <NavBar/>
         {children}
+        <ScrollToTopButton/>
         <Footer/>
       </body>
     </html>
