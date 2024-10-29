@@ -3,17 +3,25 @@ import React from 'react';
 import Image from 'next/image';
 
 interface EventCardProps {
-  imageUrl: string;
   name: string;
-  date: string;
-  hour: string;
+  description: string;
+  imageUrl: string;
+  dateTime: string;
   price: number;
   capacity: number;
-  location: string;
   category: string;
+  location: string;
+  latitude: number;
+  longitude: number;
+  creatorId: string;
 }
 
-const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, date, hour, price, capacity, location, category }) => {
+const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, dateTime, price, capacity, category, location, latitude, longitude }) => {
+  
+  const eventDate = new Date(dateTime);
+  const formattedDate = eventDate.toLocaleDateString('en-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
   return (
     <div className="flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
       {/* Imagen del evento */}
@@ -33,7 +41,6 @@ const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, date, hour, price
             height={15}
             alt="Favorito"
           />
-
         </button>
 
         {/* Etiqueta de categoría */}
@@ -48,32 +55,29 @@ const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, date, hour, price
         <div className="h-1/3 mb-1">
           <h4 className="font-semibold text-sm">{name}</h4>
         </div>
-        <div className='flex'>
-          <p className="text-gray-600 text-xs mr-1">{date} |</p>
-          <p className="text-gray-600 text-xs">{location}</p>
+        <div className="text-gray-600 text-xs">
+          <p>{formattedDate} | {formattedTime}</p>
+          <p>{location}</p>
         </div>
-        <div>
-          <p className="text-gray-600 text-xs mb-4">{hour}</p>
+        <div className="text-xs mb-2">
+          <a
+            href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-500 hover:underline"
+          >
+            Ver en Google Maps
+          </a>
         </div>
-        <div className='flex space-x-2'>
+        <div className="flex space-x-2">
           <p className="text-green-600 text-xs flex">
-          <Image
-              src="/assets/images/icons/entrada-green.svg" // Ruta de la imagen del icono de favoritos en public
-              width={10}
-              height={10}
-              alt="entrada"
-              className='mr-1'
-            />
-            {price === 0 ? "FREE" : `ARS ${price}`}</p>
+            <Image src="/assets/images/icons/entrada-green.svg" width={10} height={10} alt="entrada" className='mr-1' />
+            {price === 0 ? "FREE" : `ARS ${price}`}
+          </p>
           <p className={`text-xs flex ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
-          <Image
-              src={`/assets/images/icons/${capacity === 0 ? 'group-red.svg' : 'group-blue.svg'}`}
-              width={10}
-              height={10}
-              alt="Capacidad"
-              className='mr-1'
-            />
-            {capacity === 0 ? "Sold Out" : capacity}</p>
+            <Image src={`/assets/images/icons/${capacity === 0 ? 'group-red.svg' : 'group-blue.svg'}`} width={10} height={10} alt="Capacidad" className='mr-1' />
+            {capacity === 0 ? "Sold Out" : capacity}
+          </p>
         </div>
       </div>
     </div>

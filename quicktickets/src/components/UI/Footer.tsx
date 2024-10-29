@@ -148,7 +148,7 @@ const Footer = () => {
           <div className="space-y-4">
             <a href="#" className="block">
               <Image
-                src="/assets/images/googlePlay.svg"
+                src="/assets/images/icons/googlePlay.svg"
                 width={40}
                 height={20}
                 alt="Get it on Google Play"
@@ -157,7 +157,7 @@ const Footer = () => {
             </a>
             <a href="#" className="block">
               <Image
-                src="/assets/images/appStore.svg"
+                src="/assets/images/icons/appStore.svg"
                 width={40}
                 height={20}
                 alt="Download on the App Store"
