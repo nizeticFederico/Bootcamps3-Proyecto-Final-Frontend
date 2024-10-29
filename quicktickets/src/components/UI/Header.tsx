@@ -7,13 +7,13 @@ const NavBar = () => {
       {/* Logo */}
       <div className="flex items-center text-white">
       <Image
-          src="/assets/images/icon.svg"
+          src="/assets/images/icons/icon.svg"
           width={128}
           height={38}
           alt="IconoQuickTickets"
         />
         <Image
-          src="/assets/images/quickticketswhite.svg"
+          src="/assets/images/icons/quickticketswhite.svg"
           width={128}
           height={38}
           alt="LogoQuickTickets"

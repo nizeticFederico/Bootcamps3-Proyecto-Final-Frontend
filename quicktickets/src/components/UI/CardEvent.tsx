@@ -26,7 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, date, hour, price
         {/* Botón de favoritos */}
         <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
           <Image
-            src="/assets/images/star.svg" // Ruta de la imagen del icono de favoritos en public
+            src="/assets/images/icons/star.svg" // Ruta de la imagen del icono de favoritos en public
             width={15}
             height={15}
             alt="Favorito"
@@ -48,7 +48,7 @@ const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, date, hour, price
         <p className="text-gray-600 text-xs mb-4">{hour}</p>
         <p className="text-green-600 text-xs flex">
         <Image
-            src="/assets/images/entrada1.svg" // Ruta de la imagen del icono de favoritos en public
+            src="/assets/images/icons/entrada1.svg" // Ruta de la imagen del icono de favoritos en public
             width={10}
             height={10}
             alt="entrada"

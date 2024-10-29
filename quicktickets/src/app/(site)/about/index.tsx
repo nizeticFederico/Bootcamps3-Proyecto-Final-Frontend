@@ -18,7 +18,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/user-default.svg"
+                                    src="/assets/images/icons/user-default.svg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -30,7 +30,7 @@ export default async function AboutUs(){
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
                                 <Image
-                                    src="/assets/images/linkedin.svg"
+                                    src="/assets/images/icons/linkedin.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Linkedin"
@@ -38,7 +38,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/github.svg"
+                                    src="/assets/images/icons/github.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo GitHub"
@@ -46,7 +46,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/sobre.svg"
+                                    src="/assets/images/icons/sobre.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Mail"
@@ -60,7 +60,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/user-default.svg"
+                                    src="/assets/images/icons/user-default.svg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -72,7 +72,7 @@ export default async function AboutUs(){
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
                                 <Image
-                                    src="/assets/images/linkedin.svg"
+                                    src="/assets/images/icons/linkedin.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Linkedin"
@@ -80,7 +80,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/github.svg"
+                                    src="/assets/images/icons/github.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo GitHub"
@@ -88,7 +88,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/sobre.svg"
+                                    src="/assets/images/icons/sobre.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Mail"
@@ -103,7 +103,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/user-default.svg"
+                                    src="/assets/images/icons/user-default.svg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -115,7 +115,7 @@ export default async function AboutUs(){
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
                                 <Image
-                                    src="/assets/images/linkedin.svg"
+                                    src="/assets/images/icons/linkedin.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Linkedin"
@@ -123,7 +123,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/github.svg"
+                                    src="/assets/images/icons/github.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo GitHub"
@@ -131,7 +131,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/sobre.svg"
+                                    src="/assets/images/icons/sobre.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Mail"
@@ -145,7 +145,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/user-default.svg"
+                                    src="/assets/images/icons/user-default.svg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -157,7 +157,7 @@ export default async function AboutUs(){
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
                                 <Image
-                                    src="/assets/images/linkedin.svg"
+                                    src="/assets/images/icons/linkedin.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Linkedin"
@@ -165,7 +165,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/github.svg"
+                                    src="/assets/images/icons/github.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo GitHub"
@@ -173,7 +173,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="" target="_blank" >
                                 <Image
-                                    src="/assets/images/sobre.svg"
+                                    src="/assets/images/icons/sobre.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Mail"
@@ -200,7 +200,7 @@ export default async function AboutUs(){
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                             <a href="https://www.linkedin.com/in/rubendledesma/" target="_blank" className="fill-current-yellow">
                                 <Image
-                                    src="/assets/images/linkedin.svg"
+                                    src="/assets/images/icons/linkedin.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Linkedin"
@@ -208,7 +208,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="https://github.com/ElRubenD" target="_blank" >
                                 <Image
-                                    src="/assets/images/github.svg"
+                                    src="/assets/images/icons/github.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo GitHub"
@@ -216,7 +216,7 @@ export default async function AboutUs(){
                             </a>
                             <a href="mailto:ruben.d.ledesma@gmail.com" target="_blank" >
                                 <Image
-                                    src="/assets/images/sobre.svg"
+                                    src="/assets/images/icons/sobre.svg"
                                     width={30}
                                     height={30}
                                     alt="Logo Mail"

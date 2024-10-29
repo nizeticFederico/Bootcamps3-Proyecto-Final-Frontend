@@ -6,7 +6,7 @@ const SearchBar: React.FC = () => {
     <div className="flex items-center justify-center h-full w-full max-w-3xl mx-auto p-4">
       <button className=" bg-white text-gray-600 py-3 px-4 rounded-l-md border border-gray-300 flex items-center hover:bg-gray-100 transition">
             <Image
-                src="/assets/images/search-icon.svg"
+                src="/assets/images/icons/search-icon.svg"
                 width={28}
                 height={28}
                 alt="Logo Search"
