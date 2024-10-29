@@ -5,7 +5,7 @@ export const metadata: Metadata = {
   title: "QuickTickets",
   description: "QuickTcikets app",
   icons: {
-    icon: "/assets/images/ticket1.ico", // Ruta a tu favicon
+    icon: "/assets/images/icons/ticket1.ico", // Ruta a tu favicon
   },
 };
 

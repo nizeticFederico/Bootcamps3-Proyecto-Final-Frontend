@@ -35,7 +35,7 @@ const ScrollToTopButton: React.FC = () => {
         style={{ display: isVisible ? 'block' : 'none' }}
       >
         <Image
-            src="/assets/images/flecha-arriba.svg"
+            src="/assets/images/icons/flecha-arriba.svg"
             width={30}
             height={30}
             alt="Picture of the author"
