@@ -1,7 +1,15 @@
+"use client"
+
 import Image from "next/image";
 import Link from "next/link";
+import { useSession } from "next-auth/react";
+
+
 
 const NavBar = () => {
+
+  const {data:session} = useSession();
+  
   return (
     <nav className="bg-[#2D2A3E] p-4 flex justify-between items-center">
       {/* Logo */}
@@ -21,6 +29,8 @@ const NavBar = () => {
       </div>
 
       {/* Links */}
+
+
       <div className="hidden md:flex space-x-8 text-xl">
         <Link href="/" className="text-white hover:text-yellow-400">
           Home
@@ -40,17 +50,30 @@ const NavBar = () => {
       </div>
 
       {/* Login y Sign Up */}
-      <div className="flex items-center space-x-4">
-        <Link href="/login" className="text-white hover:text-yellow-400">
-          Login
-        </Link>
-        <Link
-          href="/register"
-          className="bg-yellow-400 text-black font-bold py-2 px-4 rounded hover:bg-yellow-300"
-        >
-          Sign Up
-        </Link>
-      </div>
+
+      {session ? (
+          <div className="hidden md:flex space-x-8 text-xl">
+              <Link href="/" className="text-white hover:text-yellow-400">
+                Create Event
+              </Link><Link href="/" className="text-white hover:text-yellow-400">
+                Tickets
+              </Link><Link href="/" className="text-white hover:text-yellow-400">
+                Interested
+              </Link><Link href="/" className="text-white hover:text-yellow-400">
+                Profile
+              </Link>
+          </div>
+        ) : (
+          <div className="flex items-center space-x-4">
+              <Link href="/login" className="text-white hover:text-yellow-400">
+                Login
+              </Link>
+              <Link href="/register" className="bg-yellow-400 text-black font-bold py-2 px-4 rounded hover:bg-yellow-300">
+                Sign Up
+              </Link>
+          </div>
+        )}
+      
     </nav>
   );
 };
