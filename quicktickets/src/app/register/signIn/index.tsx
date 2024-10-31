@@ -19,17 +19,18 @@ export default function SignIn(){
         setLoading(true);
 
         const data = {
-            name: values.name.toLocaleLowerCase(),
-            lastname: values.lastname,
+            first_name: values.name.toLocaleLowerCase(),
+            last_name: values.lastname,
             email: values.email,
-            number: Number(values.number),
-            password: values.password
+            phone: values.number,
+            password: values.password,
+            role: "admin",
         }
 
 
 
         try {
-            const response = await fetch(`endpoint`,{
+            const response = await fetch(`http://localhost:3001/auth/register`,{
                 method:"POST",
                 headers:{
                     "Content-Type":"application/json",
@@ -37,13 +38,13 @@ export default function SignIn(){
                 body: JSON.stringify(data)
             })
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 setLoading(false)
                 setStatus(response.status)
                 setTimeout(()=>{
                     setStatus(null)
                 }, 3000)
-                router.push("/")
+                router.push("/login")
                 
             }else{
                 setStatus(response.status);
@@ -99,7 +100,7 @@ export default function SignIn(){
                 <label htmlFor="email">E-mail Adress</label>
                 <input  type="email" 
                         name="email" 
-                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 
+                        /* pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"  */
                         placeholder="Enter your e-mail" value={values.email}  
                         onChange = {handleChange} 
                         className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500 peer"
