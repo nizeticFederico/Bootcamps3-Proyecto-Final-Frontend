@@ -22,7 +22,7 @@ const filters = [
 
 const FilterColumn: React.FC = () => {
   return (
-    <div className="flex flex-col w-full max-w-xs h-screen p-4 bg-white border overflow-y-auto invisible-scrollbar">
+    <div className="flex flex-col w-full max-w-xs p-4 bg-white border overflow-y-auto invisible-scrollbar sticky top-0 max-h-screen">
       {filters.map((filter, index) => (
         <div key={filter.label} className="mb-4">
           <h3 className="font-semibold text-lg mb-2">{filter.label}</h3>
