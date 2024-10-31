@@ -9,7 +9,7 @@ export default function Message({status}:StatusProps){
         return
     }
 
-    if (status === 200) {
+    if (status === 201) {
         return(
             <div className="flex itemes-center rounded-md p-4 justify-center text-white bg-green-600">
             Succes! Redirecting into login.
