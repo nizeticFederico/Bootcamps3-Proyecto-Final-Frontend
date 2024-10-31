@@ -17,7 +17,7 @@ interface EventCardProps {
 
 const EventCard: React.FC<EventCardProps> = ({
   name,
-  //imageUrl,
+  imageUrl,
   dateTime,
   price,
   capacity,
@@ -33,14 +33,12 @@ const EventCard: React.FC<EventCardProps> = ({
   return (
     <div className="flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
       <div className="w-1/2 h-full overflow-hidden rounded relative">
-        {/*
         <Image
           src={imageUrl}
           fill
           className="object-cover"
           alt="Miniatura Evento"
         />
-        */}
         <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
           <Image
             src="/assets/images/icons/star.svg"

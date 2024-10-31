@@ -1,7 +1,14 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  /* config options here */
-};
-
-export default nextConfig;
+const NextConfig = {
+  images: {
+    domains: ['grafiasmusic.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'grafiasmusic.com',
+      }
+    ]
+  }
+}
+export default NextConfig;

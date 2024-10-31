@@ -15,7 +15,7 @@ const SearchBar: React.FC = () => {
       </button>
       <input
         type="text"
-        placeholder="Search Events, Categories, Location,..."
+        placeholder="Search Events!"
         className="h-full flex-grow py-3 px-4 border border-gray-300 focus:outline-none focus:ring-0 bg-white text-gray-600"
       />
       <select
