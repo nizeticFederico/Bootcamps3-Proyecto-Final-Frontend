@@ -59,7 +59,7 @@ const NavBar = () => {
                 Tickets
               </Link><Link href="/" className="text-white hover:text-yellow-400">
                 Interested
-              </Link><Link href="/" className="text-white hover:text-yellow-400">
+              </Link><Link href="/userProfile" className="text-white hover:text-yellow-400">
                 Profile
               </Link>
           </div>
