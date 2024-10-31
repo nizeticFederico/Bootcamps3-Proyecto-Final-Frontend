@@ -32,54 +32,69 @@ export default async function EventsPage(){
                             creatorId="user123"
                         />
                         <EventCard
-                            imageUrl="/assets/images/about.jpg"
                             name="Taragüi Rock"
-                            date="9 NOV"
-                            hour="10 pm"
+                            description=""
+                            imageUrl="/assets/images/about.jpg"
+                            dateTime="2024-11-09T10:30"
                             price={6000}
                             capacity={10000}
                             location="Corrientes"
-                            category="Música"
+                            category="Musica"
+                            latitude={-27.469}
+                            longitude={-58.833}
+                            creatorId="user123"
                         />
-                            <EventCard
+                        <EventCard
+                            name="Taragüi Rock"
+                            description=""
                             imageUrl="/assets/images/about.jpg"
-                            name="Conferencia | Economia Actual"
-                            date="03 DIC"
-                            hour="9 am"
-                            price={12000}
+                            dateTime="2024-11-09T10:30"
+                            price={6000}
                             capacity={0}
                             location="Corrientes"
-                            category="Conferencia"
+                            category="Musica"
+                            latitude={-27.469}
+                            longitude={-58.833}
+                            creatorId="user123"
                         />
                         <EventCard
-                            imageUrl="/assets/images/event.jpg"
-                            name="Concierto de Música"
-                            date="15 NOV"
-                            hour="10 pm"
-                            price={1200}
-                            capacity={5000}
+                            name="Taragüi Rock"
+                            description=""
+                            imageUrl="/assets/images/about.jpg"
+                            dateTime="2024-11-09T10:30"
+                            price={6000}
+                            capacity={0}
                             location="Corrientes"
-                            category="Música"
+                            category="Musica"
+                            latitude={-27.469}
+                            longitude={-58.833}
+                            creatorId="user123"
                         />
                         <EventCard
-                            imageUrl="/assets/images/event.jpg"
-                            name="Concierto de Música"
-                            date="15 NOV"
-                            hour="10 pm"
-                            price={1200}
-                            capacity={5000}
+                            name="Taragüi Rock"
+                            description=""
+                            imageUrl="/assets/images/about.jpg"
+                            dateTime="2024-11-09T10:30"
+                            price={6000}
+                            capacity={10000}
                             location="Corrientes"
-                            category="Auctions & Fundaraisers"
+                            category="Musica"
+                            latitude={-27.469}
+                            longitude={-58.833}
+                            creatorId="user123"
                         />
-                            <EventCard
-                            imageUrl="/assets/images/event.jpg"
-                            name="Concierto de Música"
-                            date="15 NOV"
-                            hour="10 pm"
-                            price={1200}
-                            capacity={5000}
+                        <EventCard
+                            name="Taragüi Rock"
+                            description=""
+                            imageUrl="/assets/images/about.jpg"
+                            dateTime="2024-11-09T10:30"
+                            price={6000}
+                            capacity={10000}
                             location="Corrientes"
-                            category="Música"
+                            category="Musica"
+                            latitude={-27.469}
+                            longitude={-58.833}
+                            creatorId="user123"
                         />
                     </div>
                 </div>

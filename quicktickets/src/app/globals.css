@@ -28,3 +28,13 @@ html, body {
     transform: rotate(360deg);
   }
 }
+
+/*para mantenert invisible el scroll de la barra lateral*/
+.invisible-scrollbar::-webkit-scrollbar {
+  width: 0px;
+  background: transparent; /* Chrome/Safari/Webkit */
+}
+.invisible-scrollbar {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
+}

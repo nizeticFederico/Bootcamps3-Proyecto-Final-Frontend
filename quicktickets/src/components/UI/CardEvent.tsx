@@ -59,14 +59,21 @@ const EventCard: React.FC<EventCardProps> = ({ imageUrl, name, dateTime, price, 
           <p>{formattedDate} | {formattedTime}</p>
           <p>{location}</p>
         </div>
-        <div className="text-xs mb-2">
+        <div className="flex text-xs mt-1 mb-2">
+          <Image
+            src="/assets/images/icons/marcador-blue.svg"
+            width={8}
+            height={8}
+            alt="Marcador"
+            className='mr-1'
+          />
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-500 hover:underline"
           >
-            Ver en Google Maps
+            Location
           </a>
         </div>
         <div className="flex space-x-2">
