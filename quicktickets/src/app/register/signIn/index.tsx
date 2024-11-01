@@ -19,10 +19,10 @@ export default function SignIn(){
         setLoading(true);
 
         const data = {
-            name: values.name.toLocaleLowerCase(),
-            lastname: values.lastname,
+            first_name: values.name,
+            last_name: values.lastname,
             email: values.email,
-            number: Number(values.number),
+            number: values.number,
             password: values.password
         }
 
@@ -37,13 +37,14 @@ export default function SignIn(){
                 body: JSON.stringify(data)
             })
 
-            if (response.status === 200) {
+            if (response.status === 201) {
                 setLoading(false)
                 setStatus(response.status)
                 setTimeout(()=>{
                     setStatus(null)
+                    router.push("/")
                 }, 3000)
-                router.push("/")
+                
                 
             }else{
                 setStatus(response.status);
