@@ -4,7 +4,7 @@ import Image from 'next/image';
 interface EventCardProps {
   name: string;
   description: string;
-  //imageUrl: string;
+  imageUrl: string;
   dateTime: string;
   price: number;
   capacity: number;
