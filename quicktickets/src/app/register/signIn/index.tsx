@@ -43,8 +43,9 @@ export default function SignIn(){
                 setStatus(response.status)
                 setTimeout(()=>{
                     setStatus(null)
+                    router.push("/login")
                 }, 3000)
-                router.push("/login")
+                
                 
             }else{
                 setStatus(response.status);
