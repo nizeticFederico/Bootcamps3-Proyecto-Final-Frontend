@@ -26,7 +26,7 @@ export default function LogIn(){
     
                 if (result) {
                     setLoading(false)
-                    setStatus(200)
+                    setStatus(201)
                     setTimeout(()=>{
                         setStatus(null)
                     }, 3000)
@@ -78,7 +78,7 @@ export default function LogIn(){
                 <label htmlFor="email">E-mail</label>
                 <input  type="email" 
                         name="email" 
-                        pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" 
+                        /* pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}" */ 
                         placeholder="Enter your e-mail"
                         className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500 peer"
                         />

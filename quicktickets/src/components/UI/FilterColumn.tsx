@@ -11,10 +11,6 @@ const filters = [
     options: ['Today', 'Tomorrow', 'This Week', 'This Weekend', 'Pick a Date'],
   },
   {
-    label: 'Fecha',
-    options: ['Hoy', 'Este fin de semana', 'Próxima semana', 'Este mes', 'Próximo mes'],
-  },
-  {
     label: 'Category',
     options: ['Adventure Travel', 'Art Exhibitions', 'Auctions & Fundaraisers', 'Beer Festivals', 'Benefit Concerts'],
   },
@@ -26,7 +22,7 @@ const filters = [
 
 const FilterColumn: React.FC = () => {
   return (
-    <div className="flex flex-col w-full max-w-xs p-4 bg-white border ">
+    <div className="flex flex-col w-full max-w-xs p-4 bg-white border overflow-y-auto invisible-scrollbar sticky top-0 max-h-screen">
       {filters.map((filter, index) => (
         <div key={filter.label} className="mb-4">
           <h3 className="font-semibold text-lg mb-2">{filter.label}</h3>
