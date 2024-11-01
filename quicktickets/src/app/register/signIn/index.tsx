@@ -19,20 +19,12 @@ export default function SignIn(){
         setLoading(true);
 
         const data = {
-<<<<<<< HEAD
-            first_name: values.name,
-            last_name: values.lastname,
-            email: values.email,
-            number: values.number,
-            password: values.password
-=======
             first_name: values.name.toLocaleLowerCase(),
             last_name: values.lastname,
             email: values.email,
             phone: values.number,
             password: values.password,
             role: "admin",
->>>>>>> 1ce51f6b02a45b5795de731a266d91446bf8887d
         }
 
 
@@ -51,13 +43,9 @@ export default function SignIn(){
                 setStatus(response.status)
                 setTimeout(()=>{
                     setStatus(null)
-                    router.push("/")
+                    router.push("/login")
                 }, 3000)
-<<<<<<< HEAD
                 
-=======
-                router.push("/login")
->>>>>>> 1ce51f6b02a45b5795de731a266d91446bf8887d
                 
             }else{
                 setStatus(response.status);
