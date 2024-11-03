@@ -26,7 +26,7 @@ export default function LogIn(){
     
                 if (result) {
                     setLoading(false)
-                    setStatus(201)
+                    setStatus(200)
                     setTimeout(()=>{
                         setStatus(null)
                     }, 3000)
