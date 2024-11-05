@@ -1,12 +1,6 @@
+
 import React from 'react';
 import Image from 'next/image';
-import dynamic from 'next/dynamic'; // Importa dynamic para cargar componentes solo en el lado del cliente
-import "leaflet/dist/leaflet.css";
-
-const MapContainer = dynamic(() => import("react-leaflet").then(mod => mod.MapContainer), { ssr: false });
-const TileLayer = dynamic(() => import("react-leaflet").then(mod => mod.TileLayer), { ssr: false });
-const Marker = dynamic(() => import("react-leaflet").then(mod => mod.Marker), { ssr: false });
-const Popup = dynamic(() => import("react-leaflet").then(mod => mod.Popup), { ssr: false });
 
 interface EventDataProps {
   name: string;
@@ -33,70 +27,79 @@ const EventData: React.FC<EventDataProps> = ({
   location,
   latitude,
   longitude,
-/*   creatorId, */
+  creatorId,
 }) => {
   const eventDate = new Date(dateTime);
-  const formattedDate = eventDate.toLocaleDateString('en-AR', { day: '2-digit', month: 'short', year: 'numeric' });
+  const formattedDate = eventDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
   const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+
+  // Formateo de precio en moneda local
+  const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+
+  // sacamos la logica afuera para el cambio de aspecto
+  const isSoldOut = capacity === 0;
+  const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-green-600';
+  const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
+  const capacityIcon = isSoldOut ? '/group-red.svg' : '/group.svg';
 
   return (
     <main>
-        <div className="w-1/2 h-full overflow-hidden rounded relative">
+      <div className="w-1/2 h-full overflow-hidden rounded relative">
+        <Image
+          src={imageUrl}
+          fill
+          className="object-cover"
+          alt="Miniatura Evento"
+        />
+      </div>
+      <div>
+        <h2 className="text-xl font-semibold">{name}</h2>
+        <p className="text-gray-600">{category}</p>
+      </div>
+      <div>
+        <h4 className="text-lg font-medium">Date and Time</h4>
+        <div className="flex gap-2">
+          <p>{formattedDate}</p>
+          <p>{formattedTime}</p>
+        </div>
+      </div>
+      <div>
+        <h3 className="text-lg font-medium">Ticket Information</h3>
+        <div className="flex items-center gap-2">
+          <p>{formattedPrice}</p>
+          <div className={`flex items-center gap-1 ${capacityTextColor}`}>
             <Image
-                src={imageUrl}
-                fill
-                className="object-cover"
-                alt="Miniatura Evento"
+            src={capacityIcon}
+            width={16}
+            height={16}
+            alt="Capacity Icon"
+            className="mr-1"
             />
+            <p>{capacityText}</p>
+          </div>
         </div>
-        <div>
-            <h2>{name}</h2>
-            <p>{category}</p>
-        </div>
-        <div>
-            <h4>Date and Time</h4>
-            <div>
-                <p>{formattedDate}</p>
-                <p>{formattedTime}</p>
-            </div>
-        </div>
-        <div>
-            <div>
-                <h3>Ticket Information</h3>
-            </div>
-            <div>
-                <p>{price}</p>
-                <p>{capacity}</p>
-            </div>
-        </div>
-        <div>
-            <h4>Location</h4>
-            <p>{location}</p>
-            {/* Mapa con Leaflet */}
-            <MapContainer
-                center={[latitude, longitude]}
-                zoom={14}
-                style={{ width: "100%", height: "300px", marginTop: "10px" }}
-            >
-                <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://osm.org/copyright">OpenStreetMap</a> contributors'
-                />
-                <Marker position={[latitude, longitude]}>
-                    <Popup>
-                        {name} - {location}
-                    </Popup>
-                </Marker>
-            </MapContainer>
-        </div>
-        <div>
-            <h3>Hosted by</h3>
-            {/* <p>{creatorId}</p> */}
-        </div>
-        <div>
-            <h3>Description</h3>
-            <p>{description}</p>
-        </div>
+      </div>
+      <div>
+        <h4 className="text-lg font-medium">Location</h4>
+        <p>{location}</p>
+        <a
+          href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-500 hover:underline"
+          aria-label={`Open location in Google Maps for ${location}`}
+        >
+          View on Google Maps
+        </a>
+      </div>
+      <div>
+        <h3 className="text-lg font-medium">Hosted by</h3>
+        <p>{creatorId}</p>
+      </div>
+      <div>
+        <h3 className="text-lg font-medium">Description</h3>
+        <p>{description}</p>
+      </div>
     </main>
   );
 };
