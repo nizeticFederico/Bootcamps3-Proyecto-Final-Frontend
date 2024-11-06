@@ -18,10 +18,12 @@ interface EventCreateProps {
 }
 
 export default function EventCreate({ categories }: EventCreateProps) {
+  const [file, setFile] = useState<File | null>(null);
   const [values, setValues] = useState({
     name: "",
     description: "",
-    imageUrl: "https://grafiasmusic.com/wp-content/uploads/2024/05/38020.webp",
+    imageUrl: "",
+    /* imageUrl: "https://grafiasmusic.com/wp-content/uploads/2024/05/38020.webp", */
     date: "",
     time: "",
     price: "",
@@ -36,45 +38,51 @@ export default function EventCreate({ categories }: EventCreateProps) {
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const [status, setStatus] = useState<number | null>(null);
-/*   const [file, setFile] = useState<File | null>(null); */
-  /* const [imageUrl, setImageUrl] = useState<string | null>(null); // Estado donde se va a guardar la URL de la imagen */
   
   const router = useRouter();
+
+  async function uploadImage() {
+    if (!file) {
+      console.error("No file selected.");
+      return null;
+    }
+
+    const formData = new FormData();
+    formData.append("image", file);
+
+    const response = await fetch("http://localhost:3001/image/upload", {
+      method: "POST",
+      body: formData,
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      return data.url.secure_url; // Asegúrate de que esta es la propiedad correcta del objeto `data`
+    } else {
+      console.error("Error uploading image");
+      return null;
+    }
+  }
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
 
+    // Sube la imagen primero
+    const uploadedImageUrl = await uploadImage();
+    if (!uploadedImageUrl) {
+      setLoading(false);
+      return; // Si hay un error al subir la imagen, no continúa con la creación del evento
+    }
+
     // Combina `date` y `time` en el formato adecuado para `dateTime`
     const dateTime = `${values.date}T${values.time}`;
-
-    // Subir la imagen a Cloudinary si se seleccionó una
- /*    let imageUrl = values.imageUrl;
-    if (file) {
-      const formData = new FormData();
-      formData.append("file", file);
-      formData.append("upload_preset", imageUrl);
-
-      try {
-        const imageResponse = await fetch("https://api.cloudinary.com/v1_1/dsxdtlwsy/image/upload", {
-          method: "POST",
-          body: formData,
-        });
-
-        const imageData = await imageResponse.json();
-        imageUrl = imageData.secure_url;
-      } catch (error) {
-        console.error("Error uploading image:", error);
-        setLoading(false);
-        return;
-      }
-    } */
 
     const data = {
       role: "admin",
       name: values.name.toLocaleLowerCase(),
       description: values.description,
-      imageUrl: values.imageUrl,
+      imageUrl: uploadedImageUrl,
       dateTime: dateTime,
       price: values.price,
       capacity: values.capacity,
@@ -202,31 +210,26 @@ export default function EventCreate({ categories }: EventCreateProps) {
           {/* Inicio Sección de imagen */}
           <div className="flex flex-col">
             <h3 className="text-lg font-medium mb-2 ml-1">Upload Image</h3>
-            <label htmlFor="imageUrl" className="cursor-pointer">
+            <label htmlFor="imageUpload" className="cursor-pointer">
               <div className="flex flex-col items-center justify-center border rounded-lg p-6 bg-gray-50 w-full h-72">
                 <div className="relative">
                   <FaCloudUploadAlt className="text-gray-500 text-8xl" />
                 </div>
-                <span className="text-blue-600 mb-2">
-                  Upload your Event Image
-                </span>
+                <span className="text-blue-600 mb-2">Upload your Event Image</span>
                 <div>
                   <p className="text-sm text-gray-500 text-center">
                     Valid file formats: JPG, JPEG, PNG.
                   </p>
                 </div>
               </div>
+            </label>
               <input
                 type="file"
+                id="imageUpload"  // Asegúrate de que el id coincide con el htmlFor del label
                 accept=".jpg,.jpeg,.png"
-                name="imageUrl"
-                value={values.imageUrl}
-                /* onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} */
+                onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
                 className="hidden"
-                /* required */
               />
-            </label>
-            
           </div>
         </div>
         {/* Finak Sección de imagen */}
