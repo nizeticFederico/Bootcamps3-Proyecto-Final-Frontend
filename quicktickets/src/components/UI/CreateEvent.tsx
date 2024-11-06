@@ -1,50 +1,45 @@
+// components/UI/CreateEvent.tsx
+
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
 
-export default function EventCreate() {
+interface Category {
+  id: string;
+  name: string;
+}
+
+interface EventCreateProps {
+  categories: Category[];
+}
+
+export default function EventCreate({ categories }: EventCreateProps) {
   const [values, setValues] = useState({
     name: "",
     description: "",
-    imageUrl: "",
+    imageUrl: "https://grafiasmusic.com/wp-content/uploads/2024/05/38020.webp",
     date: "",
     time: "",
     price: "",
     capacity: "",
     category: "",
     location: "",
-    latitude: "",
-    longitude: "",
+    latitude: "-27.46784",
+    longitude: "-58.8344",
+    creatorId: "",
   });
+
   const [loading, setLoading] = useState<boolean>(false);
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
-  const [categories, setCategories] = useState<[]>([]);
   const [status, setStatus] = useState<number | null>(null);
-
+/*   const [file, setFile] = useState<File | null>(null); */
+  /* const [imageUrl, setImageUrl] = useState<string | null>(null); // Estado donde se va a guardar la URL de la imagen */
+  
   const router = useRouter();
-
-  useEffect(() => {
-    // Función para cargar las categorías desde la API
-    async function fetchCategories() {
-      try {
-        const response = await fetch("http://localhost:3001/category/all");
-        if (response.ok) {
-          const data = await response.json();
-          setCategories(data);
-        } else {
-          console.error("Error al cargar las categorías");
-        }
-      } catch (error) {
-        console.error("Error de red al cargar las categorías:", error);
-      }
-    }
-
-    fetchCategories();
-  }, []);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -52,6 +47,28 @@ export default function EventCreate() {
 
     // Combina `date` y `time` en el formato adecuado para `dateTime`
     const dateTime = `${values.date}T${values.time}`;
+
+    // Subir la imagen a Cloudinary si se seleccionó una
+ /*    let imageUrl = values.imageUrl;
+    if (file) {
+      const formData = new FormData();
+      formData.append("file", file);
+      formData.append("upload_preset", imageUrl);
+
+      try {
+        const imageResponse = await fetch("https://api.cloudinary.com/v1_1/dsxdtlwsy/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const imageData = await imageResponse.json();
+        imageUrl = imageData.secure_url;
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        setLoading(false);
+        return;
+      }
+    } */
 
     const data = {
       role: "admin",
@@ -65,7 +82,7 @@ export default function EventCreate() {
       location: values.location,
       latitude: values.latitude,
       longitude: values.longitude,
-      /* creatorId: values.creatorId, */
+      creatorId: values.creatorId,
     };
 
     try {
@@ -83,7 +100,7 @@ export default function EventCreate() {
         setTimeout(() => {
           setStatus(null);
         }, 3000);
-        router.push("/events"); //ver en la Daily
+        router.push("/");
       } else {
         setStatus(response.status);
         setLoading(false);
@@ -95,6 +112,8 @@ export default function EventCreate() {
       console.log(error);
     }
   }
+
+
 
   function handleChange(
     event: React.ChangeEvent<
@@ -118,7 +137,7 @@ export default function EventCreate() {
         </h2>
         <hr className="mb-10" />
         <h3 className="ml-1  font-semibold text-2xl">Event Details</h3>
-
+        {/* Inicio Seccion DAtos */}
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Inicio Seccion Nombre */}
           <div>
@@ -139,28 +158,27 @@ export default function EventCreate() {
 
           {/* Inicio Seccion Categoria */}
           <div>
-            <label htmlFor="category" className="ml-1 text-lg font-medium">
-              Event Category
-            </label>
+          <label htmlFor="category" className="ml-1 text-lg font-medium">
+            Event Category
+          </label>
             <select
               name="category"
               value={values.category}
               onChange={handleChange}
               className="p-3 border rounded-lg w-full"
-              required
             >
-              <option value="">Please select one</option>
-              {categories.map((category: { id: string; name: string }) => (
-                <option key={category.id} value={category.id}>
+              <option value="">Select a category</option>
+              {categories.map((category) => (
+                <option key={category.name}>
                   {category.name}
                 </option>
               ))}
             </select>
-          </div>
+        </div>
           {/* Final Seccion Categoria */}
         </div>
 
-        {/* Final Seccion Categoria */}
+        {/* Final Seccion DAtos */}
 
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Sección de descripción del evento */}
@@ -181,7 +199,7 @@ export default function EventCreate() {
             />
           </div>
 
-          {/* Sección de imagen */}
+          {/* Inicio Sección de imagen */}
           <div className="flex flex-col">
             <h3 className="text-lg font-medium mb-2 ml-1">Upload Image</h3>
             <label htmlFor="imageUrl" className="cursor-pointer">
@@ -203,14 +221,17 @@ export default function EventCreate() {
                 accept=".jpg,.jpeg,.png"
                 name="imageUrl"
                 value={values.imageUrl}
-                onChange={handleChange}
+                /* onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} */
                 className="hidden"
-                required
+                /* required */
               />
             </label>
+            
           </div>
         </div>
+        {/* Finak Sección de imagen */}
 
+        {/* Final Seccion Date and Time */}
         <div className="mb-6">
           <h3 className="text-2xl font-bold mb-2">Date & Time</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -247,7 +268,6 @@ export default function EventCreate() {
             {/* Fin Sección Start Time */}
           </div>
         </div>
-
         {/* Final Seccion Date and Time */}
 
         {/* Inicio Seccion Location */}
@@ -264,8 +284,31 @@ export default function EventCreate() {
             className="p-3 border rounded-lg w-full"
           />
         </div>
-        {/* Inicio Seccion Informacion adicional */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="mb-4">
+            <input
+              type="number"
+              name="latitude"
+              placeholder="Latitude"
+              value={values.latitude}
+              onChange={handleChange}
+              className="p-3 border rounded-lg w-full [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="number"
+              name="longitude"
+              placeholder="Longitude"
+              value={values.longitude}
+              onChange={handleChange}
+              className="p-3 border rounded-lg w-full [&::-webkit-inner-spin-button]:appearance-none"
+            />
+          </div>
+        </div>
+        {/* Final Seccion Location */}
 
+        {/* Inicio Seccion Informacion adicional */}
         {/* Inicio Seccion tipo de evento */}
         <h3 className="text-2xl mb-2 font-semibold flex text-center justify-center text-gray-800">
           What tickets are you selling?
