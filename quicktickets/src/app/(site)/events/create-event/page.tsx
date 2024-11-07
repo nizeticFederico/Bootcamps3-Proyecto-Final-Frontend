@@ -1,21 +1,12 @@
-/* import EventCreate from "../../../../components/UI/CreateEvent";
-
-export default async function Events(){
-    return(
-        <EventCreate />
-    )
-} */
-
-// site/events/create-event/page.tsx
 import React from 'react';
-import CategoryContainer from '@/components/UI/Categories';
+import EventCreate from '@/components/UI/CreateEvent';
 
 const CreateEventPage = () => {
     return (
-      <div>
-        <CategoryContainer />
+      <div className="container mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+        <EventCreate />
       </div>
     );
-  };
-  
-  export default CreateEventPage;
+};
+
+export default CreateEventPage;
