@@ -1,5 +1,5 @@
-// components/FilterColumn.tsx
 import React from 'react';
+import Categories from './Categories';
 
 const filters = [
   {
@@ -11,12 +11,14 @@ const filters = [
     options: ['Today', 'Tomorrow', 'This Week', 'This Weekend', 'Pick a Date'],
   },
   {
-    label: 'Category',
-    options: ['Adventure Travel', 'Art Exhibitions', 'Auctions & Fundaraisers', 'Beer Festivals', 'Benefit Concerts'],
-  },
-  {
     label: 'Format',
-    options: ['Community Engagement', 'Concerts & Performances', 'Conferences', 'Experiential Events', 'Festivals & Fairs'],
+    options: [
+      'Community Engagement',
+      'Concerts & Performances',
+      'Conferences',
+      'Experiential Events',
+      'Festivals & Fairs',
+    ],
   },
 ];
 
@@ -28,19 +30,28 @@ const FilterColumn: React.FC = () => {
           <h3 className="font-semibold text-lg mb-2">{filter.label}</h3>
           {filter.options.map((option) => (
             <label key={option} className="block mb-1">
-              <input
-                type="checkbox"
-                className="mr-2 leading-tight"
-              />
+              <input type="checkbox" className="mr-2 leading-tight" />
               <span className="text-gray-700">{option}</span>
             </label>
           ))}
-          {/* Línea divisoria */}
           {index < filters.length - 1 && (
             <div className="border-b border-gray-300 my-4"></div>
           )}
         </div>
       ))}
+
+      {/* Listado de categorías */}
+      <div className="border-t border-gray-300">
+        <h3 className="font-semibold text-lg mb-2 mt-8">Category</h3>
+        <Categories
+          renderCategory={(category) => (
+            <label key={category.name} className="block mb-1">
+              <input type="checkbox" className="mr-2 leading-tight" />
+              <span className="text-gray-700">{category.name}</span>
+            </label>
+          )}
+        />
+      </div>
     </div>
   );
 };

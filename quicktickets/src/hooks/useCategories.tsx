@@ -1,16 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-interface Category {
+export interface Category {
   id: string;
   name: string;
 }
 
-interface CategoriesProps {
-  renderCategory: (category: Category) => JSX.Element;
-}
-
-const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
+export const useCategories = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -29,15 +25,5 @@ const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
     fetchCategories();
   }, []);
 
-  if (loading) {
-    return <option>Loading categories...</option>;
-  }
-
-  return (
-    <>
-      {categories.map((category) => renderCategory(category))}
-    </>
-  );
+  return { categories, loading };
 };
-
-export default Categories;

@@ -1,5 +1,3 @@
-// components/UI/CreateEvent.tsx
-
 "use client";
 
 import { useState } from "react";
@@ -7,28 +5,21 @@ import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import Categories from "./Categories";
 
-interface Category {
-  id: string;
-  name: string;
-}
 
-interface EventCreateProps {
-  categories: Category[];
-}
 
-export default function EventCreate({ categories }: EventCreateProps) {
+export default function EventCreate() {
   const [file, setFile] = useState<File | null>(null);
   const [values, setValues] = useState({
     name: "",
     description: "",
     imageUrl: "",
-    /* imageUrl: "https://grafiasmusic.com/wp-content/uploads/2024/05/38020.webp", */
     date: "",
     time: "",
     price: "",
     capacity: "",
-    category: "",
+    category: "", // valor de categoría seleccionado
     location: "",
     latitude: "-27.46784",
     longitude: "-58.8344",
@@ -39,6 +30,12 @@ export default function EventCreate({ categories }: EventCreateProps) {
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const [status, setStatus] = useState<number | null>(null);
   
+  // Combina `date` y `time` en el formato adecuado para `dateTime`
+  const dateTime = `${values.date}T${values.time}`;
+  // Definimos la fecha actual en formato YYYY-MM-DD y la hora actual en formato HH:MM
+  const today = new Date().toISOString().split("T")[0];
+  const currentTime = new Date().toTimeString().slice(0, 5);
+
   const router = useRouter();
 
   async function uploadImage() {
@@ -75,8 +72,6 @@ export default function EventCreate({ categories }: EventCreateProps) {
       return; // Si hay un error al subir la imagen, no continúa con la creación del evento
     }
 
-    // Combina `date` y `time` en el formato adecuado para `dateTime`
-    const dateTime = `${values.date}T${values.time}`;
 
     const data = {
       role: "admin",
@@ -167,25 +162,27 @@ export default function EventCreate({ categories }: EventCreateProps) {
           {/* Inicio Seccion Categoria */}
           <div>
           <label htmlFor="category" className="ml-1 text-lg font-medium">
-            Event Category
+            Category
           </label>
-            <select
-              name="category"
-              value={values.category}
-              onChange={handleChange}
-              className="p-3 border rounded-lg w-full"
-            >
-              <option value="">Select a category</option>
-              {categories.map((category) => (
-                <option key={category.name}>
+          <select
+            name="category"
+            value={values.category}
+            onChange={handleChange}
+            className="p-3 border rounded-lg w-full"
+            required
+          >
+            <option value="">Select a category</option>
+            <Categories
+              renderCategory={(category) => (
+                <option key={category.name} value={category.name}>
                   {category.name}
                 </option>
-              ))}
-            </select>
-        </div>
+              )}
+            />
+          </select>
+          </div>
           {/* Final Seccion Categoria */}
         </div>
-
         {/* Final Seccion DAtos */}
 
         <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -249,6 +246,7 @@ export default function EventCreate({ categories }: EventCreateProps) {
                 value={values.date}
                 onChange={handleChange}
                 className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500 w-full"
+                min={today}
                 required
               />
             </div>
@@ -265,6 +263,7 @@ export default function EventCreate({ categories }: EventCreateProps) {
                 value={values.time}
                 onChange={handleChange}
                 className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500 w-full"
+                min={values.date === today ? currentTime : undefined} // Si la fecha es hoy, usa la hora actual como mínimo
                 required
               />
             </div>
