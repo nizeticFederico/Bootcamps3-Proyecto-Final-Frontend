@@ -1,4 +1,8 @@
+
 import SearchBar from "@/components/UI/SearchBar"
+import CategoriesBanner from "@/components/UI/CategoriesBanner"
+import NewsletterBanner from "@/components/UI/NewsLetterBanner"
+import CreateEventBanner from "@/components/UI/CreateEventBanner"
 
 export default async function HomePage(){
     return(
@@ -8,6 +12,11 @@ export default async function HomePage(){
                 <div className="w-full text-base">
                     <SearchBar />
                 </div>
+            </div>
+            <div>
+                <CategoriesBanner />
+                <NewsletterBanner />
+                <CreateEventBanner />
             </div>
         </main>
     )

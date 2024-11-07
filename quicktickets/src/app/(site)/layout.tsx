@@ -25,8 +25,8 @@ export default function RootLayout({
         <NavBar/>
         {children}
         <ScrollToTopButton/>
-        <CreateEventBanner />
-        <NewsletterBanner/>
+{/*         <CreateEventBanner />
+        <NewsletterBanner/> */}
         <Footer/>
         </SessionProvider>
 
