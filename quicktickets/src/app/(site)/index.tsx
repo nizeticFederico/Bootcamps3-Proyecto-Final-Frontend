@@ -4,6 +4,8 @@ import CategoriesBanner from "@/components/UI/CategoriesBanner"
 import NewsletterBanner from "@/components/UI/NewsLetterBanner"
 import CreateEventBanner from "@/components/UI/CreateEventBanner"
 import HomeFirstSection from "@/components/UI/HomeFirstSection"
+import HomeSecondSection from "@/components/UI/HomeSecondSection"
+import HomeThirdSection from "@/components/UI/HomeThirdSection"
 
 export default async function HomePage(){
     return(
@@ -18,7 +20,9 @@ export default async function HomePage(){
                 <CategoriesBanner />
                 <HomeFirstSection />
                 <NewsletterBanner />
+                <HomeSecondSection />
                 <CreateEventBanner />
+                <HomeThirdSection />
             </div>
         </main>
     )
