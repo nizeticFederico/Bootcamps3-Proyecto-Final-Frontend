@@ -5,14 +5,16 @@ import Link from "next/link";
 import { useSession } from "next-auth/react";
 import { useState , useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { logOut } from "@/actions/authActions";
+import { signOut } from "next-auth/react";
 
 
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { data: session } = useSession();
+  const { data:session } = useSession();
   const router = useRouter();
+  console.log(session);
+  
 
   useEffect(()=>{
   },[session])
@@ -21,10 +23,9 @@ const NavBar = () => {
     setIsOpen(!isOpen);
   };
 
-  const handleLogOut =  () => {
-    logOut();
-    router.push("/")
-}
+  const handleLogout = async () => {
+    await signOut({ redirect: false });
+};
 
 
   return (
@@ -68,7 +69,7 @@ const NavBar = () => {
       {session ? (
         <div className="flex items-center justify-center gap-6">
           <Link href="/" className="text-white hover:text-yellow-400">
-            Create Event
+             Create Event
           </Link>
           <div className="flex gap-6 items-center justify-center relative">
 
@@ -91,14 +92,16 @@ const NavBar = () => {
           </div>
           {isOpen && (
             <div className="absolute bg-white rounded shadow-lg mt-[133px] text-sm min-w-[140px]">
-              {/* Contenido del div desplegable */}
               <Link href="/userProfile"  onClick={() => setIsOpen(false)} className="block p-2 text-black hover:bg-gray-200 rounded">
                 Account setting
               </Link>
-              <button onClick = {handleLogOut} className="p-2 text-black hover:bg-gray-200 w-full text-start rounded">
-                  Log out
-              </button> 
-              {/* Agrega más opciones según sea necesario */}
+              <div className="flex justify-between hover:bg-gray-200 rounded">
+              <button onClick = {handleLogout} className=" flex items-center p-2 gap-2 text-black  w-full text-start  text-red-500 font-bold">
+                  Logout
+                  <Image src="/assets/images/icons/logout-logo.svg"alt="Logout logo" height={15} width={15} className=""></Image>
+              </button>
+              
+              </div>
             </div>
           )}
           </div>
