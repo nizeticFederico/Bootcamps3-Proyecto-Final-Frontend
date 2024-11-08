@@ -20,11 +20,6 @@ export async function login(credentials: { email: string; password: string; }){
     }
 };
 
-export async function logOut(){
-
-    await signOut();
-    
-}
 
 export async function getUserByMail(email:string) {
     try {
