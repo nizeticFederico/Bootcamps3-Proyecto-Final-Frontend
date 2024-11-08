@@ -1,5 +1,3 @@
-// componentes/UI/HomeFirstSection.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -24,15 +22,10 @@ export default function HomeFirstSection() {
   const [loading, setLoading] = useState<boolean>(true);
   const [showAll, setShowAll] = useState(false);
 
-  // Cambia los valores de filtro según tus necesidades
-  const FILTER_CRITERIA = {
-    category: "",
-    minPrice: 100,
-    maxPrice: "",
-  };
-
+  // Configura los criterios de filtro según sea necesario; si un valor está vacío, no se aplicará ese filtro
+  
   const visibleEvents = showAll ? filteredEvents : filteredEvents.slice(0, 6);
-
+  
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
@@ -40,7 +33,52 @@ export default function HomeFirstSection() {
         const response = await fetch("http://localhost:3001/event/all");
         if (response.ok) {
           const data = await response.json();
-          const filteredData = applyFilters(data); // Aplicar filtros
+          
+          const FILTER_CRITERIA = {
+            category: "Teatro",
+            minPrice: null as number | null, // Cambiar a null si no se aplica el filtro
+            maxPrice: null as number | null, // Cambiar a null si no se aplica el filtro
+            location: "",
+            dateRange: "", // Puede ser "today", "week", o "month"
+          };
+
+          // Mover applyFilters aquí mismo
+          const applyFilters = (events: Event[]) => {
+            const today = new Date();
+            const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+            const startOfWeek = new Date(startOfDay);
+            startOfWeek.setDate(startOfDay.getDate() - (startOfDay.getDay() || 7) + 1);
+            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+            
+            return events.filter(event => {
+              const eventDate = new Date(event.dateTime);
+              if (isNaN(eventDate.getTime())) {
+                console.error(`Invalid date format for event: ${event.dateTime}`);
+                return false;
+              }
+              
+              const matchesCategory = FILTER_CRITERIA.category ? event.category === FILTER_CRITERIA.category : true;
+              const matchesMinPrice = FILTER_CRITERIA.minPrice !== null ? event.price >= FILTER_CRITERIA.minPrice : true;
+              const matchesMaxPrice = FILTER_CRITERIA.maxPrice !== null ? event.price <= FILTER_CRITERIA.maxPrice : true;
+              const matchesLocation = FILTER_CRITERIA.location ? event.location.includes(FILTER_CRITERIA.location) : true;
+              
+              let matchesDateRange = true;
+              switch (FILTER_CRITERIA.dateRange) {
+                case "today":
+                  matchesDateRange = eventDate >= startOfDay && eventDate < new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
+                  break;
+                case "week":
+                  matchesDateRange = eventDate >= startOfWeek && eventDate < new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
+                  break;
+                case "month":
+                  matchesDateRange = eventDate >= startOfMonth && eventDate < new Date(today.getFullYear(), today.getMonth() + 1, 1);
+                  break;
+              }
+              return matchesCategory && matchesMinPrice && matchesMaxPrice && matchesLocation && matchesDateRange;
+            });
+          };
+  
+          const filteredData = applyFilters(data);
           setFilteredEvents(filteredData);
         } else {
           console.error("Failed to load events");
@@ -53,18 +91,9 @@ export default function HomeFirstSection() {
     }
     fetchEvents();
   }, []);
-
-  // Función para aplicar filtros de manera interna
-  const applyFilters = (events: Event[]) => {
-    return events.filter(event => 
-/*       event.category === FILTER_CRITERIA.category && */
-      event.price >= FILTER_CRITERIA.minPrice /* && */
-/*       event.price <= FILTER_CRITERIA.maxPrice */
-    );
-  };
-
+  
   return (
-    <main className="flex flex-col items-center min-h-screen bg-white">
+    <main id="HomeFirstSection" className="flex flex-col items-center min-h-screen bg-white">
       <div className="flex flex-row w-full max-w-screen-xl">
         <div className="flex-grow ml-4 p-10">
           <div className="flex my-4">
@@ -81,14 +110,22 @@ export default function HomeFirstSection() {
             </div>
           )}
 
-          {/* Boton apra ver mas/ver menos */}
+          {/* Botón para ver más/ver menos */}
           <div className="flex justify-center mt-4">
-            <button
-              onClick={() => setShowAll(!showAll)}
-              className="px-4 py-2 bg-white border border-blue-500 text-blue-500 rounded-md hover:bg-blue-100 transition"
-            >
-              {showAll ? "Ver menos" : "Ver mas"}
-            </button>
+          <button
+            onClick={() => {
+              setShowAll(!showAll);
+              if (showAll) {
+                window.scrollTo({
+                  top: document.getElementById('HomeFirstSection')?.offsetTop || 0,
+                  behavior: 'smooth',
+                });
+              }
+            }}
+            className="px-4 py-2 bg-white border border-blue-500 text-blue-500 rounded-md hover:bg-blue-100 transition"
+          >
+            {showAll ? "Ver menos" : "Ver más"}
+          </button>
           </div>
         </div>
       </div>
