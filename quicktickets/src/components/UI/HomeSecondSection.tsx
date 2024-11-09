@@ -3,12 +3,12 @@ import HomeSections from "./HomeSections";
 
 export default function HomeSecondSection() {
   const filterCriteria = {
-    category: "Teatro",
-    minPrice: "",
-    maxPrice: "",
+    category: "",
+    minPrice: null,
+    maxPrice: null,
     location: "",
     dateRange: "",
   };
 
-  return <HomeSections title="Titulo de prueba 2" filterCriteria={filterCriteria} />;
+  return <HomeSections title="Segunda Sección" filterCriteria={filterCriteria} sectionId="HomeSecondSection" />;
 }

@@ -1,15 +1,27 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import Categories from "./Categories";
+import { getUserByMail } from "@/actions/authActions";
+import { useSession } from "next-auth/react";
 
+
+// Define la interfaz UserData para el tipado de datos de usuario
+interface UserData {
+  userId: string;
+  email: string;
+  username: string;
+  role: string;
+}
 
 
 export default function EventCreate() {
+  const { data: session } = useSession();
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [values, setValues] = useState({
     name: "",
@@ -19,7 +31,7 @@ export default function EventCreate() {
     time: "",
     price: "",
     capacity: "",
-    category: "", // valor de categoría seleccionado
+    category: "",
     location: "",
     latitude: "-27.46784",
     longitude: "-58.8344",
@@ -27,16 +39,28 @@ export default function EventCreate() {
   });
 
   const [loading, setLoading] = useState<boolean>(false);
-  const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const [status, setStatus] = useState<number | null>(null);
-  
-  // Combina `date` y `time` en el formato adecuado para `dateTime`
+    // Combina `date` y `time` en el formato adecuado para `dateTime`
   const dateTime = `${values.date}T${values.time}`;
-  // Definimos la fecha actual en formato YYYY-MM-DD y la hora actual en formato HH:MM
+    // Definimos la fecha actual en formato YYYY-MM-DD y la hora actual en formato HH:MM
   const today = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().slice(0, 5);
-
+  const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const router = useRouter();
+
+  useEffect(() => {
+    async function fetchUserData() {
+      if (session?.user?.email) {
+        const data = await getUserByMail(session.user.email);
+        if (data) {
+          setUserData(data);
+          setValues((prev) => ({ ...prev, creatorId: data.userId }));
+        }
+      }
+    }
+
+    fetchUserData();
+  }, [session]);
 
   async function uploadImage() {
     if (!file) {
@@ -74,18 +98,18 @@ export default function EventCreate() {
 
 
     const data = {
-      role: "admin",
+      role: userData?.role,
       name: values.name.toLocaleLowerCase(),
       description: values.description,
       imageUrl: uploadedImageUrl,
-      dateTime: dateTime,
+      dateTime,
       price: values.price,
       capacity: values.capacity,
       category: values.category,
       location: values.location,
       latitude: values.latitude,
       longitude: values.longitude,
-      creatorId: values.creatorId,
+      creatorId: userData?.userId || "", // Usa un string vacío si userData es null
     };
 
     try {
@@ -93,6 +117,7 @@ export default function EventCreate() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
+          "Authorization": `Bearer ${session?.accessToken}`,  // Agregar el token aquí
         },
         body: JSON.stringify(data),
       });
