@@ -1,4 +1,4 @@
-// HomeSection.tsx
+// HomeSections.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -29,9 +29,10 @@ interface FilterCriteria {
 interface HomeSectionsProps {
   title: string;
   filterCriteria: FilterCriteria;
+  sectionId: string; // Nuevo prop para el ID de la sección
 }
 
-export default function HomeSections({ title, filterCriteria }: HomeSectionsProps) {
+export default function HomeSections({ title, filterCriteria, sectionId }: HomeSectionsProps) {
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [showAll, setShowAll] = useState(false);
@@ -59,8 +60,7 @@ export default function HomeSections({ title, filterCriteria }: HomeSectionsProp
     fetchEvents();
   }, [filterCriteria]);
 
-  // Función para aplicar filtros de manera condicional
-    const applyFilters = (events: Event[], criteria: FilterCriteria) => {
+  const applyFilters = (events: Event[], criteria: FilterCriteria) => {
     const today = new Date();
     const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
     const startOfWeek = new Date(startOfDay);
@@ -94,7 +94,7 @@ export default function HomeSections({ title, filterCriteria }: HomeSectionsProp
   };
 
   return (
-    <main id="HomeSections" className="flex flex-col items-center min-h-screen bg-white">
+    <main id={sectionId} className="flex flex-col items-center min-h-screen bg-white">
       <div className="flex flex-row w-full max-w-screen-xl">
         <div className="flex-grow ml-4 p-10">
           <div className="flex my-4">
@@ -117,7 +117,7 @@ export default function HomeSections({ title, filterCriteria }: HomeSectionsProp
                 setShowAll(!showAll);
                 if (showAll) {
                   window.scrollTo({
-                    top: document.getElementById("HomeSections")?.offsetTop || 0,
+                    top: document.getElementById(sectionId)?.offsetTop || 0,
                     behavior: "smooth",
                   });
                 }

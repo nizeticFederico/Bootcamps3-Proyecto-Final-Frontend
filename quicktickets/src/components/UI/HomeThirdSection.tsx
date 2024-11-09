@@ -1,14 +1,14 @@
-// HomeFirstSection.tsx
+// HomeThirdSection.tsx
 import HomeSections from "./HomeSections";
 
 export default function HomeThirdSection() {
   const filterCriteria = {
-    category: "Teatro",
-    minPrice: "",
-    maxPrice: "",
+    category: "",
+    minPrice: null,
+    maxPrice: null,
     location: "",
     dateRange: "",
   };
 
-  return <HomeSections title="Titulo de prueba 3" filterCriteria={filterCriteria} />;
+  return <HomeSections title="Tercera Sección" filterCriteria={filterCriteria} sectionId="HomeThirdSection" />;
 }
