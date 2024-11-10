@@ -26,6 +26,20 @@ export default function EventsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState({ category: "", location: "", price: "", date: "" });
 
+  const locations = Array.from(new Set(events.map((event) => event.location)));
+
+  const onSearch = (name: string, location: string) => {
+    let filtered = events;
+    if (location) {
+      filtered = filtered.filter((event) => event.location === location);
+    }
+    if (name) {
+      const lowercasedName = name.toLowerCase();
+      filtered = filtered.filter((event) => event.name.toLowerCase().includes(lowercasedName));
+    }
+    setFilteredEvents(filtered);
+  };
+
   useEffect(() => {
     async function fetchEvents() {
       try {
@@ -63,7 +77,7 @@ export default function EventsPage() {
           Explore a world of events. Find what excites you!
         </h2>
         <div className="w-full">
-          <SearchBar setFilters={setFilters} />
+          <SearchBar onSearch={onSearch} locations={locations} />
         </div>
       </div>
       <div className="flex flex-row w-full max-w-screen-xl">

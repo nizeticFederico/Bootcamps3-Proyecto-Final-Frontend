@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+"use client"
+
+import React, { useState, useEffect } from 'react';
 import Categories from './Categories';
 
 interface FilterColumnProps {
@@ -8,18 +10,21 @@ interface FilterColumnProps {
 const FilterColumn: React.FC<FilterColumnProps> = ({ setFilters }) => {
   const [activeFilters, setActiveFilters] = useState<{ category?: string; price?: string; date?: string }>({});
 
-  const handleFilterChange = (type: string, value: string) => {
+  const handleFilterChange = (type: 'category' | 'price' | 'date', value: string) => {
     setActiveFilters((prev) => {
       const updatedFilters = { ...prev, [type]: prev[type] === value ? undefined : value };
-      // Limpia los filtros si todas las opciones están desmarcadas
-      if (!updatedFilters.category && !updatedFilters.price && !updatedFilters.date) {
-        setFilters({});
-      } else {
-        setFilters(updatedFilters);
-      }
       return updatedFilters;
     });
   };
+
+  // Usamos useEffect para actualizar setFilters cada vez que activeFilters cambie
+  useEffect(() => {
+    if (!activeFilters.category && !activeFilters.price && !activeFilters.date) {
+      setFilters({});
+    } else {
+      setFilters(activeFilters);
+    }
+  }, [activeFilters, setFilters]);
 
   return (
     <div className="flex flex-col w-full max-w-xs p-4 bg-white border overflow-y-auto sticky top-0 max-h-screen">
