@@ -1,42 +1,42 @@
 "use client"
 
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
+import { FiSearch } from "react-icons/fi";
 
 interface SearchBarProps {
-  setFilters: (filters: { location: string }) => void;
+  onSearch: (name: string, location: string) => void;
+  locations: string[];
 }
 
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations }) => {
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [selectedLocation, setSelectedLocation] = useState<string>('');
 
-const SearchBar: React.FC<SearchBarProps> = ({ setFilters }) => {
-  const [locations, setLocations] = useState<string[]>([]);
-
-  useEffect(() => {
-    async function fetchLocations() {
-      try {
-        const response = await fetch("http://localhost:3001/event/all");
-        const data = await response.json();
-        const uniqueLocations = Array.from(new Set(data.map((event: { location: string }) => event.location)));
-        setLocations(uniqueLocations);
-      } catch (error) {
-        console.error("Error fetching locations:", error);
-      }
-    }
-    fetchLocations();
-  }, []);
-
-  const handleLocationChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilters({ location: e.target.value });
+  const handleSearchClick = () => {
+    onSearch(searchTerm, selectedLocation);
   };
 
   return (
     <div className="flex items-center justify-center h-full w-full max-w-3xl mx-auto p-4">
+      <button
+        onClick={handleSearchClick}
+        className="h-12 bg-white text-gray-600 px-4 rounded-l-md border-t border-l border-b border-gray-300 hover:bg-gray-100 transition flex items-center"
+      >
+        <FiSearch size={24} />
+      </button>
       <input
         type="text"
         placeholder="Search Events!"
-        className="h-full flex-grow py-3 px-4 border border-gray-300 focus:outline-none bg-white text-gray-600"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+        className="h-12 flex-grow py-2 px-4 border-t border-b border-gray-300 focus:outline-none focus:ring-0 bg-white text-gray-600"
       />
-      <select onChange={handleLocationChange} className="py-3 px-4 border rounded-r-md bg-white text-gray-600">
-        <option value="">Seleccionar ciudad</option>
+      <select
+        value={selectedLocation}
+        onChange={(e) => setSelectedLocation(e.target.value)}
+        className="h-12 py-2 px-4 border-t border-r border-b border-gray-300 rounded-r-md focus:outline-none focus:ring-0 bg-white text-gray-600"
+      >
+        <option value="">Select Location</option>
         {locations.map((location) => (
           <option key={location} value={location}>
             {location}
