@@ -14,7 +14,23 @@ const nextConfig: NextConfig = {
       {
         protocol: 'https',
         hostname: 'e.rpp-noticias.io',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'offloadmedia.feverup.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.teatrovera.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'somosiberoamerica.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'blog.marti.mx',
+      },
     ]
   }
 }

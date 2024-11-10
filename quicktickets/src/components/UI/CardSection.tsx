@@ -2,8 +2,12 @@
 
 import React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { TiGroup } from "react-icons/ti";
+import { FaTicketAlt } from "react-icons/fa";
 
 interface CardSectionsProps {
+  _id: string; // Agrega el ID como prop
   name: string;
   description: string;
   imageUrl: string;
@@ -18,6 +22,7 @@ interface CardSectionsProps {
 }
 
 const CardSections: React.FC<CardSectionsProps> = ({
+  _id, // Asegúrate de recibir el ID aquí
   name,
   imageUrl,
   dateTime,
@@ -26,13 +31,18 @@ const CardSections: React.FC<CardSectionsProps> = ({
   category,
   location,
 }) => {
+  const router = useRouter();
   const eventDate = new Date(dateTime);
   const day = eventDate.toLocaleDateString('en-AR', { day: '2-digit' });
   const month = eventDate.toLocaleDateString('en-AR', { month: 'short' });
   const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
+  const handleCardClick = () => {
+    router.push(`/events/${_id}`);
+  };
+
   return (
-    <div className="flex flex-wrap items-stretch mb-8">
+    <div onClick={handleCardClick} className=" cursor-pointer flex flex-wrap items-stretch mb-8">
         <div className="flex flex-col border rounded-lg shadow-lg overflow-hidden bg-white w-80 min-h-full">
         {/* Imagen y botón de favorito */}
         <div className="relative h-40 w-full">
@@ -71,14 +81,18 @@ const CardSections: React.FC<CardSectionsProps> = ({
             <p className="text-gray-500 text-sm mb-1">{location}</p>
             <p className="text-gray-600 text-xs uppercase">{formattedTime}</p>
             <div className="flex items-center justify-start mt-2 space-x-4">
-                <p className="text-green-600 text-xs flex items-center">
-                <Image src="/assets/images/icons/entrada-green.svg" width={14} height={14} alt="entrada" className="mr-1" />
-                {price === 0 ? "FREE" : `ARS ${price}`}
+              <div className="">
+                <p className= "text-green-600 text-xs flex">
+                  <FaTicketAlt className='mr-1 mt-0.5'/>
+                  {price === 0 ? "FREE" : `ARS ${price}`}
                 </p>
-                <p className={`text-xs flex items-center ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
-                <Image src={`/assets/images/icons/${capacity === 0 ? 'group-red.svg' : 'group-blue.svg'}`} width={14} height={14} alt="Capacidad" className="mr-1" />
-                {capacity === 0 ? "Sold Out" : `${capacity}`}
-                </p>
+              </div>
+                <div>
+                  <p className={` text-xs flex ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
+                    <TiGroup className='mr-1 mt-0.5'/>
+                    {capacity === 0 ? "Sold Out" : capacity}
+                  </p>
+                </div>
             </div>
             </div>
         </div>

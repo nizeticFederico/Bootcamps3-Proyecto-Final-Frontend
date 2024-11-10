@@ -1,7 +1,11 @@
 import React from 'react';
 import Image from 'next/image';
+import { useRouter } from 'next/navigation';
+import { TiGroup } from "react-icons/ti";
+import { FaMapMarkerAlt, FaTicketAlt } from "react-icons/fa";
 
 interface EventCardProps {
+  _id: string; // Agrega el ID como prop
   name: string;
   description: string;
   imageUrl: string;
@@ -16,6 +20,7 @@ interface EventCardProps {
 }
 
 const EventCard: React.FC<EventCardProps> = ({
+  _id, // Asegúrate de recibir el ID aquí
   name,
   imageUrl,
   dateTime,
@@ -26,12 +31,17 @@ const EventCard: React.FC<EventCardProps> = ({
   latitude,
   longitude,
 }) => {
+  const router = useRouter();
   const eventDate = new Date(dateTime);
   const formattedDate = eventDate.toLocaleDateString('en-AR', { day: '2-digit', month: 'short', year: 'numeric' });
   const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
+  const handleCardClick = () => {
+    router.push(`/events/${_id}`);
+  };
+
   return (
-    <div className="flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
+    <div onClick={handleCardClick} className="cursor-pointer flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
       <div className="w-1/2 h-full overflow-hidden rounded relative">
         <Image
           src={imageUrl}
@@ -59,32 +69,30 @@ const EventCard: React.FC<EventCardProps> = ({
           <p>{formattedDate} | {formattedTime}</p>
           <p>{location}</p>
         </div>
-        <div className="flex text-xs mt-1 mb-2">
-          <Image
-            src="/assets/images/icons/marcador-blue.svg"
-            width={8}
-            height={8}
-            alt="Marcador"
-            className="mr-1"
-          />
+        <div className="flex text-xs mt-1 mb-2 text-blue-500">
+          <FaMapMarkerAlt className='mr-1 mt-0.5'/>
           <a
             href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-blue-500 hover:underline"
+            className="hover:underline"
           >
             Location
           </a>
         </div>
         <div className="flex space-x-2">
-          <p className="text-green-600 text-xs flex">
-            <Image src="/assets/images/icons/entrada-green.svg" width={10} height={10} alt="entrada" className="mr-1" />
-            {price === 0 ? "FREE" : `ARS ${price}`}
-          </p>
-          <p className={`text-xs flex ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
-            <Image src={`/assets/images/icons/${capacity === 0 ? 'group-red.svg' : 'group-blue.svg'}`} width={10} height={10} alt="Capacidad" className="mr-1" />
-            {capacity === 0 ? "Sold Out" : capacity}
-          </p>
+          <div className="">
+            <p className= "text-green-600 text-xs flex">
+              <FaTicketAlt className='mr-1 mt-0.5'/>
+              {price === 0 ? "FREE" : `ARS ${price}`}
+            </p>
+          </div>
+          <div>
+            <p className={` text-xs flex ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
+              <TiGroup className='mr-1 mt-0.5'/>
+              {capacity === 0 ? "Sold Out" : capacity}
+            </p>
+          </div>
         </div>
       </div>
     </div>
