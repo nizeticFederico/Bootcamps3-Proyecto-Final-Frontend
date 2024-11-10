@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/router"; // Para obtener el ID del evento de la URL
 import DataEvent from "@/components/UI/DataEvent";
 
 interface Event {
@@ -18,15 +17,15 @@ interface Event {
   creatorId: string;
 }
 
-export default function EventPage() {
-  const router = useRouter();
-  const { id } = router.query; // Obtén el ID del evento desde la URL
+interface EventPageProps {
+  id: string;
+}
+
+export default function EventPage({ id }: EventPageProps) {
   const [event, setEvent] = useState<Event | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    if (!id) return; // Si no hay un ID en la URL, no intentes cargar
-
     async function fetchEvent() {
       try {
         const response = await fetch(`http://localhost:3001/event/${id}`);
@@ -42,17 +41,11 @@ export default function EventPage() {
         setLoading(false);
       }
     }
-
-    fetchEvent();
+    if (id) fetchEvent();
   }, [id]);
 
-  if (loading) {
-    return <p>Loading event...</p>;
-  }
-
-  if (!event) {
-    return <p>Event not found.</p>;
-  }
+  if (loading) return <p>Loading event...</p>;
+  if (!event) return <p>Event not found.</p>;
 
   return (
     <main className="flex flex-col items-center min-h-screen bg-white">

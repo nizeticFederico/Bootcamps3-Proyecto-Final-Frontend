@@ -18,7 +18,6 @@ interface UserData {
   role: string;
 }
 
-
 export default function EventCreate() {
   const { data: session } = useSession();
   const [userData, setUserData] = useState<UserData | null>(null);
@@ -58,7 +57,6 @@ export default function EventCreate() {
         }
       }
     }
-
     fetchUserData();
   }, [session]);
 
@@ -99,7 +97,7 @@ export default function EventCreate() {
 
     const data = {
       role: userData?.role,
-      name: values.name.toLocaleLowerCase(),
+      name: values.name.toLowerCase(),
       description: values.description,
       imageUrl: uploadedImageUrl,
       dateTime,
@@ -109,7 +107,7 @@ export default function EventCreate() {
       location: values.location,
       latitude: values.latitude,
       longitude: values.longitude,
-      creatorId: userData?.userId || "", // Usa un string vacío si userData es null
+      creatorId: userData?.userId || "",
     };
 
     try {
@@ -117,7 +115,7 @@ export default function EventCreate() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.accessToken}`,  // Agregar el token aquí
+          "Authorization": `Bearer ${session?.token || ""}`, // Acceso seguro al token
         },
         body: JSON.stringify(data),
       });

@@ -3,11 +3,9 @@ import Footer from "@/components/UI/Footer";
 import NavBar from "@/components/UI/Header";
 import ScrollToTopButton from "@/components/UI/ScrollToTopButton";
 import { SessionProvider } from "next-auth/react";
-import { auth } from "@/auth";
-import NewsletterBanner from "@/components/UI/NewsLetterBanner";
-import CreateEventBanner from "@/components/UI/CreateEventBanner";
+/* import { auth } from "@/auth";
 
-const session = await auth();
+const session = await auth(); */
 
 export const metadata: Metadata = {
   title: "QuickTickets",
@@ -21,12 +19,10 @@ export default function RootLayout({
 }>) {
   return (
     <div className= "antialiased">
-        <SessionProvider session={session}>
+        <SessionProvider /* session={session} */>
         <NavBar/>
         {children}
         <ScrollToTopButton/>
-{/*         <CreateEventBanner />
-        <NewsletterBanner/> */}
         <Footer/>
         </SessionProvider>
 
