@@ -1,14 +1,22 @@
 import type { NextConfig } from "next";
 
-const NextConfig = {
+const nextConfig: NextConfig = {
   images: {
-    domains: ['grafiasmusic.com'],
     remotePatterns: [
       {
         protocol: 'https',
         hostname: 'grafiasmusic.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'museomoderno.org',
+      },
+      {
+        protocol: 'https',
+        hostname: 'e.rpp-noticias.io',
       }
     ]
   }
 }
-export default NextConfig;
+
+export default nextConfig;
