@@ -1,19 +1,27 @@
-"use client"
+"use client";
 
 import React, { useState } from 'react';
 import { FiSearch } from "react-icons/fi";
+import { useRouter } from "next/navigation";
 
 interface SearchBarProps {
-  onSearch: (name: string, location: string) => void;
+  onSearch?: (name: string, location: string) => void;
   locations: string[];
+  redirectTo?: string;
 }
 
-const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations }) => {
+const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const router = useRouter();
 
   const handleSearchClick = () => {
-    onSearch(searchTerm, selectedLocation);
+    if (redirectTo) {
+      const query = new URLSearchParams({ name: searchTerm, location: selectedLocation });
+      router.push(`${redirectTo}?${query.toString()}`);
+    } else if (onSearch) {
+      onSearch(searchTerm, selectedLocation);
+    }
   };
 
   return (

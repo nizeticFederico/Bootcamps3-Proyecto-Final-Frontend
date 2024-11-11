@@ -48,3 +48,5 @@ html, body {
   text-overflow: ellipsis;
   white-space: normal;
 }
+
+@import "https://unpkg.com/leaflet@1.9.3/dist/leaflet.css";

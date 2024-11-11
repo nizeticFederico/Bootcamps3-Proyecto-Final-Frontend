@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
+import L from 'leaflet';
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -42,14 +43,31 @@ const EventData: React.FC<EventDataProps> = ({
   const formattedDate = eventDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
   const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
 
-  // Formateo de precio en moneda local
   const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
-
-  // sacamos la logica afuera para el cambio de aspecto
   const isSoldOut = capacity === 0;
   const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
   const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
-/*   const capacityIcon = isSoldOut ? '/group-red.svg' : '/group.svg'; */
+
+  // Ref para el contenedor del mapa
+  const mapRef = useRef<HTMLDivElement>(null);
+  const mapInstanceRef = useRef<L.Map | null>(null);
+
+  useEffect(() => {
+     // Solo inicializa el mapa si no existe una instancia previa
+     if (!mapInstanceRef.current && mapRef.current) {
+      // Crear una instancia del mapa y almacenarla en mapInstanceRef
+      const map = L.map(mapRef.current).setView([latitude, longitude], 13);
+      mapInstanceRef.current = map;
+
+      // Agregar capa de mapa de OpenStreetMap
+      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+      }).addTo(map);
+
+      // Agregar marcador en las coordenadas
+      L.marker([latitude, longitude]).addTo(map);
+    }
+  }, [latitude, longitude]);
 
   return (
     <main>
@@ -109,21 +127,12 @@ const EventData: React.FC<EventDataProps> = ({
         </div>
         <div>
           <h3 className="text-lg font-medium">Location</h3>
-          <div className="flex items-center space-x-2 text-gray-600">
-            <FaMapMarkerAlt/>
+          <div className='flex'>
+            <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
-          <div className="h-40 w-80 bg-gray-200 rounded-md flex items-center justify-center">
-            <span className="text-3xl text-red-500">&#x1F4CD;</span>{" "}
-            <a
-              href={`https://www.google.com/maps/search/?api=1&query=${latitude},${longitude}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-blue-500 hover:underline"
-              aria-label={`Open location in Google Maps for ${location}`}
-            >
-              View on Google Maps EJMPLO
-            </a>
+          <div className="h-40 w-80 bg-gray-200 rounded-md overflow-hidden">
+            <div ref={mapRef} className="h-full w-full"></div>
           </div>
         </div>
         <div>
@@ -144,11 +153,11 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-        <h3 className="text-xl font-semibold text-gray-700">Event Description</h3>
-        <div className="max-w-lg">
-          <p>{description}</p>
+          <h3 className="text-xl font-semibold text-gray-700">Event Description</h3>
+          <div className="max-w-lg">
+            <p>{description}</p>
+          </div>
         </div>
-      </div>
       </div>
     </main>
   );

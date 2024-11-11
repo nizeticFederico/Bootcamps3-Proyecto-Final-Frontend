@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
 import { useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/UI/SearchBar";
 import FilterColumn from "@/components/UI/FilterColumn";
 import EventCard from "@/components/UI/CardEvent";
@@ -26,6 +27,7 @@ export default function EventsPage() {
   const [loading, setLoading] = useState<boolean>(true);
   const [filters, setFilters] = useState({ category: "", location: "", price: "", date: "" });
 
+  const searchParams = useSearchParams();
   const locations = Array.from(new Set(events.map((event) => event.location)));
 
   const onSearch = (name: string, location: string) => {
@@ -61,14 +63,10 @@ export default function EventsPage() {
   }, []);
 
   useEffect(() => {
-    const filtered = events.filter((event) => {
-      const matchesCategory = !filters.category || event.category === filters.category;
-      const matchesLocation = !filters.location || event.location === filters.location;
-      const matchesPrice = !filters.price || (filters.price === "Free" ? event.price === 0 : event.price > 0);
-      return matchesCategory && matchesLocation && matchesPrice;
-    });
-    setFilteredEvents(filtered);
-  }, [filters, events]);
+    const name = searchParams.get("name") || "";
+    const location = searchParams.get("location") || "";
+    onSearch(name, location);
+  }, [events, searchParams]);
 
   return (
     <main className="flex flex-col items-center min-h-screen bg-white">
