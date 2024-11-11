@@ -15,7 +15,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
   const [selectedLocation, setSelectedLocation] = useState<string>('');
   const router = useRouter();
 
-  const handleSearchClick = () => {
+  const handleSearch = () => {
     if (redirectTo) {
       const query = new URLSearchParams({ name: searchTerm, location: selectedLocation });
       router.push(`${redirectTo}?${query.toString()}`);
@@ -24,10 +24,16 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
   return (
     <div className="flex items-center justify-center h-full w-full max-w-3xl mx-auto p-4">
       <button
-        onClick={handleSearchClick}
+        onClick={handleSearch}
         className="h-12 bg-white text-gray-600 px-4 rounded-l-md border-t border-l border-b border-gray-300 hover:bg-gray-100 transition flex items-center"
       >
         <FiSearch size={24} />
@@ -37,6 +43,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
         placeholder="Search Events!"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
+        onKeyDown={handleKeyDown}  // Agregar evento para Enter
         className="h-12 flex-grow py-2 px-4 border-t border-b border-gray-300 focus:outline-none focus:ring-0 bg-white text-gray-600"
       />
       <select
