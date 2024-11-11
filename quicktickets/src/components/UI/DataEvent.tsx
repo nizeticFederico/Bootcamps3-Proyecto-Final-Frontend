@@ -52,27 +52,31 @@ const EventData: React.FC<EventDataProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    // Verificar si Google Maps ya está cargado
-    if (!window.google) {
+    if (typeof window !== 'undefined' && !window.google) {
+      const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
       const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAv8YX2EGLIcSXNdUIUqzjkzokL88Oz8eI`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&callback=initMap`;
       script.async = true;
-      script.onload = () => initMap();
-      document.body.appendChild(script);
+      script.onload = () => {
+        if (mapRef.current) {
+          const map = new google.maps.Map(mapRef.current, {
+            center: { lat: latitude, lng: longitude },
+            zoom: 15,
+          });
+          new google.maps.Marker({
+            position: { lat: latitude, lng: longitude },
+            map,
+          });
+        }
+      };
+      document.head.appendChild(script);
     } else {
-      initMap();
-    }
-
-    function initMap() {
       if (mapRef.current) {
-        // Crear instancia de Google Maps y centrarla en las coordenadas proporcionadas
-        const map = new window.google.maps.Map(mapRef.current, {
+        const map = new google.maps.Map(mapRef.current, {
           center: { lat: latitude, lng: longitude },
-          zoom: 13,
+          zoom: 15,
         });
-
-        // Agregar marcador en la ubicación del evento
-        new window.google.maps.Marker({
+        new google.maps.Marker({
           position: { lat: latitude, lng: longitude },
           map,
         });

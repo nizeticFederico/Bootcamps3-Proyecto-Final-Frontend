@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
@@ -8,7 +8,6 @@ import { FaCloudUploadAlt } from "react-icons/fa";
 import Categories from "./Categories";
 import { getUserByMail } from "@/actions/authActions";
 import { useSession } from "next-auth/react";
-
 
 // Define la interfaz UserData para el tipado de datos de usuario
 interface UserData {
@@ -37,63 +36,77 @@ export default function EventCreate() {
     creatorId: "",
   });
 
+  
+  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<number | null>(null);
-    // Combina `date` y `time` en el formato adecuado para `dateTime`
+  
   const dateTime = `${values.date}T${values.time}`;
-    // Definimos la fecha actual en formato YYYY-MM-DD y la hora actual en formato HH:MM
   const today = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().slice(0, 5);
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const router = useRouter();
 
+  const mapRef = useRef<HTMLDivElement | null>(null);
+  const markerRef = useRef<google.maps.Marker | null>(null);
+  const [map, setMap] = useState<google.maps.Map | null>(null);
+
+  
+
   useEffect(() => {
-    async function fetchUserData() {
-      if (session?.user?.email) {
-        const data = await getUserByMail(session.user.email);
-        if (data) {
-          setUserData(data);
-          setValues((prev) => ({ ...prev, creatorId: data.userId }));
-        }
+    const loadGoogleMapsScript = () => {
+      if (!window.google) {
+        const script = document.createElement("script");
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_DE_GOOGLE}&libraries=places`;
+        script.async = true;
+        script.onload = () => initializeMap();
+        document.head.appendChild(script);
+      } else {
+        initializeMap();
       }
-    }
-    fetchUserData();
-  }, [session]);
+    };
 
-  async function uploadImage() {
-    if (!file) {
-      console.error("No file selected.");
-      return null;
-    }
+    const initializeMap = () => {
+      if (mapRef.current && !map) {
+        const googleMap = new google.maps.Map(mapRef.current, {
+          center: { lat: parseFloat(values.latitude), lng: parseFloat(values.longitude) },
+          zoom: 14,
+        });
 
-    const formData = new FormData();
-    formData.append("image", file);
+        const marker = new google.maps.Marker({
+          position: { lat: parseFloat(values.latitude), lng: parseFloat(values.longitude) },
+          map: googleMap,
+          draggable: true,
+        });
 
-    const response = await fetch("http://localhost:3001/image/upload", {
-      method: "POST",
-      body: formData,
-    });
+        marker.addListener("dragend", () => {
+          const position = marker.getPosition();
+          if (position) {
+            setValues((prevValues) => ({
+              ...prevValues,
+              latitude: position.lat().toString(),
+              longitude: position.lng().toString(),
+            }));
+          }
+        });
 
-    if (response.ok) {
-      const data = await response.json();
-      return data.url.secure_url; // Asegúrate de que esta es la propiedad correcta del objeto `data`
-    } else {
-      console.error("Error uploading image");
-      return null;
-    }
-  }
+        setMap(googleMap);
+        markerRef.current = marker;
+      }
+    };
+
+    loadGoogleMapsScript();
+  }, [map, values.latitude, values.longitude]);
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
 
-    // Sube la imagen primero
     const uploadedImageUrl = await uploadImage();
     if (!uploadedImageUrl) {
       setLoading(false);
-      return; // Si hay un error al subir la imagen, no continúa con la creación del evento
+      return;
     }
-
 
     const data = {
       role: userData?.role,
@@ -115,7 +128,7 @@ export default function EventCreate() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "z": `Bearer ${session?.token || ""}`, // Acceso seguro al token
+          "z": `Bearer ${session?.token || ""}`,
         },
         body: JSON.stringify(data),
       });
@@ -139,8 +152,6 @@ export default function EventCreate() {
     }
   }
 
-
-
   function handleChange(
     event: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -148,8 +159,74 @@ export default function EventCreate() {
   ) {
     const { currentTarget } = event;
     const { name, value } = currentTarget;
-
     setValues({ ...values, [name]: value });
+
+    if (name === "location") {
+      fetchSuggestions(value);
+    }
+  }
+
+  async function fetchSuggestions(query: string) {
+    if (query.length < 3) return;
+  
+    const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
+    if (!googleApiKey) {
+      console.error("Google API Key is missing");
+      return;
+    }
+  
+    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&types=(cities)&key=${googleApiKey}`;
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch suggestions");
+      }
+      const data = await response.json();
+      if (data.predictions) {
+        setSuggestions(data.predictions);
+      } else {
+        setSuggestions([]);
+      }
+    } catch (error) {
+      console.error("Error fetching suggestions:", error);
+      setSuggestions([]);
+    }
+  }
+  
+  async function handleSuggestionClick(suggestion: any) {
+    const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
+    if (!googleApiKey) {
+      console.error("Google API Key is missing");
+      return;
+    }
+  
+    const placeId = suggestion.place_id;
+    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${googleApiKey}`;
+  
+    try {
+      const response = await fetch(url);
+      if (!response.ok) {
+        throw new Error("Failed to fetch place details");
+      }
+      const data = await response.json();
+  
+      if (data.result) {
+        const location = data.result.geometry.location;
+        setValues((prevValues) => ({
+          ...prevValues,
+          location: suggestion.description,
+          latitude: location.lat.toString(),
+          longitude: location.lng.toString(),
+        }));
+        setSuggestions([]);
+  
+        // Aquí puedes añadir una función para centrar el mapa en la ubicación seleccionada
+        // updateMapLocation(location.lat, location.lng);
+      }
+    } catch (error) {
+      console.error("Error fetching place details:", error);
+    }
   }
 
   return (
@@ -295,11 +372,11 @@ export default function EventCreate() {
         </div>
         {/* Final Seccion Date and Time */}
 
-        {/* Inicio Seccion Location */}
+        {/* Sección Location */}
         <label htmlFor="location" className="text-2xl font-medium ml-1">
           Event Location
         </label>
-        <div className="mb-4">
+        <div className="mb-4 relative">
           <input
             type="text"
             name="location"
@@ -308,30 +385,23 @@ export default function EventCreate() {
             onChange={handleChange}
             className="p-3 border rounded-lg w-full"
           />
+          {suggestions.length > 0 && (
+            <ul className="absolute z-10 bg-white border w-full rounded-lg max-h-40 overflow-y-auto">
+              {suggestions.map((suggestion) => (
+                <li
+                  key={suggestion.place_id}
+                  onClick={() => handleSuggestionClick(suggestion)}
+                  className="p-2 cursor-pointer hover:bg-gray-200"
+                >
+                  {suggestion.description}
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="mb-4">
-            <input
-              type="number"
-              name="latitude"
-              placeholder="Latitude"
-              value={values.latitude}
-              onChange={handleChange}
-              className="p-3 border rounded-lg w-full [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
-          <div className="mb-4">
-            <input
-              type="number"
-              name="longitude"
-              placeholder="Longitude"
-              value={values.longitude}
-              onChange={handleChange}
-              className="p-3 border rounded-lg w-full [&::-webkit-inner-spin-button]:appearance-none"
-            />
-          </div>
-        </div>
-        {/* Final Seccion Location */}
+        <div ref={mapRef} style={{ height: "300px", width: "100%", marginTop: "20px" }} />
+        
+        {/* Fin Sección Location */}
 
         {/* Inicio Seccion Informacion adicional */}
         {/* Inicio Seccion tipo de evento */}
