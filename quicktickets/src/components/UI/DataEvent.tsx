@@ -1,7 +1,7 @@
+//src/components/UI/DataEvent.tsx
 
 import React, { useEffect, useRef } from 'react';
 import Image from 'next/image';
-import L from 'leaflet';
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -50,22 +50,33 @@ const EventData: React.FC<EventDataProps> = ({
 
   // Ref para el contenedor del mapa
   const mapRef = useRef<HTMLDivElement>(null);
-  const mapInstanceRef = useRef<L.Map | null>(null);
 
   useEffect(() => {
-     // Solo inicializa el mapa si no existe una instancia previa
-     if (!mapInstanceRef.current && mapRef.current) {
-      // Crear una instancia del mapa y almacenarla en mapInstanceRef
-      const map = L.map(mapRef.current).setView([latitude, longitude], 13);
-      mapInstanceRef.current = map;
+    // Verificar si Google Maps ya está cargado
+    if (!window.google) {
+      const script = document.createElement('script');
+      script.src = `https://maps.googleapis.com/maps/api/js?key=AIzaSyAv8YX2EGLIcSXNdUIUqzjkzokL88Oz8eI`;
+      script.async = true;
+      script.onload = () => initMap();
+      document.body.appendChild(script);
+    } else {
+      initMap();
+    }
 
-      // Agregar capa de mapa de OpenStreetMap
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-      }).addTo(map);
+    function initMap() {
+      if (mapRef.current) {
+        // Crear instancia de Google Maps y centrarla en las coordenadas proporcionadas
+        const map = new window.google.maps.Map(mapRef.current, {
+          center: { lat: latitude, lng: longitude },
+          zoom: 13,
+        });
 
-      // Agregar marcador en las coordenadas
-      L.marker([latitude, longitude]).addTo(map);
+        // Agregar marcador en la ubicación del evento
+        new window.google.maps.Marker({
+          position: { lat: latitude, lng: longitude },
+          map,
+        });
+      }
     }
   }, [latitude, longitude]);
 
@@ -132,6 +143,7 @@ const EventData: React.FC<EventDataProps> = ({
             <p>{location}</p>
           </div>
           <div className="h-40 w-80 bg-gray-200 rounded-md overflow-hidden">
+            {/* Div que contendrá el mapa de Google */}
             <div ref={mapRef} className="h-full w-full"></div>
           </div>
         </div>
