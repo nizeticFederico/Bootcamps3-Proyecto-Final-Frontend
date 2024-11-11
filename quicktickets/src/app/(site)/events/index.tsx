@@ -32,13 +32,63 @@ export default function EventsPage() {
 
   const onSearch = (name: string, location: string) => {
     let filtered = events;
+
+    // Aplicar filtro de localización
     if (location) {
       filtered = filtered.filter((event) => event.location === location);
     }
+
+    // Aplicar filtro de nombre
     if (name) {
       const lowercasedName = name.toLowerCase();
       filtered = filtered.filter((event) => event.name.toLowerCase().includes(lowercasedName));
     }
+
+    // Aplicar filtros de FilterColumn
+    if (filters.category) {
+      filtered = filtered.filter((event) => event.category === filters.category);
+    }
+    if (filters.price) {
+      if (filters.price === "Free") {
+        filtered = filtered.filter((event) => event.price === 0);
+      } else if (filters.price === "Paid") {
+        filtered = filtered.filter((event) => event.price > 0);
+      }
+    }
+    if (filters.date) {
+      const today = new Date();
+      
+      if (filters.date === "Today") {
+        filtered = filtered.filter((event) => new Date(event.dateTime).toDateString() === today.toDateString());
+      } else if (filters.date === "Tomorrow") {
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        filtered = filtered.filter((event) => new Date(event.dateTime).toDateString() === tomorrow.toDateString());
+      } else if (filters.date === "This Week") {
+        const startOfWeek = new Date(today);
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Domingo (o Lunes si prefieres)
+        const endOfWeek = new Date(startOfWeek);
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sábado (o Domingo si prefieres)
+        
+        filtered = filtered.filter((event) => {
+          const eventDate = new Date(event.dateTime);
+          return eventDate >= startOfWeek && eventDate <= endOfWeek;
+        });
+      } else if (filters.date === "This Weekend") {
+        const startOfWeekend = new Date(today);
+        const endOfWeekend = new Date(today);
+    
+        // Configurar fin de semana como Sábado y Domingo
+        startOfWeekend.setDate(today.getDate() + (6 - today.getDay())); // Sábado
+        endOfWeekend.setDate(today.getDate() + (7 - today.getDay())); // Domingo
+    
+        filtered = filtered.filter((event) => {
+          const eventDate = new Date(event.dateTime);
+          return eventDate >= startOfWeekend && eventDate <= endOfWeekend;
+        });
+      }
+    }
+
     setFilteredEvents(filtered);
   };
 
@@ -67,6 +117,13 @@ export default function EventsPage() {
     const location = searchParams.get("location") || "";
     onSearch(name, location);
   }, [events, searchParams]);
+
+  // Aplicar filtros cada vez que cambien los filtros de FilterColumn
+  useEffect(() => {
+    const name = searchParams.get("name") || "";
+    const location = searchParams.get("location") || "";
+    onSearch(name, location);
+  }, [filters]);
 
   return (
     <main className="flex flex-col items-center min-h-screen bg-white">

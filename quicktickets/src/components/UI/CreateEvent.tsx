@@ -115,7 +115,7 @@ export default function EventCreate() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "Authorization": `Bearer ${session?.token || ""}`, // Acceso seguro al token
+          "z": `Bearer ${session?.token || ""}`, // Acceso seguro al token
         },
         body: JSON.stringify(data),
       });
