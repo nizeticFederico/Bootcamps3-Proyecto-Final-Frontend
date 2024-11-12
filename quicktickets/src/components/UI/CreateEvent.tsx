@@ -6,20 +6,12 @@ import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
 import Categories from "./Categories";
-import { getUserByMail } from "@/actions/authActions";
 import { useSession } from "next-auth/react";
-
-// Define la interfaz UserData para el tipado de datos de usuario
-interface UserData {
-  userId: string;
-  email: string;
-  username: string;
-  role: string;
-}
 
 export default function EventCreate() {
   const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
+  const [imageUrl, setImageUrl] = useState(null); // Estado donde se va a guardar la URL de la imagen como "string"
   const [values, setValues] = useState({
     name: "",
     description: "",
@@ -30,16 +22,17 @@ export default function EventCreate() {
     capacity: "",
     category: "",
     location: "",
+    country: "",
+    city: "",
     latitude: "-27.46784",
     longitude: "-58.8344",
     creatorId: "",
   });
 
   
-  const [suggestions, setSuggestions] = useState([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<number | null>(null);
-  
+
   const dateTime = `${values.date}T${values.time}`;
   const today = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().slice(0, 5);
@@ -49,8 +42,6 @@ export default function EventCreate() {
   const mapRef = useRef<HTMLDivElement | null>(null);
   const markerRef = useRef<google.maps.Marker | null>(null);
   const [map, setMap] = useState<google.maps.Map | null>(null);
-
-  
 
   useEffect(() => {
     const loadGoogleMapsScript = () => {
@@ -99,39 +90,58 @@ export default function EventCreate() {
 
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    setLoading(true);
-
-    const uploadedImageUrl = await uploadImage();
-    if (!uploadedImageUrl) {
-      setLoading(false);
+    if (!file) {
+      console.error("No file selected.");
       return;
     }
+    const formData = new FormData();
+    formData.append("image", file)
+    const response = await fetch("http://localhost:3001/image/upload", {
+      method:'POST',
+      body: formData
+    })
+    const dataImage = await response.json();
+    setImageUrl(dataImage.url.secure_url)
+
+    setLoading(true);
 
     const data = {
       name: values.name.toLowerCase(),
       description: values.description,
-      imageUrl: uploadedImageUrl,
-      dateTime:dateTime,
+      imageUrl:dataImage.url.secure_url,
+      dateTime,
       price: values.price,
       capacity: values.capacity,
       category: values.category,
       location: values.location,
       latitude: values.latitude,
       longitude: values.longitude,
-      creatorId: session?.user?.id || "",
+      creatorId: session?.user?.id || "defaultUserId", // Si no hay ID de usuario, usa un valor por defecto
     };
 
+
+    console.log('Datos a enviar:', data); // Agregar esta línea
+
+/*     const token = session?.accessToken; // Obtener el token de la sesión */
+
+    if (!session?.accessToken) {
+      console.log("Token de autorización:", session?.accessToken);  // Verificar que el token está presente
+      setLoading(false);
+      setStatus(401); // Si no hay token, retornamos un error 401
+      return;
+    }
     try {
       const response = await fetch(`http://localhost:3001/event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "token": `${session?.accessToken || ""}`,
+          "token": `${session?.accessToken}`, // Enviamos el token en los headers
         },
         body: JSON.stringify(data),
       });
-
+  
       if (response.status === 201) {
+        console.log("Evento creado con éxito");
         setLoading(false);
         setStatus(response.status);
         setTimeout(() => {
@@ -139,6 +149,7 @@ export default function EventCreate() {
         }, 3000);
         router.push("/");
       } else {
+        console.error("Error al crear el evento:");
         setStatus(response.status);
         setLoading(false);
         setTimeout(() => {
@@ -149,7 +160,7 @@ export default function EventCreate() {
       console.log(error);
     }
   }
-
+  
   function handleChange(
     event: React.ChangeEvent<
       HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
@@ -157,15 +168,21 @@ export default function EventCreate() {
   ) {
     const { currentTarget } = event;
     const { name, value } = currentTarget;
-    setValues({ ...values, [name]: value });
-
-    if (name === "location") {
-      fetchSuggestions(value);
-    }
+  
+    setValues((prevValues) => {
+      const newValues = { ...prevValues, [name]: value };
+  
+      // Combina "country" y "city" para actualizar "location"
+      if (name === "country" || name === "city") {
+        newValues.location = `${newValues.city}, ${newValues.country}`.trim();
+      }
+  
+      return newValues;
+    });
   }
 
-  async function fetchSuggestions(query: string) {
-    if (query.length < 3) return;
+  async function handleLocationUpdate() {
+    if (!values.city || !values.country) return; // No procede si falta alguno
   
     const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
     if (!googleApiKey) {
@@ -173,57 +190,38 @@ export default function EventCreate() {
       return;
     }
   
-    const url = `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${query}&types=(cities)&key=${googleApiKey}`;
+    const query = `${values.city}, ${values.country}`;
+    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+      query
+    )}&key=${googleApiKey}`;
   
     try {
       const response = await fetch(url);
       if (!response.ok) {
-        throw new Error("Failed to fetch suggestions");
-      }
-      const data = await response.json();
-      if (data.predictions) {
-        setSuggestions(data.predictions);
-      } else {
-        setSuggestions([]);
-      }
-    } catch (error) {
-      console.error("Error fetching suggestions:", error);
-      setSuggestions([]);
-    }
-  }
-  
-  async function handleSuggestionClick(suggestion: any) {
-    const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-    if (!googleApiKey) {
-      console.error("Google API Key is missing");
-      return;
-    }
-  
-    const placeId = suggestion.place_id;
-    const url = `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${googleApiKey}`;
-  
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch place details");
+        throw new Error("Failed to fetch location data");
       }
       const data = await response.json();
   
-      if (data.result) {
-        const location = data.result.geometry.location;
+      if (data.results && data.results.length > 0) {
+        const location = data.results[0].geometry.location;
+  
+        // Actualiza el mapa y el marcador
+        if (map && markerRef.current) {
+          const newPosition = new google.maps.LatLng(location.lat, location.lng);
+          map.setCenter(newPosition); // Reubica el mapa
+          markerRef.current.setPosition(newPosition); // Mueve el marcador
+        }
+  
+        // Actualiza los valores en el estado
         setValues((prevValues) => ({
           ...prevValues,
-          location: suggestion.description,
           latitude: location.lat.toString(),
           longitude: location.lng.toString(),
+          location: `${prevValues.country}, ${prevValues.city}`, // Concatenación para "Location"
         }));
-        setSuggestions([]);
-  
-        // Aquí puedes añadir una función para centrar el mapa en la ubicación seleccionada
-        // updateMapLocation(location.lat, location.lng);
       }
     } catch (error) {
-      console.error("Error fetching place details:", error);
+      console.error("Error fetching location data:", error);
     }
   }
 
@@ -312,19 +310,18 @@ export default function EventCreate() {
                 </div>
                 <span className="text-blue-600 mb-2">Upload your Event Image</span>
                 <div>
-                  <p className="text-sm text-gray-500 text-center">
-                    Valid file formats: JPG, JPEG, PNG.
-                  </p>
+                  <p className="text-sm text-gray-500 text-center">Valid file formats: JPG, JPEG, PNG.</p>
                 </div>
               </div>
             </label>
-              <input
-                type="file"
-                id="imageUpload"  // Asegúrate de que el id coincide con el htmlFor del label
-                accept=".jpg,.jpeg,.png"
-                onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)}
-                className="hidden"
-              />
+            <input
+              type="file"
+              id="imageUpload"
+              accept=".jpg,.jpeg,.png"
+              onChange={(e) => {setFile(e.target.files[0])}}
+/*               onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} */
+              className="hidden"
+            />
           </div>
         </div>
         {/* Finak Sección de imagen */}
@@ -371,19 +368,44 @@ export default function EventCreate() {
         {/* Final Seccion Date and Time */}
 
         {/* Sección Location */}
-        <label htmlFor="location" className="text-2xl font-medium ml-1">
-          Event Location
-        </label>
-        <div className="mb-4 relative">
-          <input
-            type="text"
-            name="location"
-            placeholder="Where will your event take place?"
-            value={values.location}
-            onChange={handleChange}
-            className="p-3 border rounded-lg w-full"
-          />
-          {suggestions.length > 0 && (
+        <div className="mb-6">
+          <h3 className="text-2xl font-bold mb-2">Location</h3>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label htmlFor="country" className="ml-1 text-lg font-medium">
+                Country
+              </label>
+              <input
+                type="text"
+                name="country"
+                placeholder="Enter the country"
+                value={values.country}
+                onChange={(e) => {
+                  handleChange(e); // Actualiza el estado
+                  handleLocationUpdate(); // Intenta reubicar el mapa
+                }}
+                className="p-3 border rounded-lg w-full"
+              />
+            </div>
+            <div>
+              <label htmlFor="city" className="ml-1 text-lg font-medium">
+                City
+              </label>
+              <input
+                type="text"
+                name="city"
+                placeholder="Enter the city"
+                value={values.city}
+                onChange={(e) => {
+                  handleChange(e); // Actualiza el estado
+                  handleLocationUpdate(); // Intenta reubicar el mapa
+                }}
+                className="p-3 border rounded-lg w-full"
+              />
+            </div>
+        </div>
+          
+{/*           {suggestions.length > 0 && (
             <ul className="absolute z-10 bg-white border w-full rounded-lg max-h-40 overflow-y-auto">
               {suggestions.map((suggestion) => (
                 <li
@@ -395,7 +417,7 @@ export default function EventCreate() {
                 </li>
               ))}
             </ul>
-          )}
+          )} */}
         </div>
         <div ref={mapRef} style={{ height: "300px", width: "100%", marginTop: "20px" }} />
         
