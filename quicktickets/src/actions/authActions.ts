@@ -28,7 +28,6 @@ export async function getUserByMail(email:string) {
             return {
                 userId:data._id,
                 email:data.email,
-                username: data.username,
                 role: data.role
             }
             
@@ -47,8 +46,11 @@ export async function formLogin(formData: FormData){
 
     try {
         const result = await signIn("credentials", {email , password, redirect: false});
-        return result;
+        if (result?.error) {
+            return { success: false, error: result.error };
+        }
+        return { success: true, result };
     } catch (error) {
-        console.log(error);
+        return { success: false, error: "Invalid email or password." };
     }
 };

@@ -11,8 +11,9 @@ import { signOut } from "next-auth/react";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const { data:session } = useSession();
+  const { data:session , status } = useSession();
   const router = useRouter();
+  
   console.log(session);
   
 

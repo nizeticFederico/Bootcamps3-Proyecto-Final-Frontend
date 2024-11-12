@@ -10,6 +10,7 @@ export default function LogIn(){
 
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
+    const [error, setError] = useState<string | null>(null);
     const [status , setStatus] = useState<number | null >(null)
 
     const router = useRouter();
@@ -24,16 +25,18 @@ export default function LogIn(){
             try {
                 const result = await formLogin(formData);
     
-                if (result) {
+                if (result.success) {
                     setLoading(false)
+                    setError(null)
                     setStatus(200)
                     setTimeout(()=>{
                         setStatus(null)
-                    }, 3000)
-                    router.push("/")
+                        router.push("/")
+                    }, 1500)
+                    
                     
                 }else{
-                    setStatus(404);
+                    setError(result.error);
                     setLoading(false)
                     setTimeout(()=>{
                         setStatus(null)
@@ -116,6 +119,7 @@ export default function LogIn(){
                     <a href="/register" className="text-gray-500"> Register</a>
                 </p>
                 <Message status={status}/>
+                {error && <div style={{ color: "red" }}>{error}</div>}
             </form>
             </div>
             
