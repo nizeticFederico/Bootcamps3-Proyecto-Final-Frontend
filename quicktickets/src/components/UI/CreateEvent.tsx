@@ -19,7 +19,6 @@ interface UserData {
 
 export default function EventCreate() {
   const { data: session } = useSession();
-  const [userData, setUserData] = useState<UserData | null>(null);
   const [file, setFile] = useState<File | null>(null);
   const [values, setValues] = useState({
     name: "",
@@ -109,18 +108,17 @@ export default function EventCreate() {
     }
 
     const data = {
-      role: userData?.role,
       name: values.name.toLowerCase(),
       description: values.description,
       imageUrl: uploadedImageUrl,
-      dateTime,
+      dateTime:dateTime,
       price: values.price,
       capacity: values.capacity,
       category: values.category,
       location: values.location,
       latitude: values.latitude,
       longitude: values.longitude,
-      creatorId: userData?.userId || "",
+      creatorId: session?.user?.id || "",
     };
 
     try {
@@ -128,7 +126,7 @@ export default function EventCreate() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "z": `Bearer ${session?.token || ""}`,
+          "token": `${session?.accessToken || ""}`,
         },
         body: JSON.stringify(data),
       });
