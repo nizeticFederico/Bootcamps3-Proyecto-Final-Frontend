@@ -14,7 +14,7 @@ const NavBar = () => {
   const { data:session , status } = useSession();
   const router = useRouter();
   
-  console.log(session);
+  // console.log(session);
   
 
   useEffect(()=>{

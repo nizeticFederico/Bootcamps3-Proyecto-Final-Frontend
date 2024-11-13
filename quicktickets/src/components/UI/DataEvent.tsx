@@ -1,7 +1,9 @@
 //src/components/UI/DataEvent.tsx
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import Image from 'next/image';
+import React, { useEffect, useRef } from "react";
+import Image from "next/image";
+import { useSession } from "next-auth/react";
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -12,7 +14,10 @@ import {
 } from "react-icons/fa";
 import { TiGroup } from "react-icons/ti";
 
+import { loadStripe } from "@stripe/stripe-js";
+
 interface EventDataProps {
+  _id: string;
   name: string;
   description: string;
   imageUrl: string;
@@ -27,6 +32,7 @@ interface EventDataProps {
 }
 
 const EventData: React.FC<EventDataProps> = ({
+  _id,
   name,
   imageUrl,
   description,
@@ -39,22 +45,33 @@ const EventData: React.FC<EventDataProps> = ({
   longitude,
   creatorId,
 }) => {
+  // const {data:Session}=useSession();
   const eventDate = new Date(dateTime);
-  const formattedDate = eventDate.toLocaleDateString('es-AR', { day: '2-digit', month: 'short', year: 'numeric' });
-  const formattedTime = eventDate.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' });
+  const formattedDate = eventDate.toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+  const formattedTime = eventDate.toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-  const formattedPrice = new Intl.NumberFormat('es-AR', { style: 'currency', currency: 'ARS' }).format(price);
+  const formattedPrice = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  }).format(price);
   const isSoldOut = capacity === 0;
-  const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
-  const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
+  const capacityTextColor = isSoldOut ? "text-red-500" : "text-blue-600";
+  const capacityText = isSoldOut ? "Sold Out" : `${capacity} tickets left`;
 
   // Ref para el contenedor del mapa
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.google) {
+    if (typeof window !== "undefined" && !window.google) {
       const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-      const script = document.createElement('script');
+      const script = document.createElement("script");
       script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&callback=initMap`;
       script.async = true;
       script.onload = () => {
@@ -84,6 +101,22 @@ const EventData: React.FC<EventDataProps> = ({
     }
   }, [latitude, longitude]);
 
+  // -------------- Payment --------------------
+  const { data: session } = useSession();
+  const buyStripe = async () => {
+    const payData = { eventId: _id, quantity: 1 };
+    const response = await fetch("http://localhost:3001/pay", {
+      method: "POST", // Especifica que se trata de una solicitud POST
+      headers: {
+        "Content-Type": "application/json",
+        token: `${session?.accessToken || ""}`,
+      }, // Define el tipo de contenido como JSON
+      body: JSON.stringify(payData),
+    });
+    const data = await response.json();
+    window.open(data);
+  };
+
   return (
     <main>
       <div className="max-w-3xl mx-auto p-6 space-y-8 bg-white shadow-lg rounded-lg">
@@ -105,7 +138,10 @@ const EventData: React.FC<EventDataProps> = ({
           <div className="flex items-center space-x-4">
             <FaRegStar className="h-6 w-6 text-gray-400 cursor-pointer" />
             <FaShareAlt className="h-6 w-6 text-gray-400 cursor-pointer" />
-            <button className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2">
+            <button
+              onClick={buyStripe}
+              className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+            >
               <FaTicketAlt className="h-5 w-5" />
               <span>Buy Tickets</span>
             </button>
@@ -128,7 +164,9 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700">Ticket Information</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Ticket Information
+          </h3>
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
@@ -142,7 +180,7 @@ const EventData: React.FC<EventDataProps> = ({
         </div>
         <div>
           <h3 className="text-lg font-medium">Location</h3>
-          <div className='flex'>
+          <div className="flex">
             <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
@@ -152,7 +190,9 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-3">Hosted by</h3>
+          <h3 className="text-xl font-semibold text-gray-700 mb-3">
+            Hosted by
+          </h3>
           <div className="flex items-center space-x-4">
             <div className="h-10 w-10 rounded-full bg-gray-300"></div>
             <div>
@@ -169,7 +209,9 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700">Event Description</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Event Description
+          </h3>
           <div className="max-w-lg">
             <p>{description}</p>
           </div>
