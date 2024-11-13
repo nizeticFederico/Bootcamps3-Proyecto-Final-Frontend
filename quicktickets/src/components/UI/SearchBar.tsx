@@ -1,19 +1,27 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useMemo } from "react";
 import { FiSearch } from "react-icons/fi";
 import { useRouter } from "next/navigation";
 
 interface SearchBarProps {
   onSearch?: (name: string, location: string) => void;
-  locations: string[];
+  locations: string[]; // Lista de strings con formato `${city}, ${country}`
   redirectTo?: string;
 }
 
 const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }) => {
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [selectedLocation, setSelectedLocation] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [selectedLocation, setSelectedLocation] = useState<string>("");
   const router = useRouter();
+
+  // Extraer los países únicos desde `locations`
+  const countries = useMemo(() => {
+    const countrySet = new Set(
+      locations.map((location) => location.split(", ").pop() || "") // Tomar solo el `country`
+    );
+    return Array.from(countrySet).filter(Boolean); // Convertir el Set a Array y eliminar valores vacíos
+  }, [locations]);
 
   const handleSearch = () => {
     if (redirectTo) {
@@ -25,7 +33,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
   };
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === 'Enter') {
+    if (e.key === "Enter") {
       handleSearch();
     }
   };
@@ -43,7 +51,7 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
         placeholder="Search Events!"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
-        onKeyDown={handleKeyDown}  // Agregar evento para Enter
+        onKeyDown={handleKeyDown}
         className="h-12 flex-grow py-2 px-4 border-t border-b border-gray-300 focus:outline-none focus:ring-0 bg-white text-gray-600"
       />
       <select
@@ -52,9 +60,9 @@ const SearchBar: React.FC<SearchBarProps> = ({ onSearch, locations, redirectTo }
         className="h-12 py-2 px-4 border-t border-r border-b border-gray-300 rounded-r-md focus:outline-none focus:ring-0 bg-white text-gray-600"
       >
         <option value="">Select Location</option>
-        {locations.map((location) => (
-          <option key={location} value={location}>
-            {location}
+        {countries.map((country) => (
+          <option key={country} value={country}>
+            {country}
           </option>
         ))}
       </select>

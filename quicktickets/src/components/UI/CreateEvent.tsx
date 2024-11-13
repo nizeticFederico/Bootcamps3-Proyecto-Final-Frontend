@@ -18,8 +18,8 @@ export default function EventCreate() {
     imageUrl: "",
     date: "",
     time: "",
-    price: "",
-    capacity: "",
+    price: "0",
+    capacity: "0",
     category: "",
     location: "",
     country: "",
@@ -217,7 +217,7 @@ export default function EventCreate() {
           ...prevValues,
           latitude: location.lat.toString(),
           longitude: location.lng.toString(),
-          location: `${prevValues.country}, ${prevValues.city}`, // Concatenación para "Location"
+          location: `${prevValues.city}, ${prevValues.country}`, // Concatenación para "Location"
         }));
       }
     } catch (error) {
@@ -404,20 +404,6 @@ export default function EventCreate() {
               />
             </div>
         </div>
-          
-{/*           {suggestions.length > 0 && (
-            <ul className="absolute z-10 bg-white border w-full rounded-lg max-h-40 overflow-y-auto">
-              {suggestions.map((suggestion) => (
-                <li
-                  key={suggestion.place_id}
-                  onClick={() => handleSuggestionClick(suggestion)}
-                  className="p-2 cursor-pointer hover:bg-gray-200"
-                >
-                  {suggestion.description}
-                </li>
-              ))}
-            </ul>
-          )} */}
         </div>
         <div ref={mapRef} style={{ height: "300px", width: "100%", marginTop: "20px" }} />
         

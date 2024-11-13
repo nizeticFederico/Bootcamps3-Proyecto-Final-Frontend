@@ -52,10 +52,13 @@ const EventData: React.FC<EventDataProps> = ({
   const mapRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && !window.google) {
-      const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-      const script = document.createElement('script');
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}&callback=initMap`;
+    const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
+    const scriptId = "google-maps-script";
+  
+    if (!document.querySelector(`#${scriptId}`)) {
+      const script = document.createElement("script");
+      script.id = scriptId;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}`;
       script.async = true;
       script.onload = () => {
         if (mapRef.current) {
@@ -71,7 +74,7 @@ const EventData: React.FC<EventDataProps> = ({
       };
       document.head.appendChild(script);
     } else {
-      if (mapRef.current) {
+      if (mapRef.current && window.google) {
         const map = new google.maps.Map(mapRef.current, {
           center: { lat: latitude, lng: longitude },
           zoom: 15,
