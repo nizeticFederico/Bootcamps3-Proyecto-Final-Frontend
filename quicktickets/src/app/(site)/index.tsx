@@ -1,6 +1,7 @@
-"use client"
+"use client";
 
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
+import { useFetchLocations } from "@/hooks/useFetchLocations";
 import SearchBar from "@/components/UI/SearchBar";
 import CategoriesBanner from "@/components/UI/CategoriesBanner";
 import NewsletterBanner from "@/components/UI/NewsLetterBanner";
@@ -11,6 +12,7 @@ import HomeThirdSection from "@/components/UI/HomeThirdSection";
 
 export default function HomePage() {
   const router = useRouter();
+  const locations = useFetchLocations("http://localhost:3001/event/all");
 
   // Función que redirige a EventsPage con los parámetros de búsqueda
   const handleSearch = (name: string, location: string) => {
@@ -29,7 +31,7 @@ export default function HomePage() {
           Explore the <span className="text-[#FFE047]">vibrant events</span> happening locally and globally.
         </h2>
         <div className="w-full text-base">
-          <SearchBar onSearch={handleSearch} locations={[]} />
+          <SearchBar onSearch={handleSearch} locations={locations} />
         </div>
       </div>
       <div>

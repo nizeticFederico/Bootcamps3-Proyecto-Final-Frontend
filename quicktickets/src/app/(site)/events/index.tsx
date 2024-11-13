@@ -5,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/UI/SearchBar";
 import FilterColumn from "@/components/UI/FilterColumn";
 import EventCard from "@/components/UI/CardEvent";
+import { useFetchLocations } from "@/hooks/useFetchLocations";
 
 interface Event {
   _id: string;
@@ -35,10 +36,8 @@ export default function EventsPage() {
 
   const searchParams = useSearchParams();
 
-  // Generar opciones únicas para el Select basado en los países
-  const locations = Array.from(
-    new Set(events.map((event) => event.location.split(", ")[1])) // Extraer país
-  );
+  // Hook para obtener ubicaciones únicas
+  const locations = useFetchLocations("http://localhost:3001/event/all");
 
   const onSearch = (name: string, location: string) => {
     let filtered = events;

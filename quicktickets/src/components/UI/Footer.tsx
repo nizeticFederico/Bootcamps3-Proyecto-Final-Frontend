@@ -1,4 +1,7 @@
+"use client"
+
 import Image from "next/image";
+import Link from "next/link";
 
 const Footer = () => {
   return (
@@ -72,46 +75,28 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-lg mb-4">Categories</h3>
           <ul className="space-y-2">
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Concerts & Gigs
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Festivals & Lifestyle
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Business & Networking
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Food & Drinks
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Performing Arts
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Sports & Outdoors
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Exhibitions
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:text-yellow-400">
-                Workshops, Conferences & Classes
-              </a>
-            </li>
+            {[
+              "Concerts & Gigs",
+              "Festivals & Lifestyle",
+              "Business & Networking",
+              "Food & Drinks",
+              "Performing Arts",
+              "Sports & Outdoors",
+              "Exhibitions",
+              "Workshops, Conferences & Classes",
+            ].map((category) => (
+              <li key={category}>
+                <Link
+                  href={{
+                    pathname: "/EventsPage",
+                    query: { category },
+                  }}
+                  className="hover:text-yellow-400"
+                >
+                  {category}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 
