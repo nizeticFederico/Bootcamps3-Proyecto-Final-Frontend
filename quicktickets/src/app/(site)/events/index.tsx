@@ -1,5 +1,3 @@
-// src/app/(site)/events/index.tsx
-
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,6 +5,7 @@ import { useSearchParams } from "next/navigation";
 import SearchBar from "@/components/UI/SearchBar";
 import FilterColumn from "@/components/UI/FilterColumn";
 import EventCard from "@/components/UI/CardEvent";
+import { useFetchLocations } from "@/hooks/useFetchLocations";
 
 interface Event {
   _id: string;
@@ -17,7 +16,7 @@ interface Event {
   price: number;
   capacity: number;
   category: string;
-  location: string;
+  location: string; // Formato: "City, Country"
   latitude: number;
   longitude: number;
   creatorId: string;
@@ -36,15 +35,21 @@ export default function EventsPage() {
   });
 
   const searchParams = useSearchParams();
-  const locations = Array.from(new Set(events.map((event) => event.location)));
+
+  // Hook para obtener ubicaciones únicas
+  const locations = useFetchLocations("http://localhost:3001/event/all");
 
   const onSearch = (name: string, location: string) => {
     let filtered = events;
 
+    // Filtro por país (location)
     if (location) {
-      filtered = filtered.filter((event) => event.location === location);
+      filtered = filtered.filter(
+        (event) => event.location.split(", ")[1] === location
+      );
     }
 
+    // Filtro por nombre (name)
     if (name) {
       const lowercasedName = name.toLowerCase();
       filtered = filtered.filter((event) =>
@@ -52,10 +57,12 @@ export default function EventsPage() {
       );
     }
 
+    // Filtro por categoría
     if (filters.category) {
       filtered = filtered.filter((event) => event.category === filters.category);
     }
 
+    // Filtro por precio
     if (filters.price) {
       if (filters.price === "Free") {
         filtered = filtered.filter((event) => event.price === 0);
@@ -64,6 +71,7 @@ export default function EventsPage() {
       }
     }
 
+    // Filtro por fecha
     if (filters.date) {
       const today = new Date();
       if (filters.date === "Today") {

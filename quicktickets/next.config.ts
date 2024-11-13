@@ -8,8 +8,20 @@ const nextConfig: NextConfig = {
         hostname: "grafiasmusic.com",
       },
       {
-        protocol: "https",
-        hostname: "museomoderno.org",
+        protocol: 'https',
+        hostname: 'res.cloudinary.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'www.cifraclub.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'cifraclub.com',
+      },
+      {
+        protocol: 'https',
+        hostname: 'museomoderno.org',
       },
       {
         protocol: "https",
