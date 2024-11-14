@@ -8,6 +8,9 @@ import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
 import { RxDropdownMenu } from "react-icons/rx";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { CgProfile } from "react-icons/cg";
+import { IoTicketOutline } from "react-icons/io5";
+import { MdLogout } from "react-icons/md";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -40,12 +43,14 @@ const NavBar = () => {
           width={128}
           height={38}
           alt="IconoQuickTickets"
+          objectFit="contain"
         />
         <Image
           src="/assets/images/icons/quickticketswhite.svg"
           width={128}
           height={38}
           alt="LogoQuickTickets"
+          objectFit="contain"
         />
       </div>
 
@@ -68,7 +73,7 @@ const NavBar = () => {
       {/* Botón de menú desplegable (hamburguesa) para pantallas pequeñas */}
       <div className="md:hidden flex items-center">
         <button onClick={toggleMenu} className="text-white">
-          <RxDropdownMenu className="text-white" />
+          <RxDropdownMenu className="text-4xl" />
         </button>
       </div>
 
@@ -99,19 +104,19 @@ const NavBar = () => {
           <div className="flex gap-6 items-center justify-center relative">
             <div className="flex flex-col items-center justify-center text-sm">
               <Link href="/" className="flex flex-col text-white hover:text-yellow-400 items-center">
-                <Image src="/assets/images/icons/ticket-white.svg" alt="Ticket" height={25} width={25} />
+                <IoTicketOutline className="text-white text-2xl" />
                 Tickets
               </Link>
             </div>
             <div className="flex items-center justify-center text-sm gap-2">
               <div className="flex flex-col items-center justify-center">
                 <Link href="/userProfile" className="flex flex-col text-white hover:text-yellow-400 items-center">
-                  <Image src="/assets/images/icons/profileImage.svg" alt="Profile" height={25} width={25} />
+                  <CgProfile className="text-white text-2xl" />
                   Profile
                 </Link>
               </div>
               <button onClick={toggleDropdown} className="flex items-center justify-center">
-                <IoMdArrowDropdown className="text-white " />
+                <IoMdArrowDropdown className="text-white text-2xl " />
               </button>
             </div>
             {isOpen && (
@@ -129,12 +134,7 @@ const NavBar = () => {
                     className="flex items-center p-2 gap-2 w-full text-start text-red-500 font-bold"
                   >
                     Logout
-                    <Image
-                      src="/assets/images/icons/logout-logo.svg"
-                      alt="Logout logo"
-                      height={15}
-                      width={15}
-                    />
+                    <MdLogout />
                   </button>
                 </div>
               </div>
