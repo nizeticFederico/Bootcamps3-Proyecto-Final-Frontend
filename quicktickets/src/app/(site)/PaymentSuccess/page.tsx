@@ -29,7 +29,7 @@ const Page = () => {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              Authorization: `Bearer ${session.accessToken}`, // Si necesitas token del usuario
+              token: `${session.accessToken}`, // Si necesitas token del usuario
             },
             body: JSON.stringify({ eventId, quantity }),
           });
