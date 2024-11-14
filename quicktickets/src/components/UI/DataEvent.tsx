@@ -29,6 +29,7 @@ interface EventDataProps {
   latitude: number;
   longitude: number;
   creatorId: string;
+  availability: number;
 }
 
 const EventData: React.FC<EventDataProps> = ({
@@ -44,6 +45,7 @@ const EventData: React.FC<EventDataProps> = ({
   latitude,
   longitude,
   creatorId,
+  availability,
 }) => {
   // const {data:Session}=useSession();
   const eventDate = new Date(dateTime);
@@ -61,9 +63,9 @@ const EventData: React.FC<EventDataProps> = ({
     style: "currency",
     currency: "ARS",
   }).format(price);
-  const isSoldOut = capacity === 0;
+  const isSoldOut = availability === 0;
   const capacityTextColor = isSoldOut ? "text-red-500" : "text-blue-600";
-  const capacityText = isSoldOut ? "Sold Out" : `${capacity} tickets left`;
+  const capacityText = isSoldOut ? "Sold Out" : `${availability} tickets left`;
 
   // Ref para el contenedor del mapa
   const mapRef = useRef<HTMLDivElement>(null);

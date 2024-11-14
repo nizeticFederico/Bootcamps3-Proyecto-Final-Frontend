@@ -15,6 +15,7 @@ interface Event {
   latitude: number;
   longitude: number;
   creatorId: string;
+  availability: number;
 }
 
 interface EventPageProps {

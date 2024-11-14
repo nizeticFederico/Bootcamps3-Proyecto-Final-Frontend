@@ -35,27 +35,33 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="bg-[#2D2A3E] flex justify-between items-center h-20 gap-2 pl-20 pr-20 max-h-16">
+    <nav className="bg-[#2D2A3E] flex justify-between items-center h-20 px-10">
       {/* Logo */}
-      <div className="flex items-center text-white">
-        <Image
-          src="/assets/images/icons/icon.svg"
-          width={128}
-          height={38}
-          alt="IconoQuickTickets"
-          objectFit="contain"
-        />
-        <Image
-          src="/assets/images/icons/quickticketswhite.svg"
-          width={128}
-          height={38}
-          alt="LogoQuickTickets"
-          objectFit="contain"
-        />
+      <div className="flex items-center justify-start space-x-0">
+        {/* Ícono */}
+        <div className="w-40 h-12 relative">
+          <Image
+            src="/assets/images/icons/icon.svg"
+            alt="IconoQuickTickets"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 10vw, 5vw"
+          />
+        </div>
+        {/* Logo */}
+        <div className="w-40 h-12 relative">
+          <Image
+            src="/assets/images/icons/quickticketswhite.svg"
+            alt="LogoQuickTickets"
+            fill
+            className="object-contain"
+            sizes="(max-width: 768px) 10vw, 5vw"
+          />
+        </div>
       </div>
 
       {/* Links */}
-      <div className="hidden md:flex space-x-8 text-xl">
+      <div className="hidden md:flex space-x-8 text-lg">
         <Link href="/" className="text-white hover:text-yellow-400">
           Home
         </Link>
@@ -70,14 +76,13 @@ const NavBar = () => {
         </Link>
       </div>
 
-      {/* Botón de menú desplegable (hamburguesa) para pantallas pequeñas */}
+      {/* Menú desplegable para pantallas pequeñas */}
       <div className="md:hidden flex items-center">
         <button onClick={toggleMenu} className="text-white">
           <RxDropdownMenu className="text-4xl" />
         </button>
       </div>
 
-      {/* Menú desplegable en pantallas pequeñas */}
       {menuOpen && (
         <div className="absolute top-20 right-0 bg-[#2D2A3E] w-full md:hidden">
           <Link href="/" className="block text-white hover:text-yellow-400 py-2 px-4">
@@ -95,7 +100,7 @@ const NavBar = () => {
         </div>
       )}
 
-      {/* Login y Sign Up */}
+      {/* Login / Profile */}
       {session ? (
         <div className="flex items-center justify-center gap-6">
           <Link href="/events/create-event" className="text-white hover:text-yellow-400">
