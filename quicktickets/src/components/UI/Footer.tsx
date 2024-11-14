@@ -1,7 +1,7 @@
 "use client"
 
 import Image from "next/image";
-import Link from "next/link";
+import Categories from "./Categories";
 
 const Footer = () => {
   return (
@@ -12,7 +12,7 @@ const Footer = () => {
           <h3 className="font-bold text-lg mb-4">Company Info</h3>
           <ul className="space-y-2">
             <li>
-              <a href="#" className="hover:text-yellow-400">
+              <a href="/about" className="hover:text-yellow-400">
                 About Us
               </a>
             </li>
@@ -75,28 +75,15 @@ const Footer = () => {
         <div>
           <h3 className="font-bold text-lg mb-4">Categories</h3>
           <ul className="space-y-2">
-            {[
-              "Concerts & Gigs",
-              "Festivals & Lifestyle",
-              "Business & Networking",
-              "Food & Drinks",
-              "Performing Arts",
-              "Sports & Outdoors",
-              "Exhibitions",
-              "Workshops, Conferences & Classes",
-            ].map((category) => (
-              <li key={category}>
-                <Link
-                  href={{
-                    pathname: "/EventsPage",
-                    query: { category },
-                  }}
-                  className="hover:text-yellow-400"
-                >
-                  {category}
-                </Link>
-              </li>
-            ))}
+            <Categories
+              renderCategory={(category) => (
+                <li key={category.name}>
+                  <a href="#" className="hover:text-yellow-400">
+                    {category.name}
+                  </a>
+                </li>
+              )}
+            />
           </ul>
         </div>
 

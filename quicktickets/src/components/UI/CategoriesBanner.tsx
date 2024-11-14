@@ -35,6 +35,7 @@ const CategoriesBanner: React.FC = () => {
                     fill
                     alt={category.name}
                     className="object-cover"
+                    sizes="(max-width: 600px) 100vw, 50vw"
                   />
                 </button>
                 <p className="text-gray-700">{category.name}</p>
