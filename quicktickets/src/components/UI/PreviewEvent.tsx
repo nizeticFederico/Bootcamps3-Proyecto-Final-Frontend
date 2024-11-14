@@ -87,43 +87,37 @@ const PreviewEvent: React.FC = () => {
   }, [eventData]);
 
   // Función para crear el evento
-  const handleCreateEvent = async () => {
+  const handleCreateEvent = async (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  
     if (!session?.accessToken) {
-      console.log("Token de autorización:", session?.accessToken); // Verificar que el token está presente
+      console.log("Token de autorización:", session?.accessToken);
       setIsLoading(false);
-      setStatus(401); // Si no hay token, retornamos un error 401
+      setStatus(401);
       return;
     }
-
+  
+    if (isLoading) return; // Evita múltiples solicitudes
     setIsLoading(true);
-
+  
     try {
       const response = await fetch(`http://localhost:3001/event`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "token": `${session?.accessToken}`, // Enviamos el token en los headers
+          token: `${session?.accessToken}`,
         },
         body: JSON.stringify(eventData),
       });
-
-      if (response.status === 201) {
+  
+      if (response.ok) {
         console.log("Evento creado con éxito");
-        setStatus(response.status);
-        setTimeout(() => {
-          setStatus(null);
-        }, 3000);
-        router.push("/events"); // Redirigir a la página principal
+        router.push(`/events`); // Redirige a la lista de eventos
       } else {
         console.error("Error al crear el evento:", response.statusText);
-        setStatus(response.status);
-        setTimeout(() => {
-          setStatus(null);
-        }, 3000);
       }
     } catch (error) {
       console.error("Error en la solicitud:", error);
-      setStatus(500);
     } finally {
       setIsLoading(false);
     }
@@ -157,7 +151,7 @@ const PreviewEvent: React.FC = () => {
   const isSoldOut = capacity === 0;
   const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
   const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
-  const userName = session?.user?.name;
+/*   const userName = session?.user?.name; */
 
   return (
     <main>
@@ -238,7 +232,7 @@ const PreviewEvent: React.FC = () => {
           <div className="flex items-center space-x-4">
             <div className="h-10 w-10 rounded-full bg-gray-300"></div>
             <div>
-              <p className="font-semibold">{userName}</p>
+              <p className="font-semibold">{creatorId}</p>
               <div className="flex space-x-2">
                 <button className="px-3 py-1 text-sm border rounded-md">
                   Contact

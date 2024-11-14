@@ -5,6 +5,9 @@ import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
+import { IoTicketOutline } from "react-icons/io5";
+import { TiGroup } from "react-icons/ti";
+import { AiOutlineDollar } from "react-icons/ai";
 import Categories from "./Categories";
 import { useSession } from "next-auth/react";
 
@@ -49,6 +52,8 @@ export default function EventCreate() {
         const script = document.createElement("script");
         script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_DE_GOOGLE}&libraries=places`;
         script.async = true;
+        script.defer = true; // Defer también mejora el rendimiento
+        script.setAttribute("loading", "lazy"); // Lazy loading
         script.onload = () => initializeMap();
         document.head.appendChild(script);
       } else {
@@ -91,22 +96,6 @@ export default function EventCreate() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (!file) {
-      console.error("No file selected.");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("image", file)
-    const response = await fetch("http://localhost:3001/image/upload", {
-      method:'POST',
-      body: formData
-    })
-    const dataImage = await response.json();
-    setImageUrl(dataImage.url.secure_url)
-
-    setLoading(true);
-
-
     // Validación de campos obligatorios
     if (!file) {
       alert("Por favor, selecciona una imagen para el evento.");
@@ -140,7 +129,7 @@ export default function EventCreate() {
       const eventData = {
         name: values.name.toLowerCase(),
         description: values.description,
-        imageUrl:dataImage.url.secure_url,
+        imageUrl,
         dateTime,
         price: values.price,
         capacity: values.capacity,
@@ -148,14 +137,14 @@ export default function EventCreate() {
         location: values.location,
         latitude: values.latitude,
         longitude: values.longitude,
-        creatorId: session?.user?.id || "defaultUserId", // Si no hay ID de usuario, usa un valor por defecto
+        creatorId: session?.user?.id,
       };
 
       // Guardar datos en Local Storage
       localStorage.setItem("previewEventData", JSON.stringify(eventData));
 
       // Redirigir a la página de vista previa
-      router.push("/events/preview-event");
+      router.push("/events/previewEvent");
     } catch (error) {
       console.error("Error al subir la imagen o preparar datos:", error);
       alert("Hubo un error al crear el evento. Intenta nuevamente.");
@@ -428,12 +417,7 @@ export default function EventCreate() {
             }`}
           >
             <div className="flex justify-center mb-2">
-              <Image
-                src="/assets/images/icons/ticket-blue.svg"
-                width={50}
-                height={50}
-                alt="Ticketed Event Icon"
-              />
+              <IoTicketOutline className="text-gray-500 text-5xl"/>
             </div>
             <p className="text-lg font-semibold mt-2">Ticketed Event</p>
             <p className="text-sm text-gray-500">
@@ -474,13 +458,8 @@ export default function EventCreate() {
           <div className="flex-1 relative">
             <label className="text-lg font-medium">Event Capacity</label>
             <div className="flex items-center border border-gray-300 rounded">
-              <span className="pl-4 text-gray-500">
-                <Image
-                  src="/assets/images/icons/group-grey.svg"
-                  width={20}
-                  height={20}
-                  alt="Capacity"
-                />
+              <span className="pl-4 text-gray-500 mr-1">
+              <TiGroup className="" />
               </span>
               <input
                 type="number"
@@ -499,13 +478,8 @@ export default function EventCreate() {
             <div className="flex-1 relative">
               <label className="text-lg font-medium">Ticket Price</label>
               <div className="flex items-center border border-gray-300 rounded">
-                <span className="pl-4 text-gray-500">
-                  <Image
-                    src="/assets/images/icons/dollar-rounded.svg"
-                    width={20}
-                    height={20}
-                    alt="Ticket Price Icon"
-                  />
+                <span className="pl-4 text-gray-500 mr-1">
+                  <AiOutlineDollar />
                 </span>
                 <input
                   type="number"
