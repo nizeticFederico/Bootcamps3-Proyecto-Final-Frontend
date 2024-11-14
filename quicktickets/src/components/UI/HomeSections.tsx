@@ -94,7 +94,7 @@ export default function HomeSections({ title, filterCriteria, sectionId }: HomeS
   };
 
   return (
-    <main id={sectionId} className="flex flex-col items-center min-h-screen bg-white">
+    <div id={sectionId} className="flex flex-col items-center min-h-screen bg-white">
       <div className="flex flex-row w-full max-w-screen-xl">
         <div className="flex-grow ml-4 p-10">
           <div className="flex my-4">
@@ -129,6 +129,6 @@ export default function HomeSections({ title, filterCriteria, sectionId }: HomeS
           </div>
         </div>
       </div>
-    </main>
+    </div>
   );
 }

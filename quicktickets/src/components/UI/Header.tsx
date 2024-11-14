@@ -6,6 +6,8 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
+import { RxDropdownMenu } from "react-icons/rx";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -66,7 +68,7 @@ const NavBar = () => {
       {/* Botón de menú desplegable (hamburguesa) para pantallas pequeñas */}
       <div className="md:hidden flex items-center">
         <button onClick={toggleMenu} className="text-white">
-          <Image src="/assets/images/icons/arrow-white.svg" alt="Menu" height={10} width={10} />
+          <RxDropdownMenu className="text-white" />
         </button>
       </div>
 
@@ -109,7 +111,7 @@ const NavBar = () => {
                 </Link>
               </div>
               <button onClick={toggleDropdown} className="flex items-center justify-center">
-                <Image src="/assets/images/icons/arrow-white.svg" alt="button" height={10} width={10} />
+                <IoMdArrowDropdown className="text-white " />
               </button>
             </div>
             {isOpen && (
@@ -124,7 +126,7 @@ const NavBar = () => {
                 <div className="flex justify-between hover:bg-gray-200 rounded">
                   <button
                     onClick={handleLogout}
-                    className="flex items-center p-2 gap-2 text-black w-full text-start text-red-500 font-bold"
+                    className="flex items-center p-2 gap-2 w-full text-start text-red-500 font-bold"
                   >
                     Logout
                     <Image

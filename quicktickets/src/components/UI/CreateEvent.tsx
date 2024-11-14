@@ -88,8 +88,9 @@ export default function EventCreate() {
     loadGoogleMapsScript();
   }, [map, values.latitude, values.longitude]);
 
-  async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     if (!file) {
       console.error("No file selected.");
       return;
@@ -105,61 +106,63 @@ export default function EventCreate() {
 
     setLoading(true);
 
-    const data = {
-      name: values.name.toLowerCase(),
-      description: values.description,
-      imageUrl:dataImage.url.secure_url,
-      dateTime,
-      price: values.price,
-      capacity: values.capacity,
-      category: values.category,
-      location: values.location,
-      latitude: values.latitude,
-      longitude: values.longitude,
-      creatorId: session?.user?.id || "defaultUserId", // Si no hay ID de usuario, usa un valor por defecto
-    };
 
-
-    console.log('Datos a enviar:', data); // Agregar esta línea
-
-/*     const token = session?.accessToken; // Obtener el token de la sesión */
-
-    if (!session?.accessToken) {
-      console.log("Token de autorización:", session?.accessToken);  // Verificar que el token está presente
-      setLoading(false);
-      setStatus(401); // Si no hay token, retornamos un error 401
+    // Validación de campos obligatorios
+    if (!file) {
+      alert("Por favor, selecciona una imagen para el evento.");
       return;
     }
-    try {
-      const response = await fetch(`http://localhost:3001/event`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "token": `${session?.accessToken}`, // Enviamos el token en los headers
-        },
-        body: JSON.stringify(data),
-      });
-  
-      if (response.status === 201) {
-        console.log("Evento creado con éxito");
-        setLoading(false);
-        setStatus(response.status);
-        setTimeout(() => {
-          setStatus(null);
-        }, 3000);
-        router.push("/");
-      } else {
-        console.error("Error al crear el evento:");
-        setStatus(response.status);
-        setLoading(false);
-        setTimeout(() => {
-          setStatus(null);
-        }, 3000);
-      }
-    } catch (error) {
-      console.log(error);
+    if (!values.name || !values.category || !values.date || !values.time) {
+      alert("Por favor, completa todos los campos obligatorios.");
+      return;
     }
-  }
+
+    setLoading(true);
+
+    try {
+      // Subir la imagen al servidor
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const response = await fetch("http://localhost:3001/image/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Error al subir la imagen");
+      }
+
+      const dataImage = await response.json();
+      const imageUrl = dataImage.url.secure_url;
+
+      // Preparar datos del evento
+      const eventData = {
+        name: values.name.toLowerCase(),
+        description: values.description,
+        imageUrl:dataImage.url.secure_url,
+        dateTime,
+        price: values.price,
+        capacity: values.capacity,
+        category: values.category,
+        location: values.location,
+        latitude: values.latitude,
+        longitude: values.longitude,
+        creatorId: session?.user?.id || "defaultUserId", // Si no hay ID de usuario, usa un valor por defecto
+      };
+
+      // Guardar datos en Local Storage
+      localStorage.setItem("previewEventData", JSON.stringify(eventData));
+
+      // Redirigir a la página de vista previa
+      router.push("/events/preview-event");
+    } catch (error) {
+      console.error("Error al subir la imagen o preparar datos:", error);
+      alert("Hubo un error al crear el evento. Intenta nuevamente.");
+    } finally {
+      setLoading(false);
+    }
+  };
   
   function handleChange(
     event: React.ChangeEvent<
@@ -530,7 +533,7 @@ export default function EventCreate() {
               <div className="loader"></div>
             </div>
           ) : (
-            "Create Event"
+            "Save and Continue"
           )}
         </button>
         <Message status={status} />
