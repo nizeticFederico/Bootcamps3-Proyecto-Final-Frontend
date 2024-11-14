@@ -30,6 +30,7 @@ const Page: React.FC = () => {
   const sendPostRequest = async (eventId: string, quantity: number) => {
     setLoading(true);
     setError(null);
+    //
 
     try {
       const response = await fetch('http://localhost:3001/order/success', {
