@@ -1,53 +1,58 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from 'react';
+import { useSession } from 'next-auth/react';
+import { useSearchParams } from 'next/navigation';
 import { FaCheckCircle } from "react-icons/fa";
 
-const Page = () => {
+const Page: React.FC = () => {
   const searchParams = useSearchParams();
-  const [eventId, setEventId] = useState<string | null>(null);
-  const [quantity, setQuantity] = useState<number | null>(null);
-  const { data: session } = useSession();
+  const eventId = searchParams.get('eventId');
+  const quantity = searchParams.get('quantity');
+  const { data: session, status } = useSession();
+
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [isFetchDone, setIsFetchDone] = useState(false)
 
   useEffect(() => {
-    // Extraer eventId y quantity de los parámetros de búsqueda
-    const eventIdParam = searchParams.get("eventId");
-    const quantityParam = searchParams.get("quantity");
-
-    setEventId(eventIdParam || null);
-    setQuantity(quantityParam ? parseInt(quantityParam, 10) : null);
-  }, [searchParams]);
-
-  useEffect(() => {
-    // Realizar el POST cuando ambos valores y el token están disponibles
-    if (eventId && quantity !== null) {
-      const postOrderSuccess = async () => {
-        try {
-          const response = await fetch("http://localhost:3001/order/success", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              token: `${session.accessToken}`, // Si necesitas token del usuario
-            },
-            body: JSON.stringify({ eventId, quantity }),
-          });
-
-          if (!response.ok) {
-            throw new Error("Error en la solicitud");
-          }
-
-          const data = await response.json();
-          console.log("Respuesta del servidor:", data);
-        } catch (error) {
-          console.error("Error en el fetch:", error);
-        }
-      };
-
-      postOrderSuccess();
+    if (status === 'loading') {
+      // Si la sesión está cargando, no hacer nada por ahora
+      return;
     }
-  }, [eventId, quantity, session]);
+    if (eventId && quantity &&session?.accessToken && !isFetchDone) {
+      sendPostRequest(eventId, parseInt(quantity));
+      setIsFetchDone(true)
+    }
+  }, [eventId, quantity, session, status]);
+
+  const sendPostRequest = async (eventId: string, quantity: number) => {
+    setLoading(true);
+    setError(null);
+
+    try {
+      const response = await fetch('http://localhost:3001/order/success', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          token: `${session?.accessToken || ""}`,
+        },
+        body: JSON.stringify({ eventId, quantity }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Error en la solicitud');
+      }
+
+      setSuccess(true);
+    } catch (err) {
+      setError((err as Error).message);
+    } finally {
+      setLoading(false);
+    }
+  };
+console.log(session);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
