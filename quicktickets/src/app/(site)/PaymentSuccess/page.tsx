@@ -3,126 +3,82 @@
 import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
+import { FaCheckCircle } from "react-icons/fa";
 
 const Page = () => {
-  // const searchParams = useSearchParams();
-  // const [eventId, setEventId] = useState<string | null>(null);
-  // const [quantity, setQuantity] = useState<number | null>(null);
-  // const { data: session } = useSession();
+  const searchParams = useSearchParams();
+  const [eventId, setEventId] = useState<string | null>(null);
+  const [quantity, setQuantity] = useState<number | null>(null);
+  const { data: session } = useSession();
 
-  // useEffect(() => {
-  //   // Extraer eventId y quantity de los parámetros de búsqueda
-  //   const eventIdParam = searchParams.get("eventId");
-  //   const quantityParam = searchParams.get("quantity");
+  useEffect(() => {
+    // Extraer eventId y quantity de los parámetros de búsqueda
+    const eventIdParam = searchParams.get("eventId");
+    const quantityParam = searchParams.get("quantity");
 
-  //   setEventId(eventIdParam || null);
-  //   setQuantity(quantityParam ? parseInt(quantityParam, 10) : null);
-  // }, [searchParams]);
+    setEventId(eventIdParam || null);
+    setQuantity(quantityParam ? parseInt(quantityParam, 10) : null);
+  }, [searchParams]);
 
-  // useEffect(() => {
-  //   // Realizar el POST cuando ambos valores están disponibles
-  //   if (eventId && quantity !== null) {
-  //     const postOrderSuccess = async () => {
-  //       try {
-  //         const response = await fetch("http://localhost:3001/order/success", {
-  //           method: "POST",
-  //           headers: {
-  //             "Content-Type": "application/json",
-  //             token: `${session?.accessToken || ""}`, // Si necesitas token del usuario
-  //           },
-  //           body: JSON.stringify({ eventId, quantity }),
-  //         });
+  useEffect(() => {
+    // Realizar el POST cuando ambos valores y el token están disponibles
+    if (eventId && quantity !== null) {
+      const postOrderSuccess = async () => {
+        try {
+          const response = await fetch("http://localhost:3001/order/success", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${session.accessToken}`, // Si necesitas token del usuario
+            },
+            body: JSON.stringify({ eventId, quantity }),
+          });
 
-  //         if (!response.ok) {
-  //           throw new Error("Error en la solicitud");
-  //         }
+          if (!response.ok) {
+            throw new Error("Error en la solicitud");
+          }
 
-  //         const data = await response.json();
-  //         console.log("Respuesta del servidor:", data);
-  //       } catch (error) {
-  //         console.error("Error en el fetch:", error);
-  //       }
-  //     };
+          const data = await response.json();
+          console.log("Respuesta del servidor:", data);
+        } catch (error) {
+          console.error("Error en el fetch:", error);
+        }
+      };
 
-  //     postOrderSuccess();
-  //   }
-  // }, [eventId, quantity, session]);
+      postOrderSuccess();
+    }
+  }, [eventId, quantity, session]);
 
-  return <div>Hola</div>;
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
+      <div className="w-full max-w-lg bg-white shadow-md rounded-lg p-8 text-center animate-fade-in">
+        <div className="animate-bounce-slow">
+          <FaCheckCircle className="text-green-500 w-16 h-16 mx-auto mb-4" />
+        </div>
+        <h1 className="text-2xl font-bold text-gray-800 mb-2">
+          Your payment has been received
+        </h1>
+        <p className="text-gray-600 mb-6 mt-3">
+          Thank you for your payment! Your event ticket has been sent to your
+          email. Please check your inbox for your ticket and further details
+          about the event.
+        </p>
+
+        {/* <div className="flex justify-center items-center space-x-4 mb-6">
+          <div className="text-gray-600">
+            <strong>Event ID:</strong> {eventId}
+          </div>
+          <div className="text-gray-600">
+            <strong>Quantity:</strong> {quantity}
+          </div>
+        </div> */}
+
+        <button className="bg-yellow-500 text-white font-semibold py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+          Go to your dashboard
+        </button>
+      </div>
+    </div>
+  );
 };
 
 export default Page;
-
-// 'use client';
-
-// import { useSearchParams } from "next/navigation";
-// import { useEffect, useState } from "react";
-// import { useSession } from "next-auth/react";
-
-// const Page = () => {
-//   const searchParams = useSearchParams();
-//   const [eventId, setEventId] = useState<string | null>(null);
-//   const [quantity, setQuantity] = useState<number | null>(null);
-//   const { data: session } = useSession();
-
-//   useEffect(() => {
-//     // Función asíncrona interna para manejar la solicitud
-//     const fetchOrderData = async () => {
-//       const orderData = {
-//         eventId: searchParams.get("eventId"),
-//         quantity: searchParams.get("quantity")
-//       };
-
-//       try {
-//         const response = await fetch("http://localhost:3001/order/success", {
-//           method: "POST",
-//           headers: {
-//             "Content-Type": "application/json",
-//             token: `${session?.accessToken || ""}`,
-//           },
-//           body: JSON.stringify(orderData)
-//         });
-
-//         if (response.ok) {
-//           const data = await response.json();
-//           // Aquí puedes manejar la respuesta y actualizar el estado si es necesario
-//           console.log(data); // O cualquier otra lógica para manejar la respuesta
-//         } else {
-//           console.error("Error en la solicitud:", response.status);
-//         }
-//       } catch (error) {
-//         console.error("Error de red:", error);
-//       }
-
-//       // Actualizar el estado local con los parámetros de la URL
-//       setEventId(orderData.eventId || null);
-//       setQuantity(orderData.quantity ? parseInt(orderData.quantity, 10) : null);
-//     };
-
-//     fetchOrderData(); // Llamada a la función asincrónica
-
-//   }, [searchParams, session]); // Dependencias: cuando cambian los parámetros de búsqueda o la sesión
-
-//   console.log(eventId, quantity);
-
-//   return <div>Hola</div>;
-// };
-
-// export default Page;
-
-// TARJETA 4000000320000021
-
-// const { data: session } = useSession();
-//   const buyStripe = async () => {
-//     const payData = { eventId: _id, quantity: 1 };
-//     const response = await fetch("http://localhost:3001/pay", {
-//       method: "POST", // Especifica que se trata de una solicitud POST
-//       headers: {
-//         "Content-Type": "application/json",
-//         token: `${session?.accessToken || ""}`,
-//       }, // Define el tipo de contenido como JSON
-//       body: JSON.stringify(payData),
-//     });
-//     const data = await response.json();
-//     window.open(data);
-//   };
