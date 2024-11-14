@@ -17,6 +17,7 @@ interface EventCardProps {
   latitude: number;
   longitude: number;
   creatorId: string;
+  availability: number;
 }
 
 const EventCard: React.FC<EventCardProps> = ({
@@ -30,6 +31,7 @@ const EventCard: React.FC<EventCardProps> = ({
   location,
   latitude,
   longitude,
+  availability,
 }) => {
   const router = useRouter();
   const eventDate = new Date(dateTime);
@@ -89,9 +91,9 @@ const EventCard: React.FC<EventCardProps> = ({
             </p>
           </div>
           <div>
-            <p className={` text-xs flex ${capacity === 0 ? 'text-red-600' : 'text-blue-600'}`}>
+            <p className={` text-xs flex ${availability === 0 ? 'text-red-600' : 'text-blue-600'}`}>
               <TiGroup className='mr-1 mt-0.5'/>
-              {capacity === 0 ? "Sold Out" : capacity}
+              {availability === 0 ? "Sold Out" : availability}
             </p>
           </div>
         </div>
