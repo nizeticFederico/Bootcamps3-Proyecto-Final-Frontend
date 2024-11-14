@@ -4,7 +4,8 @@ import { useState } from "react"
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image"
-import { formLogin } from "@/actions/authActions";
+import { formLogin } from "@/actions/authActions";  
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export default function LogIn(){
 
@@ -101,8 +102,8 @@ export default function LogIn(){
                         onClick={() => setShowPassword(!showPassword)}
                         className="absolute right-3 top-1/2 transform -translate-y-1/2">
                             { showPassword ? 
-                            (<Image src="assets/eye-solid.svg" height={20} width={20} alt="show password" ></Image>) :
-                            (<Image src="assets/eye-slash-solid.svg" height={20} width={20} alt="hidde password" ></Image>)}</button>
+                            (<FaEye className="text-2xl"/>) :
+                            (<FaEyeSlash className="text-2xl"/>)}</button>
                 </div>
                 <button type="submit" 
                         className=" flex items-center justify-center text-lg rounded-md p-3 mt-4 min-h-[50px] text-white text-bold bg-[#2B293D] hover:bg-[#3F3D51] w-full relative">
