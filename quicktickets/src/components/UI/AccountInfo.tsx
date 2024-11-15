@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from "react";
-
+import { useSession } from "next-auth/react";
 const Account = () => {
   // Estado para la sección seleccionada
   const [selectedSection, setSelectedSection] = useState<
@@ -70,13 +70,13 @@ const Account = () => {
   );
 };
 {
-  /* Información de mi cuenta */
+  /* AccountInfo Section */
 }
 const AccountInfo = () => (
   <div className="p-6 max-w-4xl mx-auto">
     <h2 className="text-3xl font-bold mb-4">Account Information</h2>
     <hr />
-    
+
     {/* Profile Photo Section */}
     <h3 className="flex justify-center font-semibold text-1xl mb-4 mt-8">
       Profile Photo
@@ -109,7 +109,7 @@ const AccountInfo = () => (
         <h3 className="flex justify-center font-semibold text-1xl mb-4">
           Profile Information
         </h3>
-        
+
         <div className="flex items-center mb-4 justify-center">
           <label className="w-32 text-gray-700 text-right pr-4">
             First Name:
@@ -125,16 +125,12 @@ const AccountInfo = () => (
         </div>
 
         <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Website:
-          </label>
+          <label className="w-32 text-gray-700 text-right pr-4">Website:</label>
           <input type="text" className="border p-2 w-3/4" />
         </div>
 
         <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Company:
-          </label>
+          <label className="w-32 text-gray-700 text-right pr-4">Company:</label>
           <input type="text" className="border p-2 w-3/4" />
         </div>
       </div>
@@ -148,7 +144,7 @@ const AccountInfo = () => (
           These details are private and only used to contact you for ticketing
           or prizes.
         </span>
-        
+
         <div className="flex items-center mb-4 justify-center">
           <label className="w-32 text-gray-700 text-right pr-4">
             Phone Number:
@@ -157,9 +153,7 @@ const AccountInfo = () => (
         </div>
 
         <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Address:
-          </label>
+          <label className="w-32 text-gray-700 text-right pr-4">Address:</label>
           <input type="text" className="border p-2 w-3/4" />
         </div>
 
@@ -171,20 +165,16 @@ const AccountInfo = () => (
         </div>
 
         <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Country:
-          </label>
+          <label className="w-32 text-gray-700 text-right pr-4">Country:</label>
           <input type="text" className="border p-2 w-3/4" />
         </div>
 
         <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Pincode:
-          </label>
+          <label className="w-32 text-gray-700 text-right pr-4">Pincode:</label>
           <input type="text" className="border p-2 w-3/4" />
         </div>
       </div>
-      
+
       {/* Save Button */}
       <div className="flex justify-center mt-6">
         <button className="bg-blue-950 text-white rounded py-2 px-4 mt-4">
@@ -195,70 +185,213 @@ const AccountInfo = () => (
   </div>
 );
 
+const ChangeEmail = () => {
+  // Definir el estado de los emails
+  const [newEmail, setNewEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const { data: session, status } = useSession();
 
-const ChangeEmail = () => (
-  <div className="p-6 max-w-3xl mx-auto">
-    <h2 className="text-2xl font-bold mb-4">Change Email</h2>
-    <hr />
-    <form>
-      <div className="flex items-center mb-4 mt-8">
-        <label className="w-1/4 text-gray-700 text-right pr-4">
-          Current Email:
-        </label>
-        <input
-          type="email"
-          className="border p-2 w-3/4"
-          value="user@example.com"
-          disabled
-        />
-      </div>
-      
-      <div className="flex items-center mb-4">
-        <label className="w-1/4 text-gray-700 text-right pr-4">
-          New Email:
-        </label>
-        <input type="email" className="border p-2 w-3/4" />
-      </div>
-      <div className="flex items-center mb-4">
-        <label className="w-1/4 text-gray-700 text-right pr-4">
-          Confirm Email:
-        </label>
-        <input type="email" className="border p-2 w-3/4" />
-      </div>
-      <div className="flex justify-center mt-6">
-        <button className="bg-blue-950 text-white rounded py-2 px-4">
-          Save New Email
-        </button>
-      </div>
-    </form>
-  </div>
-);
+  // Función para manejar el cambio de email
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
+    // Verificar que los emails coincidan
+    if (newEmail !== confirmEmail) {
+      setError("Los emails no coinciden.");
+      return;
+    }
 
-const ChangePassword = () => (
-  <div className="p-6 max-w-2xl mx-auto">
-    <h2 className="text-2xl font-bold mb-4">Change Password</h2>
-    <hr />
-    <form>
-      <div className="flex items-center mb-4 mt-8">
-        <label className="w-1/3 text-gray-700 text-right pr-4">
-          New Password:
-        </label>
-        <input type="password" className="border p-2 w-2/3" />
-      </div>
-      <div className="flex items-center mb-4">
-        <label className="w-1/3 text-gray-700 text-right pr-4">
-          Confirm Password:
-        </label>
-        <input type="password" className="border p-2 w-2/3" />
-      </div>
-      <div className="flex justify-center mt-6">
-        <button className="bg-blue-950 text-white rounded py-2 px-4 mt-4">
-          Save New Password
-        </button>
-      </div>
-    </form>
-  </div>
-);
+    // Preparar los datos
+    const requestBody = {
+      email: newEmail,
+    };
+
+    try {
+      // Realizar la solicitud fetch
+      const response = await fetch("http://localhost:3001/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: `${session?.accessToken || ""}`,
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setSuccess("Email cambiado con éxito");
+        setError(""); // Limpiar el error si el cambio es exitoso
+      } else {
+        setError(data.message || "Error al cambiar el email");
+        setSuccess(""); // Limpiar el éxito si hay un error
+      }
+    } catch (error) {
+      setError("Hubo un error al intentar cambiar el email.");
+      setSuccess(""); // Limpiar el éxito si hay un error
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-3xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Change Email</h2>
+      <hr />
+      <form onSubmit={handleSubmit}>
+        <div className="flex items-center mb-4 mt-8">
+          <label className="w-1/4 text-gray-700 text-right pr-4">
+            Current Email:
+          </label>
+          <input
+            type="email"
+            className="border p-2 w-3/4"
+            value="user@example.com" // Esto debe ser el email actual del usuario
+            disabled
+          />
+        </div>
+
+        <div className="flex items-center mb-4">
+          <label className="w-1/4 text-gray-700 text-right pr-4">
+            New Email:
+          </label>
+          <input
+            type="email"
+            className="border p-2 w-3/4"
+            value={newEmail}
+            onChange={(e) => setNewEmail(e.target.value)}
+          />
+        </div>
+
+        <div className="flex items-center mb-4">
+          <label className="w-1/4 text-gray-700 text-right pr-4">
+            Confirm Email:
+          </label>
+          <input
+            type="email"
+            className="border p-2 w-3/4"
+            value={confirmEmail}
+            onChange={(e) => setConfirmEmail(e.target.value)}
+          />
+        </div>
+
+        {error && <p className="text-red-500">{error}</p>}
+        {success && <p className="text-green-500">{success}</p>}
+
+        <div className="flex justify-center mt-6">
+          <button
+            type="submit"
+            className="bg-blue-950 text-white rounded py-2 px-4"
+          >
+            Save New Email
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const ChangePassword = () => {
+  // Defino el estado de las contraseñas
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [repeatedNewPassword, setRepeatedNewPassword] = useState("");
+  const [error, setError] = useState("");
+  const { data: session, status } = useSession();
+
+  // Función para manejar el cambio de contraseña
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    // Verifico que las contraseñas nuevas coincidan
+    if (newPassword !== repeatedNewPassword) {
+      setError("Las contraseñas no coinciden.");
+      return;
+    }
+
+    // Preparo los datos
+    const requestBody = {
+      currentPassword,
+      newPassword,
+      repeatedNewPassword,
+    };
+
+    try {
+      // Realizo la solicitud fetch
+      const response = await fetch(
+        "http://localhost:3001/user/update-password",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken || ""}`,
+          },
+          body: JSON.stringify(requestBody),
+        }
+      );
+
+      const data = await response.json();
+
+      if (response.ok) {
+        alert("Contraseña cambiada con éxito");
+      } else {
+        setError(data.message || "Error al cambiar la contraseña");
+      }
+    } catch (error) {
+      setError("Hubo un error al intentar cambiar la contraseña.");
+    }
+  };
+
+  return (
+    <div className="p-6 max-w-2xl mx-auto">
+      <h2 className="text-2xl font-bold mb-4">Change Password</h2>
+      <hr />
+      <form onSubmit={handleSubmit}>
+        <div className="flex items-center mb-4 mt-8">
+          <label className="w-1/3 text-gray-700 text-right pr-4">
+            Current Password:
+          </label>
+          <input
+            type="password"
+            className="border p-2 w-2/3"
+            value={currentPassword}
+            onChange={(e) => setCurrentPassword(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center mb-4">
+          <label className="w-1/3 text-gray-700 text-right pr-4">
+            New Password:
+          </label>
+          <input
+            type="password"
+            className="border p-2 w-2/3"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+          />
+        </div>
+        <div className="flex items-center mb-4">
+          <label className="w-1/3 text-gray-700 text-right pr-4">
+            Confirm New Password:
+          </label>
+          <input
+            type="password"
+            className="border p-2 w-2/3"
+            value={repeatedNewPassword}
+            onChange={(e) => setRepeatedNewPassword(e.target.value)}
+          />
+        </div>
+        {error && <p className="text-red-500">{error}</p>}
+        <div className="flex justify-center mt-6">
+          <button
+            type="submit"
+            className="bg-blue-950 text-white rounded py-2 px-4 mt-4"
+          >
+            Save New Password
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
 
 export default Account;
