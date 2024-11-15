@@ -17,6 +17,7 @@ const NavBar = () => {
   const [menuOpen, setMenuOpen] = useState<boolean>(false); // Estado para el menú en pantallas pequeñas
   const { data: session, status } = useSession();
   const router = useRouter();
+  const isAdmin = session?.user?.role === "admin";
 
   console.log(session);
 
@@ -28,6 +29,7 @@ const NavBar = () => {
 
   const handleLogout = async () => {
     await signOut({ redirect: false });
+    router.push("/");
   };
 
   const toggleMenu = () => {
@@ -120,7 +122,7 @@ const NavBar = () => {
               </button>
             </div>
             {isOpen && (
-              <div className="absolute bg-white rounded shadow-lg mt-[133px] text-sm min-w-[140px]">
+              <div className="absolute bg-white rounded shadow-lg mt-[167px] text-sm min-w-[140px]">
                 <Link
                   href="/userProfile"
                   onClick={() => setIsOpen(false)}
@@ -128,6 +130,12 @@ const NavBar = () => {
                 >
                   Account setting
                 </Link>
+                {isAdmin && (<Link
+                  href="/adminDashboard"
+                  onClick={() => setIsOpen(false)}
+                  className="block font-bold p-2 text-violet-500 hover:bg-gray-200 rounded"
+                >Admin Dashboard
+                </Link>)}
                 <div className="flex justify-between hover:bg-gray-200 rounded">
                   <button
                     onClick={handleLogout}
