@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react"; // Para manejar la sesión
 import { useRouter } from "next/navigation"; // Redirigir al usuario
 import Image from "next/image";
@@ -13,6 +13,7 @@ import {
 import { TiGroup } from "react-icons/ti";
 import { TfiBackLeft } from "react-icons/tfi";
 import { MdOutlineEventAvailable } from "react-icons/md";
+import GoogleMapComponent from "./GoogleMaps";
 
 interface EventData {
   name: string;
@@ -29,79 +30,54 @@ interface EventData {
 }
 
 const PreviewEvent: React.FC = () => {
+  const [marker, setMarker] = useState({ lat: 0, lng: 0 }); // Inicializa con coordenadas por defecto
   const router = useRouter();
-  const { data: session } = useSession(); // Obtener los datos de la sesión
+  const { data: session } = useSession();
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
 
-  // Recuperar datos de localStorage
+  // Cargar datos del evento desde Local Storage
   useEffect(() => {
     const storedData = localStorage.getItem("previewEventData");
     if (storedData) {
-      console.log(storedData);
-      setEventData(JSON.parse(storedData));
+      const event = JSON.parse(storedData);
+      setEventData(event);
+
+      // Validar que las coordenadas sean números válidos
+      const lat = parseFloat(event.latitude);
+      const lng = parseFloat(event.longitude);
+
+      if (!isNaN(lat) && !isNaN(lng)) {
+        setMarker({ lat, lng });
+      } else {
+        console.error("Coordenadas no válidas:", event.latitude, event.longitude);
+      }
     } else {
-      router.push("/events/create-event"); // Redirigir si no hay datos
+      router.push("/events/create-event");
     }
   }, [router]);
 
-  // Renderizar mapa de Google
-  useEffect(() => {
-    if (eventData) {
-      const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-      const scriptId = "google-maps-script";
+  // Manejar creación del evento
+  const handleCreateEvent = async () => {
+    const eventData = {
+      name, // Asegúrate de que estas variables tengan datos válidos
+      description,
+      imageUrl,
+      dateTime,
+      price,
+      capacity,
+      category,
+      location,
+      latitude: marker.lat,
+      longitude: marker.lng,
+      creatorId: session?.user.id, // Si utilizas NextAuth
+    };
 
-      if (!document.querySelector(`#${scriptId}`)) {
-        const script = document.createElement("script");
-        script.id = scriptId;
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}`;
-        script.async = true;
-        script.onload = () => {
-          if (mapRef.current) {
-            const map = new google.maps.Map(mapRef.current, {
-              center: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-              zoom: 15,
-            });
-            new google.maps.Marker({
-              position: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-              map,
-            });
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        if (mapRef.current && window.google) {
-          const map = new google.maps.Map(mapRef.current, {
-            center: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-            zoom: 15,
-          });
-          new google.maps.Marker({
-            position: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-            map,
-          });
-        }
-      }
-    }
-  }, [eventData]);
+    console.log("Datos enviados:", eventData); // Muestra los datos en la consola
 
-  // Función para crear el evento
-  const handleCreateEvent = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  
-    if (!session?.accessToken) {
-      console.log("Token de autorización:", session?.accessToken);
-      setIsLoading(false);
-      setStatus(401);
-      return;
-    }
-  
-    if (isLoading) return; // Evita múltiples solicitudes
-    setIsLoading(true);
-  
     try {
-      const response = await fetch(`http://localhost:3001/event`, {
+      const response = await fetch("http://localhost:3001/event", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -109,11 +85,13 @@ const PreviewEvent: React.FC = () => {
         },
         body: JSON.stringify(eventData),
       });
-  
+
+      console.log('Token de acceso:', session?.accessToken);
+
       if (response.ok) {
-        console.log("Evento creado con éxito");
-        router.push(`/events`); // Redirige a la lista de eventos
+        router.push(`/events`);
       } else {
+        setStatus(response.status);
         console.error("Error al crear el evento:", response.statusText);
       }
     } catch (error) {
@@ -124,34 +102,33 @@ const PreviewEvent: React.FC = () => {
   };
 
   if (!eventData) {
-    return <p className="text-center text-gray-600">Cargando...</p>;
+    return <p className="text-center text-gray-600">Cargando datos del evento...</p>;
   }
 
-  // Desestructurar los datos del evento
-  const { name, description, imageUrl, dateTime, price, capacity, category, location, creatorId } = eventData;
+   // Desestructurar los datos del evento
+   const { name, description, imageUrl, dateTime, price, capacity, category, location, creatorId } = eventData;
 
-  // Formatear fecha y hora
-  const formattedDate = new Date(dateTime).toLocaleDateString("es-AR", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  });
-
-  const formattedTime = new Date(dateTime).toLocaleTimeString("es-AR", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
-
-  // Formatear precio
-  const formattedPrice = new Intl.NumberFormat("es-AR", {
-    style: "currency",
-    currency: "ARS",
-  }).format(price);
-
-  const isSoldOut = capacity === 0;
-  const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
-  const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
-/*   const userName = session?.user?.name; */
+   // Formatear fecha y hora
+   const formattedDate = new Date(dateTime).toLocaleDateString("es-AR", {
+     day: "2-digit",
+     month: "short",
+     year: "numeric",
+   });
+ 
+   const formattedTime = new Date(dateTime).toLocaleTimeString("es-AR", {
+     hour: "2-digit",
+     minute: "2-digit",
+   });
+ 
+   // Formatear precio
+   const formattedPrice = new Intl.NumberFormat("es-AR", {
+     style: "currency",
+     currency: "ARS",
+   }).format(price);
+ 
+   const isSoldOut = capacity === 0;
+   const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
+   const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
 
   return (
     <main>
@@ -222,9 +199,13 @@ const PreviewEvent: React.FC = () => {
             <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
-          <div className="h-40 w-80 bg-gray-200 rounded-md overflow-hidden">
-            {/* Div que contendrá el mapa de Google */}
-            <div ref={mapRef} className="h-full w-full"></div>
+          {/* Mapa */}
+          <div className="mt-6 h-64 rounded-lg shadow-md overflow-hidden">
+            <GoogleMapComponent
+              apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+              center={marker} // Coordenadas del marcador
+              markerPosition={marker} // Posición del marcador
+            />
           </div>
         </div>
         <div>

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
@@ -10,6 +10,7 @@ import { TiGroup } from "react-icons/ti";
 import { AiOutlineDollar } from "react-icons/ai";
 import Categories from "./Categories";
 import { useSession } from "next-auth/react";
+import GoogleMapComponent from "./GoogleMaps";
 
 export default function EventCreate() {
   const { data: session } = useSession();
@@ -29,7 +30,7 @@ export default function EventCreate() {
     city: "",
     latitude: "-27.46784",
     longitude: "-58.8344",
-    creatorId: "",
+    creatorId: session?.user?.id || "",
   });
 
   
@@ -42,74 +43,52 @@ export default function EventCreate() {
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
   const router = useRouter();
 
-  const mapRef = useRef<HTMLDivElement | null>(null);
-  const markerRef = useRef<google.maps.Marker | null>(null);
-  const [map, setMap] = useState<google.maps.Map | null>(null);
+  
 
-  useEffect(() => {
-    const loadGoogleMapsScript = () => {
-      if (!window.google) {
-        const script = document.createElement("script");
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${process.env.NEXT_PUBLIC_API_DE_GOOGLE}&libraries=places`;
-        script.async = true;
-        script.defer = true; // Defer también mejora el rendimiento
-        script.setAttribute("loading", "lazy"); // Lazy loading
-        script.onload = () => initializeMap();
-        document.head.appendChild(script);
-      } else {
-        initializeMap();
+  // Handle marker drag end
+  const handleMarkerDragEnd = (coords: { lat: number; lng: number }) => {
+    setMarker(coords);
+    setValues((prev) => ({
+      ...prev,
+      latitude: coords.lat.toString(),
+      longitude: coords.lng.toString(),
+    }));
+  };
+
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    
+    setValues((prevValues) => {
+      const newValues = { ...prevValues, [name]: value };
+  
+      // Si los campos country o city cambian, actualiza location
+      if (name === "country" || name === "city") {
+        newValues.location = `${newValues.city}, ${newValues.country}`.trim();
       }
-    };
+  
+      return newValues;
+    });
+  };
 
-    const initializeMap = () => {
-      if (mapRef.current && !map) {
-        const googleMap = new google.maps.Map(mapRef.current, {
-          center: { lat: parseFloat(values.latitude), lng: parseFloat(values.longitude) },
-          zoom: 14,
-        });
-
-        const marker = new google.maps.Marker({
-          position: { lat: parseFloat(values.latitude), lng: parseFloat(values.longitude) },
-          map: googleMap,
-          draggable: true,
-        });
-
-        marker.addListener("dragend", () => {
-          const position = marker.getPosition();
-          if (position) {
-            setValues((prevValues) => ({
-              ...prevValues,
-              latitude: position.lat().toString(),
-              longitude: position.lng().toString(),
-            }));
-          }
-        });
-
-        setMap(googleMap);
-        markerRef.current = marker;
-      }
-    };
-
-    loadGoogleMapsScript();
-  }, [map, values.latitude, values.longitude]);
-
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+   // Submit form
+   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    // Validación de campos obligatorios
     if (!file) {
-      alert("Por favor, selecciona una imagen para el evento.");
+      alert("Please select an image for the event.");
       return;
     }
+
     if (!values.name || !values.category || !values.date || !values.time) {
-      alert("Por favor, completa todos los campos obligatorios.");
+      alert("Please complete all required fields.");
       return;
     }
 
     setLoading(true);
 
     try {
-      // Subir la imagen al servidor
       const formData = new FormData();
       formData.append("image", file);
 
@@ -119,103 +98,82 @@ export default function EventCreate() {
       });
 
       if (!response.ok) {
-        throw new Error("Error al subir la imagen");
+        throw new Error("Image upload failed.");
       }
 
       const dataImage = await response.json();
-      const imageUrl = dataImage.url.secure_url;
+      const uploadedImageUrl = dataImage.url.secure_url;
 
-      // Preparar datos del evento
-      const eventData = {
-        name: values.name.toLowerCase(),
-        description: values.description,
-        imageUrl,
-        dateTime,
-        price: values.price,
-        capacity: values.capacity,
-        category: values.category,
-        location: values.location,
-        latitude: values.latitude,
-        longitude: values.longitude,
-        creatorId: session?.user?.id,
-      };
+   // Preparar datos del evento
+   const eventData = {
+    name: values.name.toLowerCase(),
+    description: values.description,
+    imageUrl: uploadedImageUrl,
+    dateTime,
+    price: values.price,
+    capacity: values.capacity,
+    category: values.category,
+    location: values.location,
+    latitude: values.latitude,
+    longitude: values.longitude,
+    creatorId: session?.user?.id,
+  };
 
-      // Guardar datos en Local Storage
+    console.log(eventData);
+    
+
       localStorage.setItem("previewEventData", JSON.stringify(eventData));
-
-      // Redirigir a la página de vista previa
       router.push("/events/previewEvent");
     } catch (error) {
-      console.error("Error al subir la imagen o preparar datos:", error);
-      alert("Hubo un error al crear el evento. Intenta nuevamente.");
+      console.error("Error creating event:", error);
+      alert("An error occurred while creating the event. Please try again.");
     } finally {
       setLoading(false);
     }
   };
-  
-  function handleChange(
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
-  ) {
-    const { currentTarget } = event;
-    const { name, value } = currentTarget;
-  
-    setValues((prevValues) => {
-      const newValues = { ...prevValues, [name]: value };
-  
-      // Combina "country" y "city" para actualizar "location"
-      if (name === "country" || name === "city") {
-        newValues.location = `${newValues.city}, ${newValues.country}`.trim();
-      }
-  
-      return newValues;
-    });
-  }
 
-  async function handleLocationUpdate() {
-    if (!values.city || !values.country) return; // No procede si falta alguno
-  
-    const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-    if (!googleApiKey) {
-      console.error("Google API Key is missing");
-      return;
+   // Geocoding based on country and city
+   const geocodeLocation = async (country: string, city: string) => {
+    const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
+    const response = await fetch(
+      `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
+        `${city}, ${country}`
+      )}&key=${apiKey}`
+    );
+    const data = await response.json();
+
+    if (data.status === "OK" && data.results.length > 0) {
+      const location = data.results[0].geometry.location;
+      return { lat: location.lat, lng: location.lng };
+    } else {
+      throw new Error("Coordinates not found.");
     }
-  
-    const query = `${values.city}, ${values.country}`;
-    const url = `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
-      query
-    )}&key=${googleApiKey}`;
-  
-    try {
-      const response = await fetch(url);
-      if (!response.ok) {
-        throw new Error("Failed to fetch location data");
-      }
-      const data = await response.json();
-  
-      if (data.results && data.results.length > 0) {
-        const location = data.results[0].geometry.location;
-  
-        // Actualiza el mapa y el marcador
-        if (map && markerRef.current) {
-          const newPosition = new google.maps.LatLng(location.lat, location.lng);
-          map.setCenter(newPosition); // Reubica el mapa
-          markerRef.current.setPosition(newPosition); // Mueve el marcador
-        }
-  
-        // Actualiza los valores en el estado
-        setValues((prevValues) => ({
-          ...prevValues,
-          latitude: location.lat.toString(),
-          longitude: location.lng.toString(),
-          location: `${prevValues.city}, ${prevValues.country}`, // Concatenación para "Location"
+  };
+
+  useEffect(() => {
+    const fetchCoordinates = async () => {
+      if (!values.country || !values.city) return;
+
+      try {
+        const coords = await geocodeLocation(values.country, values.city);
+        setValues((prev) => ({
+          ...prev,
+          latitude: coords.lat.toString(),
+          longitude: coords.lng.toString(),
         }));
+        setMarker(coords);
+      } catch (error) {
+        console.error("Error fetching coordinates:", error);
       }
-    } catch (error) {
-      console.error("Error fetching location data:", error);
-    }
-  }
+    };
+
+    fetchCoordinates();
+  }, [values.country, values.city]);
+
+  const [marker, setMarker] = useState({
+    lat: parseFloat(values.latitude),
+    lng: parseFloat(values.longitude),
+  });
 
   return (
     <form
@@ -358,9 +316,8 @@ export default function EventCreate() {
           </div>
         </div>
         {/* Final Seccion Date and Time */}
-
-        {/* Sección Location */}
-        <div className="mb-6">
+      {/* Location Section */}
+        <div className="mt-6">
           <h3 className="text-2xl font-bold mb-2">Location</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
@@ -372,12 +329,9 @@ export default function EventCreate() {
                 name="country"
                 placeholder="Enter the country"
                 value={values.country}
-                onChange={(e) => {
-                  handleChange(e); // Actualiza el estado
-                  handleLocationUpdate(); // Intenta reubicar el mapa
-                }}
+                onChange={handleChange}
                 className="p-3 border rounded-lg w-full"
-              />
+                />
             </div>
             <div>
               <label htmlFor="city" className="ml-1 text-lg font-medium">
@@ -388,17 +342,22 @@ export default function EventCreate() {
                 name="city"
                 placeholder="Enter the city"
                 value={values.city}
-                onChange={(e) => {
-                  handleChange(e); // Actualiza el estado
-                  handleLocationUpdate(); // Intenta reubicar el mapa
-                }}
+                onChange={handleChange}
                 className="p-3 border rounded-lg w-full"
               />
             </div>
+          </div>
+
+          <div className="mt-4">
+            <GoogleMapComponent
+              apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
+              center={marker}
+              markerPosition={marker}
+              onMarkerDragEnd={handleMarkerDragEnd}
+              isPointerMovable={true} // El marcador no debe moverse
+            />
+          </div>
         </div>
-        </div>
-        <div ref={mapRef} style={{ height: "300px", width: "100%", marginTop: "20px" }} />
-        
         {/* Fin Sección Location */}
 
         {/* Inicio Seccion Informacion adicional */}

@@ -50,9 +50,10 @@ const CardSections: React.FC<CardSectionsProps> = ({
         <div className="relative h-40 w-full">
             <Image
             src={imageUrl}
-            layout="fill"
+            fill
             className="object-cover"
             alt="Miniatura Evento"
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
             <button className="absolute top-2 right-2 p-2 bg-white rounded-full shadow-md hover:bg-gray-100 transition">
             <Image
