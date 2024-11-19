@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { FaCloudUploadAlt } from "react-icons/fa";
@@ -16,6 +16,7 @@ export default function EventCreate() {
   const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
   const [imageUrl, setImageUrl] = useState(null); // Estado donde se va a guardar la URL de la imagen como "string"
+  const searchParams = useSearchParams(); // Para acceder a los datos enviados desde `DataEvent.tsx`
   const [values, setValues] = useState({
     name: "",
     description: "",
@@ -32,6 +33,44 @@ export default function EventCreate() {
     longitude: "-58.8344",
     creatorId: session?.user?.id || "",
   });
+  const router = useRouter();
+  
+  // Revisar si hay datos iniciales
+  useEffect(() => {
+    const eventData = {
+      name: searchParams.get("name") || "",
+      description: searchParams.get("description") || "",
+      category: searchParams.get("category") || "",
+      imageUrl: searchParams.get("imageUrl") || "",
+      price: searchParams.get("price") || "",
+      capacity: searchParams.get("capacity") || "",
+      latitude: searchParams.get("latitude") || "",
+      longitude: searchParams.get("longitude") || "",
+    };
+
+    // Procesar dateTime
+    const dateTime = searchParams.get("dateTime");
+    if (dateTime) {
+      const [date, time] = dateTime.split("T");
+      eventData.date = date || "";
+      eventData.time = time ? time.slice(0, 5) : ""; // Cortar segundos si los hay
+    }
+
+    // Procesar location
+    const location = searchParams.get("location");
+    if (location) {
+      const [city, country] = location.split(", ");
+      eventData.city = city || "";
+      eventData.country = country || "";
+      eventData.location = `${city || ""}, ${country || ""}`.trim();
+    }
+
+    setValues((prevValues) => ({
+      ...prevValues,
+      ...eventData,
+    }));
+  }, [searchParams]);
+  
 
   
   const [loading, setLoading] = useState<boolean>(false);
@@ -41,7 +80,7 @@ export default function EventCreate() {
   const today = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().slice(0, 5);
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
-  const router = useRouter();
+
 
   
 

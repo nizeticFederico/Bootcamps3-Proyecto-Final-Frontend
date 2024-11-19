@@ -58,6 +58,25 @@ const PreviewEvent: React.FC = () => {
     }
   }, [router]);
 
+    // Manejar la redirección a CreateEvent
+    const handleBackToCreate = () => {
+      if (eventData) {
+        const queryParams = new URLSearchParams({
+          name: eventData.name,
+          description: eventData.description,
+          category: eventData.category,
+          imageUrl: eventData.imageUrl,
+          price: eventData.price.toString(),
+          capacity: eventData.capacity.toString(),
+          dateTime: eventData.dateTime,
+          location: eventData.location,
+          latitude: eventData.latitude.toString(),
+          longitude: eventData.longitude.toString(),
+        }).toString();
+        router.push(`/events/create-event?${queryParams}`);
+      }
+    };
+
   // Manejar creación del evento
   const handleCreateEvent = async () => {
     const eventData = {
@@ -150,10 +169,10 @@ const PreviewEvent: React.FC = () => {
           </div>
           <div className="flex items-center space-x-4">
             <button
-            onClick={() => router.push("/events/create-event")}
+            onClick={handleBackToCreate}
             className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2">
               <TfiBackLeft className="h-5 w-5" />
-              <span>Volver atrás</span>
+              <span>Back to the future</span>
             </button>
             <button
             onClick={handleCreateEvent}
@@ -185,7 +204,8 @@ const PreviewEvent: React.FC = () => {
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
-              <p>{formattedPrice}</p>
+              {price === 0 ? "FREE" : `ARS ${formattedPrice}`}
+              {/* <p>{formattedPrice}</p> */}
             </div>
             <div className={`flex items-center gap-1 ${capacityTextColor}`}>
               <TiGroup className="mr-2" />

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { useState } from "react";
+/* import React, { useState } from "react"; */
 import Image from "next/image";
 import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation"; // Router para redirección
 import {
   FaMapMarkerAlt,
   FaCalendarAlt,
@@ -43,6 +44,8 @@ const EventData: React.FC<EventDataProps> = ({
   creatorId,
   availability,
 }) => {
+  const router = useRouter();
+  const { data: session } = useSession();
   const eventDate = new Date(dateTime);
   const formattedDate = eventDate.toLocaleDateString("es-AR", {
     day: "2-digit",
@@ -63,11 +66,30 @@ const EventData: React.FC<EventDataProps> = ({
   const capacityTextColor = isSoldOut ? "text-red-500" : "text-blue-600";
   const capacityText = isSoldOut ? "Sold Out" : `${availability} tickets left`;
 
-  const { data: session } = useSession();
-  const [marker] = useState<{ lat: number; lng: number }>({
+/*   const [marker] = useState<{ lat: number; lng: number }>({
     lat: latitude,
     lng: longitude,
-  });
+  }); */
+
+  const isCreator = session?.user?.id === creatorId; // Verificar si el usuario es el creador
+
+  const handleEditEvent = () => {
+    const query = new URLSearchParams({
+      _id,
+      name,
+      description,
+      imageUrl,
+      dateTime,
+      price: price.toString(),
+      capacity: availability.toString(),
+      category,
+      location,
+      latitude: latitude.toString(),
+      longitude: longitude.toString(),
+    }).toString();
+  
+    router.push(`/events/create-event?${query}`);
+  };
 
   const buyStripe = async () => {
     const payData = { eventId: _id, quantity: 1 };
@@ -104,13 +126,22 @@ const EventData: React.FC<EventDataProps> = ({
           <div className="flex items-center space-x-4">
             <FaRegStar className="h-6 w-6 text-gray-400 cursor-pointer" />
             <FaShareAlt className="h-6 w-6 text-gray-400 cursor-pointer" />
-            <button
-              onClick={buyStripe}
-              className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
-            >
-              <FaTicketAlt className="h-5 w-5" />
-              <span>Buy Tickets</span>
-            </button>
+            {isCreator ? (
+              <button
+                onClick={handleEditEvent}
+                className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+              >
+                <span>Edit Event</span>
+              </button>
+            ) : (
+              <button
+                onClick={buyStripe}
+                className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+              >
+                <FaTicketAlt className="h-5 w-5" />
+                <span>Buy Tickets</span>
+              </button>
+            )}
           </div>
         </div>
         <div className="space-y-2">
@@ -134,7 +165,8 @@ const EventData: React.FC<EventDataProps> = ({
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
-              <p>{formattedPrice}</p>
+              {price === 0 ? "FREE" : `ARS ${formattedPrice}`}
+              {/* <p>{formattedPrice}</p> */}
             </div>
             <div className={`flex items-center gap-1 ${capacityTextColor}`}>
               <TiGroup className="mr-2" />
