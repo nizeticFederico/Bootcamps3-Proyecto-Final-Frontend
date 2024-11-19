@@ -89,6 +89,8 @@ const EventData: React.FC<EventDataProps> = ({
     }).toString();
   
     router.push(`/events/create-event?${query}`);
+    console.log(query);
+    
   };
 
   const buyStripe = async () => {

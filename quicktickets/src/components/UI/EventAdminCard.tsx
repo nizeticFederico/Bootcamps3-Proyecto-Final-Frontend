@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useSession  } from "next-auth/react";
 import Modal from "./Modal";
+import { toast } from "react-toastify";
 
 interface Event {
   _id: string;
@@ -37,7 +38,6 @@ export default function EventCard() {
       try {
         const response = await fetch('http://localhost:3001/event/all'); 
         const data: Event[] = await response.json();
-        console.log(data);
         setEvents(data);
       } catch (error) {
         console.error('Error fetching events:', error);
@@ -85,11 +85,10 @@ export default function EventCard() {
       });
   
       if (response.ok) {
-        console.log('Evento eliminado exitosamente');
         setEvents(events.filter(event => event._id !== eventId));
+        toast.success('Event deleted succesfully')
       } else {
-        console.log(response.status);
-        console.error('Error al eliminar el evento');
+          toast.error('Error');
       }
     } catch (error) {
       console.error('Error de conexión:', error);
@@ -129,19 +128,18 @@ export default function EventCard() {
       });
 
       if (response.ok) {
-        const updatedEvent: Event = await response.json();
+        const { event: updatedEvent } = await response.json();
         setEvents(events.map(event =>
           event._id === eventId ? updatedEvent : event
         ));
         setEditingEventId(null);
         setEditedEvent(null); 
+        toast.success('Event succesfully updated ');
       } else {
-        console.error('Error al guardar los cambios');
-        const errorMessage = await response.text();
-        console.log(errorMessage);
+        toast.error('Error due to save changes')
       }
     } catch (error) {
-      console.error('Error al enviar los datos a la API:', error);
+      console.error('Error al enviar los datos a la API:' , error);
     }
   };
 

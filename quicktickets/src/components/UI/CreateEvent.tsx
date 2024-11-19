@@ -15,7 +15,7 @@ import GoogleMapComponent from "./GoogleMaps";
 export default function EventCreate() {
   const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
-  const [imageUrl, setImageUrl] = useState(null); // Estado donde se va a guardar la URL de la imagen como "string"
+  /* const [imageUrl, setImageUrl] = useState(null); // Estado donde se va a guardar la URL de la imagen como "string" */
   const searchParams = useSearchParams(); // Para acceder a los datos enviados desde `DataEvent.tsx`
   const [values, setValues] = useState({
     name: "",
@@ -38,12 +38,13 @@ export default function EventCreate() {
   // Revisar si hay datos iniciales
   useEffect(() => {
     const eventData = {
+      id: searchParams.get("_id") || "",
       name: searchParams.get("name") || "",
       description: searchParams.get("description") || "",
       category: searchParams.get("category") || "",
       imageUrl: searchParams.get("imageUrl") || "",
-      price: searchParams.get("price") || "",
-      capacity: searchParams.get("capacity") || "",
+      price: searchParams.get("price") || "0",
+      capacity: searchParams.get("capacity") || "0",
       latitude: searchParams.get("latitude") || "",
       longitude: searchParams.get("longitude") || "",
     };
@@ -143,8 +144,11 @@ export default function EventCreate() {
       const dataImage = await response.json();
       const uploadedImageUrl = dataImage.url.secure_url;
 
+      console.log(uploadedImageUrl);
+
    // Preparar datos del evento
    const eventData = {
+    id: values.id || null, // Incluye el ID si existe; null si no
     name: values.name.toLowerCase(),
     description: values.description,
     imageUrl: uploadedImageUrl,
@@ -158,17 +162,25 @@ export default function EventCreate() {
     creatorId: session?.user?.id,
   };
 
-    console.log(eventData);
-    
+  console.log("Datos del evento guardados en localStorage:", eventData);
+   
 
-      localStorage.setItem("previewEventData", JSON.stringify(eventData));
-      router.push("/events/previewEvent");
-    } catch (error) {
-      console.error("Error creating event:", error);
-      alert("An error occurred while creating the event. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  // Guardar datos en localStorage
+  localStorage.setItem("previewEventData", JSON.stringify(eventData));
+
+  // Redirigir a PreviewEvent con el ID si está disponible
+  const redirectUrl = eventData.id
+    ? `/events/previewEvent?_id=${eventData.id}`
+    : "/events/previewEvent";
+
+  console.log("Redirigiendo a:", redirectUrl);
+  router.push(redirectUrl);
+} catch (error) {
+  console.error("Error creating or editing event:", error);
+  alert("An error occurred while processing the event. Please try again.");
+} finally {
+  setLoading(false);
+}
   };
 
    // Geocoding based on country and city

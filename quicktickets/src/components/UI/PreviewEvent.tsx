@@ -1,21 +1,17 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react"; // Para manejar la sesión
-import { useRouter } from "next/navigation"; // Redirigir al usuario
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation"; // Para manejar query params
 import Image from "next/image";
-import {
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaRegClock,
-  FaTicketAlt,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaCalendarAlt, FaRegClock, FaTicketAlt } from "react-icons/fa";
 import { TiGroup } from "react-icons/ti";
 import { TfiBackLeft } from "react-icons/tfi";
-import { MdOutlineEventAvailable } from "react-icons/md";
 import GoogleMapComponent from "./GoogleMaps";
+import { MdOutlineEventAvailable } from "react-icons/md";
 
 interface EventData {
+  id?: string;
   name: string;
   description: string;
   imageUrl: string;
@@ -30,85 +26,96 @@ interface EventData {
 }
 
 const PreviewEvent: React.FC = () => {
-  const [marker, setMarker] = useState({ lat: 0, lng: 0 }); // Inicializa con coordenadas por defecto
+  const [marker, setMarker] = useState({ lat: 0, lng: 0 });
   const router = useRouter();
+  const searchParams = useSearchParams(); // Para leer query params
   const { data: session } = useSession();
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
 
-  // Cargar datos del evento desde Local Storage
+  // Cargar datos del evento desde Local Storage o query params
   useEffect(() => {
+    console.log("Cargando datos del evento...");
     const storedData = localStorage.getItem("previewEventData");
+
+    // Intentar obtener ID desde query params
+    const eventId = searchParams.get("id");
+    console.log("Query param ID:", eventId);
+
     if (storedData) {
       const event = JSON.parse(storedData);
+      console.log("Datos del evento desde localStorage:", event);
+
+      // Si hay un ID en los query params, actualízalo en el objeto de evento
+      if (eventId) {
+        event.id = eventId;
+        console.log("Evento cargado con ID:", event.id || eventId);
+      } else {
+        console.error("No se encontró un ID válido para el evento.");
+      }
+
       setEventData(event);
 
-      // Validar que las coordenadas sean números válidos
       const lat = parseFloat(event.latitude);
       const lng = parseFloat(event.longitude);
-
       if (!isNaN(lat) && !isNaN(lng)) {
         setMarker({ lat, lng });
       } else {
         console.error("Coordenadas no válidas:", event.latitude, event.longitude);
       }
     } else {
+      console.warn("No se encontró información en localStorage. Redirigiendo...");
       router.push("/events/create-event");
     }
-  }, [router]);
+  }, [router, searchParams]);
 
-    // Manejar la redirección a CreateEvent
-    const handleBackToCreate = () => {
-      if (eventData) {
-        const queryParams = new URLSearchParams({
-          name: eventData.name,
-          description: eventData.description,
-          category: eventData.category,
-          imageUrl: eventData.imageUrl,
-          price: eventData.price.toString(),
-          capacity: eventData.capacity.toString(),
-          dateTime: eventData.dateTime,
-          location: eventData.location,
-          latitude: eventData.latitude.toString(),
-          longitude: eventData.longitude.toString(),
-        }).toString();
-        router.push(`/events/create-event?${queryParams}`);
-      }
-    };
+  // Manejar redirección a CreateEvent
+  const handleBackToCreate = () => {
+    console.log("Redirigiendo a CreateEvent con datos:", eventData);
+    if (eventData) {
+      const queryParams = new URLSearchParams({
+        name: eventData.name,
+        description: eventData.description,
+        category: eventData.category,
+        imageUrl: eventData.imageUrl,
+        price: eventData.price.toString(),
+        capacity: eventData.capacity.toString(),
+        dateTime: eventData.dateTime,
+        location: eventData.location,
+        latitude: eventData.latitude.toString(),
+        longitude: eventData.longitude.toString(),
+      }).toString();
+      router.push(`/events/create-event?${queryParams}`);
+    }
+  };
 
-  // Manejar creación del evento
+  // Crear evento (POST)
   const handleCreateEvent = async () => {
-    const eventData = {
-      name, // Asegúrate de que estas variables tengan datos válidos
-      description,
-      imageUrl,
-      dateTime,
-      price,
-      capacity,
-      category,
-      location,
+    if (!eventData) return;
+    console.log("Creando evento con datos:", eventData);
+
+    const newEventData = {
+      ...eventData,
       latitude: marker.lat,
       longitude: marker.lng,
-      creatorId: session?.user.id, // Si utilizas NextAuth
+      creatorId: session?.user.id,
     };
 
-    console.log("Datos enviados:", eventData); // Muestra los datos en la consola
-
     try {
+      setIsLoading(true);
       const response = await fetch("http://localhost:3001/event", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           token: `${session?.accessToken}`,
         },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(newEventData),
       });
 
-      console.log('Token de acceso:', session?.accessToken);
-
       if (response.ok) {
-        router.push(`/events`);
+        console.log("Evento creado exitosamente");
+        router.push("/events");
       } else {
         setStatus(response.status);
         console.error("Error al crear el evento:", response.statusText);
@@ -120,34 +127,82 @@ const PreviewEvent: React.FC = () => {
     }
   };
 
+  // Actualizar evento (PUT)
+  const handleUpdateEvent = async () => {
+    if (!eventData || !eventData.id) {
+      console.error("El evento no tiene un ID válido para actualizar");
+      return;
+    }
+
+    console.log("Actualizando evento con ID:", eventData.id);
+
+    const updatedData = {
+      ...eventData,
+      latitude: marker.lat,
+      longitude: marker.lng,
+    };
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`http://localhost:3001/event/${eventData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        router.push(`/events/${eventData.id}`);
+      } else {
+        setStatus(response.status);
+        console.error("Error al actualizar el evento:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!eventData) {
     return <p className="text-center text-gray-600">Cargando datos del evento...</p>;
   }
+  
 
-   // Desestructurar los datos del evento
-   const { name, description, imageUrl, dateTime, price, capacity, category, location, creatorId } = eventData;
+  const {
+    id,
+    name,
+    description,
+    imageUrl,
+    dateTime,
+    price,
+    capacity,
+    category,
+    location,
+    creatorId,
+  } = eventData;
 
-   // Formatear fecha y hora
-   const formattedDate = new Date(dateTime).toLocaleDateString("es-AR", {
-     day: "2-digit",
-     month: "short",
-     year: "numeric",
-   });
- 
-   const formattedTime = new Date(dateTime).toLocaleTimeString("es-AR", {
-     hour: "2-digit",
-     minute: "2-digit",
-   });
- 
-   // Formatear precio
-   const formattedPrice = new Intl.NumberFormat("es-AR", {
-     style: "currency",
-     currency: "ARS",
-   }).format(price);
- 
-   const isSoldOut = capacity === 0;
-   const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
-   const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
+  const formattedDate = new Date(dateTime).toLocaleDateString("es-AR", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
+  const formattedTime = new Date(dateTime).toLocaleTimeString("es-AR", {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+
+  const formattedPrice = new Intl.NumberFormat("es-AR", {
+    style: "currency",
+    currency: "ARS",
+  }).format(price);
+
+  const isSoldOut = capacity === 0;
+  const capacityTextColor = isSoldOut ? "text-red-500" : "text-blue-600";
+  const capacityText = isSoldOut ? "Sold Out" : `${capacity} tickets left`;
 
   return (
     <main>
@@ -169,18 +224,33 @@ const PreviewEvent: React.FC = () => {
           </div>
           <div className="flex items-center space-x-4">
             <button
-            onClick={handleBackToCreate}
-            className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2">
+              onClick={handleBackToCreate}
+              className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+            >
               <TfiBackLeft className="h-5 w-5" />
               <span>Back to the future</span>
             </button>
-            <button
-            onClick={handleCreateEvent}
-            className="bg-green-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
-            disabled={isLoading}>
-              <MdOutlineEventAvailable  className="h-5 w-5 mr-1" />
-              {isLoading ? "Creando..." : "Crear Evento"}
-            </button>
+            <div className="flex items-center space-x-4">
+              {eventData?.id ? (
+                <button
+                  onClick={handleUpdateEvent}
+                  className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                  disabled={isLoading}
+                >
+                  <MdOutlineEventAvailable className="h-5 w-5 mr-1" />
+                  {isLoading ? "Actualizando..." : "Actualizar Evento"}
+                </button>
+              ) : (
+                <button
+                  onClick={handleCreateEvent}
+                  className="bg-green-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                  disabled={isLoading}
+                >
+                  <MdOutlineEventAvailable className="h-5 w-5 mr-1" />
+                  {isLoading ? "Creando..." : "Crear Evento"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="space-y-2">
