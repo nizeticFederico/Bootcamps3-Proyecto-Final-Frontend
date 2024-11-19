@@ -6,13 +6,13 @@ import Message from "@/components/UI/Message";
 import Image from "next/image"
 import { formLogin } from "@/actions/authActions";  
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
 
 export default function LogIn(){
 
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
-    const [status , setStatus] = useState<number | null >(null)
 
     const router = useRouter();
 
@@ -27,21 +27,18 @@ export default function LogIn(){
                 const result = await formLogin(formData);
     
                 if (result.success) {
-                    setLoading(false)
-                    setError(null)
-                    setStatus(200)
+                    setLoading(false);
+                    setError(null);
+                    toast.success('Login succefull')
                     setTimeout(()=>{
-                        setStatus(null)
                         router.push("/")
                     }, 1500)
                     
                     
                 }else{
                     setError(result.error);
+                    toast.error(error);
                     setLoading(false)
-                    setTimeout(()=>{
-                        setStatus(null)
-                    }, 3000)
                 }
             } catch (error) {
                 console.error("Login error:", error);
@@ -119,8 +116,6 @@ export default function LogIn(){
                 <p className="text-sm my-4">Do you not have an account? 
                     <a href="/register" className="text-gray-500"> Register</a>
                 </p>
-                <Message status={status}/>
-                {error && <div style={{ color: "red" }}>{error}</div>}
             </form>
             </div>
             
