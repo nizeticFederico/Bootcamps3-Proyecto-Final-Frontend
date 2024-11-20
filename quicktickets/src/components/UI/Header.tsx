@@ -110,7 +110,7 @@ const NavBar = () => {
           </Link>
           <div className="flex gap-6 items-center justify-center relative">
             <div className="flex flex-col items-center justify-center text-sm">
-              <Link href="/" className="flex flex-col text-white hover:text-yellow-400 items-center">
+              <Link href="/tickets" className="flex flex-col text-white hover:text-yellow-400 items-center">
                 <IoTicketOutline className="text-white text-2xl" />
                 Tickets
               </Link>

@@ -5,7 +5,7 @@ import { useSession  } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
-interface Event {
+export interface Event {
   _id: string;
   name: string;
   description: string;
