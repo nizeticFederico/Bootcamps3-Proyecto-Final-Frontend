@@ -1,20 +1,17 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import { useSession } from "next-auth/react"; // Para manejar la sesión
-import { useRouter } from "next/navigation"; // Redirigir al usuario
+import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter, useSearchParams } from "next/navigation"; // Para manejar query params
 import Image from "next/image";
-import {
-  FaMapMarkerAlt,
-  FaCalendarAlt,
-  FaRegClock,
-  FaTicketAlt,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaCalendarAlt, FaRegClock, FaTicketAlt } from "react-icons/fa";
 import { TiGroup } from "react-icons/ti";
 import { TfiBackLeft } from "react-icons/tfi";
+import GoogleMapComponent from "./GoogleMaps";
 import { MdOutlineEventAvailable } from "react-icons/md";
 
 interface EventData {
+  id?: string;
   name: string;
   description: string;
   imageUrl: string;
@@ -29,91 +26,105 @@ interface EventData {
 }
 
 const PreviewEvent: React.FC = () => {
+  const [marker, setMarker] = useState({ lat: 0, lng: 0 });
   const router = useRouter();
-  const { data: session } = useSession(); // Obtener los datos de la sesión
+  const searchParams = useSearchParams(); // Para leer query params
+  const { data: session } = useSession();
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
-  const mapRef = useRef<HTMLDivElement>(null);
 
-  // Recuperar datos de localStorage
+  // Cargar datos del evento desde Local Storage o query params
   useEffect(() => {
-    const storedData = localStorage.getItem("previewEventData");
-    if (storedData) {
-      console.log(storedData);
-      setEventData(JSON.parse(storedData));
-    } else {
-      router.push("/events/create-event"); // Redirigir si no hay datos
-    }
-  }, [router]);
-
-  // Renderizar mapa de Google
-  useEffect(() => {
-    if (eventData) {
-      const googleApiKey = process.env.NEXT_PUBLIC_API_DE_GOOGLE;
-      const scriptId = "google-maps-script";
-
-      if (!document.querySelector(`#${scriptId}`)) {
-        const script = document.createElement("script");
-        script.id = scriptId;
-        script.src = `https://maps.googleapis.com/maps/api/js?key=${googleApiKey}`;
-        script.async = true;
-        script.onload = () => {
-          if (mapRef.current) {
-            const map = new google.maps.Map(mapRef.current, {
-              center: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-              zoom: 15,
-            });
-            new google.maps.Marker({
-              position: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-              map,
-            });
-          }
-        };
-        document.head.appendChild(script);
-      } else {
-        if (mapRef.current && window.google) {
-          const map = new google.maps.Map(mapRef.current, {
-            center: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-            zoom: 15,
-          });
-          new google.maps.Marker({
-            position: { lat: Number(eventData.latitude), lng: Number(eventData.longitude) },
-            map,
-          });
-        }
-      }
-    }
-  }, [eventData]);
-
-  // Función para crear el evento
-  const handleCreateEvent = async (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  
-    if (!session?.accessToken) {
-      console.log("Token de autorización:", session?.accessToken);
-      setIsLoading(false);
-      setStatus(401);
-      return;
-    }
-  
-    if (isLoading) return; // Evita múltiples solicitudes
-    setIsLoading(true);
-  
     try {
-      const response = await fetch(`http://localhost:3001/event`, {
+      // Obtener datos del evento desde localStorage
+      const storedEventData = JSON.parse(localStorage.getItem("eventData") || "{}");
+      console.log("Datos del evento desde localStorage:", storedEventData);
+
+      // Obtener ID del evento desde los query params
+      const eventId = searchParams.get("id");
+      console.log("Query param ID:", eventId);
+
+      // Verificar si hay datos válidos en localStorage
+      if (Object.keys(storedEventData).length > 0) {
+        // Asignar ID del evento desde query params si existe
+        if (eventId) {
+          storedEventData.id = eventId;
+          console.log("Evento cargado con ID:", storedEventData.id);
+        } else if (!storedEventData.id) {
+          console.warn("El evento no tiene un ID asociado.");
+        }
+
+        // Actualizar estado con datos del evento
+        setEventData(storedEventData);
+
+        // Manejo de coordenadas
+        const lat = parseFloat(storedEventData.latitude);
+        const lng = parseFloat(storedEventData.longitude);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setMarker({ lat, lng });
+        } else {
+          console.warn("Coordenadas no válidas:", storedEventData.latitude, storedEventData.longitude);
+        }
+      } else {
+        // No hay datos en localStorage, redirigir
+        console.warn("No se encontraron datos en localStorage. Redirigiendo...");
+        router.push("/events/create-event");
+      }
+    } catch (error) {
+      console.error("Error al cargar datos del localStorage:", error);
+      router.push("/events/create-event");
+    }
+  }, [searchParams, router]);
+
+  // Manejar redirección a CreateEvent
+  const handleBackToCreate = () => {
+    console.log("Redirigiendo a CreateEvent con datos:", eventData);
+    if (eventData) {
+      const queryParams = new URLSearchParams({
+        name: eventData.name,
+        description: eventData.description,
+        category: eventData.category,
+        imageUrl: eventData.imageUrl,
+        price: eventData.price.toString(),
+        capacity: eventData.capacity.toString(),
+        dateTime: eventData.dateTime,
+        location: eventData.location,
+        latitude: eventData.latitude.toString(),
+        longitude: eventData.longitude.toString(),
+      }).toString();
+      router.push(`/events/create-event?${queryParams}`);
+    }
+  };
+
+  // Crear evento (POST)
+  const handleCreateEvent = async () => {
+    if (!eventData) return;
+    console.log("Creando evento con datos:", eventData);
+
+    const newEventData = {
+      ...eventData,
+      latitude: marker.lat,
+      longitude: marker.lng,
+      creatorId: session?.user.id,
+    };
+
+    try {
+      setIsLoading(true);
+      const response = await fetch("http://localhost:3001/event", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           token: `${session?.accessToken}`,
         },
-        body: JSON.stringify(eventData),
+        body: JSON.stringify(newEventData),
       });
-  
+
       if (response.ok) {
-        console.log("Evento creado con éxito");
-        router.push(`/events`); // Redirige a la lista de eventos
+        console.log("Evento creado exitosamente");
+        router.push("/events");
       } else {
+        setStatus(response.status);
         console.error("Error al crear el evento:", response.statusText);
       }
     } catch (error) {
@@ -123,14 +134,63 @@ const PreviewEvent: React.FC = () => {
     }
   };
 
+  // Actualizar evento (PUT)
+  const handleUpdateEvent = async () => {
+    if (!eventData || !eventData.id) {
+      console.error("El evento no tiene un ID válido para actualizar");
+      return;
+    }
+
+    console.log("Actualizando evento con ID:", eventData.id);
+
+    const updatedData = {
+      ...eventData,
+      latitude: marker.lat,
+      longitude: marker.lng,
+    };
+
+    try {
+      setIsLoading(true);
+      const response = await fetch(`http://localhost:3001/event/${eventData.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
+        },
+        body: JSON.stringify(updatedData),
+      });
+
+      if (response.ok) {
+        router.push(`/events/${eventData.id}`);
+      } else {
+        setStatus(response.status);
+        console.error("Error al actualizar el evento:", response.statusText);
+      }
+    } catch (error) {
+      console.error("Error en la solicitud:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   if (!eventData) {
-    return <p className="text-center text-gray-600">Cargando...</p>;
+    return <p className="text-center text-gray-600">Cargando datos del evento...</p>;
   }
+  
 
-  // Desestructurar los datos del evento
-  const { name, description, imageUrl, dateTime, price, capacity, category, location, creatorId } = eventData;
+  const {
+    id,
+    name,
+    description,
+    imageUrl,
+    dateTime,
+    price,
+    capacity,
+    category,
+    location,
+    creatorId,
+  } = eventData;
 
-  // Formatear fecha y hora
   const formattedDate = new Date(dateTime).toLocaleDateString("es-AR", {
     day: "2-digit",
     month: "short",
@@ -142,16 +202,14 @@ const PreviewEvent: React.FC = () => {
     minute: "2-digit",
   });
 
-  // Formatear precio
   const formattedPrice = new Intl.NumberFormat("es-AR", {
     style: "currency",
     currency: "ARS",
   }).format(price);
 
   const isSoldOut = capacity === 0;
-  const capacityTextColor = isSoldOut ? 'text-red-500' : 'text-blue-600';
-  const capacityText = isSoldOut ? 'Sold Out' : `${capacity} tickets left`;
-/*   const userName = session?.user?.name; */
+  const capacityTextColor = isSoldOut ? "text-red-500" : "text-blue-600";
+  const capacityText = isSoldOut ? "Sold Out" : `${capacity} tickets left`;
 
   return (
     <main>
@@ -173,18 +231,33 @@ const PreviewEvent: React.FC = () => {
           </div>
           <div className="flex items-center space-x-4">
             <button
-            onClick={() => router.push("/events/create-event")}
-            className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2">
+              onClick={handleBackToCreate}
+              className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+            >
               <TfiBackLeft className="h-5 w-5" />
-              <span>Volver atrás</span>
+              <span>Back to the future</span>
             </button>
-            <button
-            onClick={handleCreateEvent}
-            className="bg-green-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
-            disabled={isLoading}>
-              <MdOutlineEventAvailable  className="h-5 w-5 mr-1" />
-              {isLoading ? "Creando..." : "Crear Evento"}
-            </button>
+            <div className="flex items-center space-x-4">
+              {eventData?.id ? (
+                <button
+                  onClick={handleUpdateEvent}
+                  className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                  disabled={isLoading}
+                >
+                  <MdOutlineEventAvailable className="h-5 w-5 mr-1" />
+                  {isLoading ? "Actualizando..." : "Actualizar Evento"}
+                </button>
+              ) : (
+                <button
+                  onClick={handleCreateEvent}
+                  className="bg-green-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                  disabled={isLoading}
+                >
+                  <MdOutlineEventAvailable className="h-5 w-5 mr-1" />
+                  {isLoading ? "Creando..." : "Crear Evento"}
+                </button>
+              )}
+            </div>
           </div>
         </div>
         <div className="space-y-2">
@@ -208,7 +281,8 @@ const PreviewEvent: React.FC = () => {
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
-              <p>{formattedPrice}</p>
+              {price === 0 ? "FREE" : `ARS ${formattedPrice}`}
+              {/* <p>{formattedPrice}</p> */}
             </div>
             <div className={`flex items-center gap-1 ${capacityTextColor}`}>
               <TiGroup className="mr-2" />
@@ -222,9 +296,13 @@ const PreviewEvent: React.FC = () => {
             <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
-          <div className="h-40 w-80 bg-gray-200 rounded-md overflow-hidden">
-            {/* Div que contendrá el mapa de Google */}
-            <div ref={mapRef} className="h-full w-full"></div>
+          {/* Mapa */}
+          <div className="mt-6 h-64 rounded-lg shadow-md overflow-hidden">
+            <GoogleMapComponent
+              apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY}
+              center={marker} // Coordenadas del marcador
+              markerPosition={marker} // Posición del marcador
+            />
           </div>
         </div>
         <div>
