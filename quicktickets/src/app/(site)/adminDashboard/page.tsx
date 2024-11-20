@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import EventCard from "@/components/UI/EventAdminCard";
+import UserCard from "@/components/UI/UserAdminCard";
 
 export default function AdminPage(){
     const [selectedSection, setSelectedSection] = useState<
@@ -11,7 +12,7 @@ export default function AdminPage(){
   const renderSection = () => {
     switch (selectedSection) {
       case "users":
-        return <p>users</p>;
+        return <UserCard/>;
       case "events":
         return <EventCard/>;
       default:

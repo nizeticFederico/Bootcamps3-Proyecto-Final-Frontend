@@ -5,79 +5,79 @@ import { useSession  } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
-interface Event {
+interface User {
   _id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  dateTime: Date;
-  price: number;
-  capacity: number;
-  availability: number;
-  category: string;
-  location: string;
-  latitude: number;
-  longitude: number;
-  creatorId: string;
+  first_name: string;
+  last_name: string;
+  email: string;
+  phone: number;
+  role: string;
   is_active: boolean;
 }
 
 
-export default function EventCard() {
-  const [events, setEvents] = useState<Event[]>([]);
+export default function UserCard() {
+  const [users, setUsers] = useState<User[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
-  const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editedEvent, setEditedEvent] = useState<Event | null>(null); 
+  const [editingUserId, setEditingUserId] = useState<string | null>(null);
+  const [editedUser, setEditedUser] = useState<User| null>(null); 
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado del modal
-  const [eventIdToDelete, setEventIdToDelete] = useState<string | null>(null);
+  const [userIdToDelete, setUserIdToDelete] = useState<string | null>(null);
   const {data:session , status}= useSession();
   
 
 
   useEffect(() => {
-    const fetchEvents = async () => {
+    const fetchUsers = async () => {
       try {
-        const response = await fetch('http://localhost:3001/event/all'); 
-        const data: Event[] = await response.json();
-        setEvents(data);
+        const response = await fetch(`http://localhost:3001/user/all-customers`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'token': `${session?.accessToken}`,
+            }
+        }); 
+
+        const data: User[] = await response.json();
+        setUsers(data);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
     };
 
-    fetchEvents();
-  }, []);
+    fetchUsers();
+  }, [status]);
 
-  const filteredEvents = searchTerm
-    ? events.filter(event =>
-        event.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = searchTerm
+    ? users.filter(user =>
+        user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
       )
-    : events;
+    : users;
 
 
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Event) => {
-    if (editedEvent) {
-      setEditedEvent({
-        ...editedEvent,
+  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof User) => {
+    if (editedUser) {
+      setEditedUser({
+        ...editedUser,
         [field]: e.target.value,
       });
     }
   };
 
 
-  const handleEditClick = (eventId: string) => {
-    const eventToEdit = events.find(event => event._id === eventId);
-    if (eventToEdit) {
-      setEditingEventId(eventId);
-      setEditedEvent({ ...eventToEdit });
+  const handleEditClick = (userId: string) => {
+    const userToEdit = users.find(user => user._id === userId);
+    if (userToEdit) {
+      setEditingUserId(userId);
+      setEditedUser({ ...userToEdit });
     }
   };
 
 
 
-  const deleteEvent = async (eventId: string) => {
+  const deleteEvent = async (userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
+      const response = await fetch(`http://localhost:3001/user/full-delete/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -86,8 +86,8 @@ export default function EventCard() {
       });
   
       if (response.ok) {
-        setEvents(events.filter(event => event._id !== eventId));
-        toast.success('Event deleted succesfully')
+        setUsers(users.filter(user => user._id !== userId));
+        toast.success('User deleted succesfully')
       } else {
           toast.error('Error');
       }
@@ -96,47 +96,58 @@ export default function EventCard() {
     }
   };
 
-  const handleDelete = async (eventId:string) => {
+  const handleDelete = async (userId:string) => {
 
-    setEventIdToDelete(eventId);
+    setUserIdToDelete(userId);
     setIsModalOpen(true);
 
   };
 
   const handleDeleteConfirm = async () => {
-    if (eventIdToDelete) {
-      await deleteEvent(eventIdToDelete); // Call deleteEvent with the event ID
-      setIsModalOpen(false); // Close the modal
+    if (userIdToDelete) {
+      await deleteEvent(userIdToDelete); 
+      setIsModalOpen(false); 
     }
   };
 
   const handleDeleteCancel = () => {
     setIsModalOpen(false);
-    setEventIdToDelete(null); 
+    setUserIdToDelete(null); 
   };
 
-  const handleSaveClick = async (eventId: string) => {
-    if (!editedEvent) return;
+  const handleSaveClick = async (userId:string) => {
+    if (!editedUser) return;
+    console.log(session?.accessToken);
+
+    const userToUpdate = {
+        first_name: editedUser.first_name,
+        last_name: editedUser.last_name,
+        email: editedUser.email,
+        password: "admin123",
+      };
 
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
+      const response = await fetch(`http://localhost:3001/user/update`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
           'token':`${session?.accessToken}`
         },
-        body: JSON.stringify(editedEvent),
+        body: JSON.stringify(userToUpdate),
       });
 
       if (response.ok) {
-        const { event: updatedEvent } = await response.json();
-        setEvents(events.map(event =>
-          event._id === eventId ? updatedEvent : event
+
+        console.log(response)
+        const updatedUser = await response.json();
+        setUsers(users.map(user =>
+          user._id === userId ? updatedUser : user
         ));
-        setEditingEventId(null);
-        setEditedEvent(null); 
+        setEditingUserId(null);
+        setEditedUser(null); 
         toast.success('Event succesfully updated ');
       } else {
+        console.log(response)
         toast.error('Error due to save changes')
       }
     } catch (error) {
@@ -145,38 +156,38 @@ export default function EventCard() {
   };
 
   const handleCancelClick = () => {
-    setEditingEventId(null);
-    setEditedEvent(null);
+    setEditingUserId(null);
+    setEditedUser(null);
   };
 
   const handleToggleStatus = async () => {
-    if (!editedEvent) return;
+    if (!editedUser) return;
 
     // Invertir el estado de 'is_active'
-    const updatedStatus = !editedEvent.is_active;
-    setEditedEvent(prevState => ({
+    const updatedStatus = !editedUser.is_active;
+    setEditedUser(prevState => ({
       ...prevState!,
       is_active: updatedStatus,
     }));
 
     try {
       // Enviar solicitud PATCH al backend para actualizar el estado
-      const response = await fetch(`http://localhost:3001/event/toggle-status`, {
+      const response = await fetch(`http://localhost:3001/user/toggle-status/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'token': `${session?.accessToken}`,
         },
         body: JSON.stringify({
-          eventId: editedEvent._id,
+          userId: editedUser._id,
         }),
       });
 
       if (response.ok) {
-        toast.success(`Event status ${updatedStatus ? 'activated' : 'deactivated'}`);
+        toast.success(`User status ${updatedStatus ? 'activated' : 'deactivated'}`);
       } else {
-        toast.error('Error updating event status');
-        setEditedEvent(prevState => ({
+        toast.error('Error updating user status');
+        setEditedUser(prevState => ({
           ...prevState!,
           is_active: !updatedStatus,
         }));
@@ -184,7 +195,7 @@ export default function EventCard() {
     } catch (error) {
       console.error('Error updating user status:', error);
       toast.error('Error updating user status');
-      setEditedEvent(prevState => ({
+      setEditedUser(prevState => ({
         ...prevState!,
         is_active: !updatedStatus,
       }));
@@ -193,91 +204,76 @@ export default function EventCard() {
 
   return (
     <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
-      <h3 className="text-4xl">Events</h3>
+      <h3 className="text-4xl">Users</h3>
       <input
         className="rounded border border-black w-[50%] p-2 focus:outline-none"
         type="text"
-        placeholder="Find events by name"
+        placeholder="Find users by name"
         value={searchTerm}
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
       <ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
-        {filteredEvents.length > 0 ? (
-          filteredEvents.map((event) => (
-            <li key={event._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
-              {editingEventId === event._id && editedEvent ? (
+        {filteredUsers.length > 0 ? (
+          filteredUsers.map((user) => (
+            <li key={user._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
+              {editingUserId === user._id && editedUser ? (
                 <div className="flex flex-col gap-2 w-full p-2">
                   <div className="flex items-center gap-2">
                     <label>Name:</label>
                     <input
                       type="text"
-                      value={editedEvent.name}
-                      onChange={(e) => handleEditChange(e, 'name')}
+                      value={editedUser.first_name}
+                      onChange={(e) => handleEditChange(e, 'first_name')}
                       className="border p-1 focus:outline-none rounded rounded-md p-2"
                     />
                   </div>
 
                   
                   <div className="flex items-center gap-2">
-                    <label>Description:</label>
+                    <label>Lastname:</label>
                     <input
                       type="text"
-                      value={editedEvent.description}
-                      onChange={(e) => handleEditChange(e, 'description')}
+                      value={editedUser.last_name}
+                      onChange={(e) => handleEditChange(e, 'last_name')}
                       className="border p-1 mb-2 focus:outline-none rounded rounded-md"
                     />
                   </div>
 
                   
                   <div className="flex items-center gap-2">
-                    <label>Date & Time:</label>
+                    <label>Email:</label>
                     <input
-                      type="datetime-local"
-                      value={editedEvent.dateTime.toString().slice(0, 16)}
-                      onChange={(e) => handleEditChange(e, 'dateTime')}
+                      type="email"
+                      value={editedUser.email}
+                      onChange={(e) => handleEditChange(e, 'email')}
                       className="border p-1 mb-2 focus:outline-none  rounded rounded-md"
                     />
                   </div>
 
                 
                   <div className="flex items-center gap-2">
-                    <label>Price:</label>
+                    <label>Phone: <p className="inline-block">{editedUser.phone}</p></label>
+                    
+                  </div>
+
+                  
+                  <div className="flex items-center gap-2">
+                    <label>Role:</label>
                     <input
-                      type="number"
-                      value={editedEvent.price}
-                      onChange={(e) => handleEditChange(e, 'price')}
+                      type="text"
+                      value={editedUser.role}
+                      onChange={(e) => handleEditChange(e, 'role')}
                       className="border p-1 mb-2 focus:outline-none rounded rounded-md"
                     />
                   </div>
 
                   
                   <div className="flex items-center gap-2">
-                    <label>Capacity:</label>
-                    <input
-                      type="number"
-                      value={editedEvent.capacity}
-                      onChange={(e) => handleEditChange(e, 'capacity')}
-                      className="border p-1 mb-2 focus:outline-none rounded rounded-md"
-                    />
-                  </div>
-
-                  
-                  <div className="flex items-center gap-2">
-                    <label>Availability:</label>
-                    <input
-                      type="number"
-                      value={editedEvent.availability}
-                      onChange={(e) => handleEditChange(e, 'availability')}
-                      className="border p-1 mb-2 focus:outline-none  rounded rounded-md"
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-2">
-                    {editedEvent.is_active ? 
-                    ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(editedEvent.is_active)}</p></label>) 
+                    {editedUser.is_active ? 
+                    ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(editedUser.is_active)}</p></label>) 
                     : 
-                    (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(editedEvent.is_active)}</p></label>)}
+                    (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(editedUser.is_active)}</p></label>)}
                     
                     <button className="p-1 rounded rounded-md bg-gray-500 text-white ml-2"
                             onClick={handleToggleStatus}>Toggle Status</button>
@@ -286,7 +282,7 @@ export default function EventCard() {
 
                   
                   <button
-                    onClick={() => handleSaveClick(event._id)}
+                    onClick={() => handleSaveClick(user._id)}
                     className="bg-green-500 text-white p-2 rounded rounded-md"
                   >
                     Save
@@ -301,16 +297,16 @@ export default function EventCard() {
               ) : (
                 <div className="flex gap-2 p-2 items-center justify-between w-full">
                  
-                  <span>{event.name}</span>
+                  <span>{`${user.first_name}  ${user.last_name}`}</span>
                   <div>
                   <button
-                    onClick={() => handleEditClick(event._id)}
+                    onClick={() => handleEditClick(user._id)}
                     className=" bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
                   >
                     Edit
                   </button>
                   <button
-                    onClick={() => handleDelete(event._id)}
+                    onClick={() => handleDelete(user._id)}
                     className="ml-2 bg-red-500 text-white p-1 rounded rounded-md min-w-16"
                   >
                     Delete
@@ -322,7 +318,7 @@ export default function EventCard() {
             </li>
           ))
         ) : (
-          <p>No se encontraron eventos</p>
+          <p>No Users found</p>
         )}
       </ul>
       <Modal
