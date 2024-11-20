@@ -36,39 +36,46 @@ const PreviewEvent: React.FC = () => {
 
   // Cargar datos del evento desde Local Storage o query params
   useEffect(() => {
-    console.log("Cargando datos del evento...");
-    const storedData = localStorage.getItem("previewEventData");
+    try {
+      // Obtener datos del evento desde localStorage
+      const storedEventData = JSON.parse(localStorage.getItem("eventData") || "{}");
+      console.log("Datos del evento desde localStorage:", storedEventData);
 
-    // Intentar obtener ID desde query params
-    const eventId = searchParams.get("id");
-    console.log("Query param ID:", eventId);
+      // Obtener ID del evento desde los query params
+      const eventId = searchParams.get("id");
+      console.log("Query param ID:", eventId);
 
-    if (storedData) {
-      const event = JSON.parse(storedData);
-      console.log("Datos del evento desde localStorage:", event);
+      // Verificar si hay datos válidos en localStorage
+      if (Object.keys(storedEventData).length > 0) {
+        // Asignar ID del evento desde query params si existe
+        if (eventId) {
+          storedEventData.id = eventId;
+          console.log("Evento cargado con ID:", storedEventData.id);
+        } else if (!storedEventData.id) {
+          console.warn("El evento no tiene un ID asociado.");
+        }
 
-      // Si hay un ID en los query params, actualízalo en el objeto de evento
-      if (eventId) {
-        event.id = eventId;
-        console.log("Evento cargado con ID:", event.id || eventId);
+        // Actualizar estado con datos del evento
+        setEventData(storedEventData);
+
+        // Manejo de coordenadas
+        const lat = parseFloat(storedEventData.latitude);
+        const lng = parseFloat(storedEventData.longitude);
+        if (!isNaN(lat) && !isNaN(lng)) {
+          setMarker({ lat, lng });
+        } else {
+          console.warn("Coordenadas no válidas:", storedEventData.latitude, storedEventData.longitude);
+        }
       } else {
-        console.error("No se encontró un ID válido para el evento.");
+        // No hay datos en localStorage, redirigir
+        console.warn("No se encontraron datos en localStorage. Redirigiendo...");
+        router.push("/events/create-event");
       }
-
-      setEventData(event);
-
-      const lat = parseFloat(event.latitude);
-      const lng = parseFloat(event.longitude);
-      if (!isNaN(lat) && !isNaN(lng)) {
-        setMarker({ lat, lng });
-      } else {
-        console.error("Coordenadas no válidas:", event.latitude, event.longitude);
-      }
-    } else {
-      console.warn("No se encontró información en localStorage. Redirigiendo...");
+    } catch (error) {
+      console.error("Error al cargar datos del localStorage:", error);
       router.push("/events/create-event");
     }
-  }, [router, searchParams]);
+  }, [searchParams, router]);
 
   // Manejar redirección a CreateEvent
   const handleBackToCreate = () => {

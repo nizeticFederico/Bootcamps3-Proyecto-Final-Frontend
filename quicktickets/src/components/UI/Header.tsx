@@ -135,6 +135,15 @@ const NavBar = () => {
                 >
                   Account setting
                 </Link>
+                <Link
+                 href="/my-events"
+                 onClick={() => setIsOpen(false)}
+                 >
+                  <button
+                  className="block font-bold p-2 text-orange-500 hover:bg-gray-200 rounded">
+                    My Events
+                  </button>
+                </Link>
                 {isAdmin && (<Link
                   href="/adminDashboard"
                   onClick={() => setIsOpen(false)}

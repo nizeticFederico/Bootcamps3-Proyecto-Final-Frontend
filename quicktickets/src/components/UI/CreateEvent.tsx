@@ -99,7 +99,7 @@ export default function EventCreate() {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
     const { name, value } = event.target;
-    
+  
     setValues((prevValues) => {
       const newValues = { ...prevValues, [name]: value };
   
@@ -111,76 +111,77 @@ export default function EventCreate() {
       return newValues;
     });
   };
-
-   // Submit form
-   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  
+  // Submit form
+  const handleSaveAndContinue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-
+  
     if (!file) {
       alert("Please select an image for the event.");
       return;
     }
-
+  
     if (!values.name || !values.category || !values.date || !values.time) {
       alert("Please complete all required fields.");
       return;
     }
-
+  
     setLoading(true);
-
+  
     try {
+      // Subir imagen al servidor
       const formData = new FormData();
       formData.append("image", file);
-
+  
       const response = await fetch("http://localhost:3001/image/upload", {
         method: "POST",
         body: formData,
       });
-
+  
       if (!response.ok) {
         throw new Error("Image upload failed.");
       }
-
+  
       const dataImage = await response.json();
       const uploadedImageUrl = dataImage.url.secure_url;
-
+  
       console.log(uploadedImageUrl);
-
-   // Preparar datos del evento
-   const eventData = {
-    id: values.id || null, // Incluye el ID si existe; null si no
-    name: values.name.toLowerCase(),
-    description: values.description,
-    imageUrl: uploadedImageUrl,
-    dateTime,
-    price: values.price,
-    capacity: values.capacity,
-    category: values.category,
-    location: values.location,
-    latitude: values.latitude,
-    longitude: values.longitude,
-    creatorId: session?.user?.id,
-  };
-
-  console.log("Datos del evento guardados en localStorage:", eventData);
-   
-
-  // Guardar datos en localStorage
-  localStorage.setItem("previewEventData", JSON.stringify(eventData));
-
-  // Redirigir a PreviewEvent con el ID si está disponible
-  const redirectUrl = eventData.id
-    ? `/events/previewEvent?_id=${eventData.id}`
-    : "/events/previewEvent";
-
-  console.log("Redirigiendo a:", redirectUrl);
-  router.push(redirectUrl);
-} catch (error) {
-  console.error("Error creating or editing event:", error);
-  alert("An error occurred while processing the event. Please try again.");
-} finally {
-  setLoading(false);
-}
+  
+      // Preparar datos del evento
+      const dateTime = `${values.date}T${values.time}`; // Asegurar formato ISO
+      const eventData = {
+        id: values.id || null, // Incluye el ID si existe; null si no
+        name: values.name.toLowerCase(),
+        description: values.description,
+        imageUrl: uploadedImageUrl,
+        dateTime,
+        price: parseFloat(values.price) || 0,
+        capacity: parseInt(values.capacity) || 0,
+        category: values.category,
+        location: values.location,
+        latitude: parseFloat(values.latitude) || null,
+        longitude: parseFloat(values.longitude) || null,
+        creatorId: session?.user?.id,
+      };
+  
+      localStorage.setItem("eventData", JSON.stringify(eventData));
+      console.log("Datos del evento guardados en localStorage:", eventData);
+  
+      // Redirigir a PreviewEvent con el ID si está disponible
+      const redirectUrl = eventData.id
+        ? `/events/previewEvent?_id=${eventData.id}`
+        : "/events/previewEvent";
+  
+      console.log("Redirigiendo a:", redirectUrl);
+      router.push(redirectUrl);
+    } catch (error) {
+      console.error("Error creating or editing event:", error);
+  
+      // Puedes agregar más lógica para mostrar el mensaje de error exacto
+      alert("An error occurred while processing the event. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
    // Geocoding based on country and city
@@ -228,7 +229,7 @@ export default function EventCreate() {
 
   return (
     <form
-      onSubmit={handleSubmit}
+      onSubmit={handleSaveAndContinue}
       className="max-w-7xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md"
     >
       <div className="flex flex-col gap-4 p-4">
