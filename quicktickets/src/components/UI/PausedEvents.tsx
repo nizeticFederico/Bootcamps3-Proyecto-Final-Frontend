@@ -5,7 +5,7 @@ import { useSession  } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
-export interface Event {
+interface Event {
   _id: string;
   name: string;
   description: string;
@@ -23,7 +23,7 @@ export interface Event {
 }
 
 
-export default function EventCard() {
+export default function PausedEventCard() {
   const [events, setEvents] = useState<Event[]>([]);
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
@@ -37,7 +37,13 @@ export default function EventCard() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:3001/event/all'); 
+        const response = await fetch(`http://localhost:3001/event/all-paused-events`, {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+              'token': `${session?.accessToken}`,
+            }
+        }); 
         const data: Event[] = await response.json();
         setEvents(data);
       } catch (error) {

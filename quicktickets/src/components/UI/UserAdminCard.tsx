@@ -28,25 +28,29 @@ export default function UserCard() {
 
 
   useEffect(() => {
-    const fetchUsers = async () => {
-      try {
-        const response = await fetch(`http://localhost:3001/user/all-customers`, {
+    if (status === "authenticated") {
+      const fetchUsers = async () => {
+        try {
+          const response = await fetch(`http://localhost:3001/user/all-customers`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               'token': `${session?.accessToken}`,
             }
-        }); 
+          });
 
-        const data: User[] = await response.json();
-        setUsers(data);
-      } catch (error) {
-        console.error('Error fetching events:', error);
-      }
-    };
+          const data: User[] = await response.json();
+          setUsers(data);
+        } catch (error) {
+          console.error('Error fetching users:', error);
+        }
+      };
 
-    fetchUsers();
-  }, [status]);
+      fetchUsers();
+    } else if (status === "unauthenticated") {
+      toast.error("You must be logged in to view users");
+    }
+  }, [session, status]);
 
   const filteredUsers = searchTerm
     ? users.filter(user =>
@@ -123,7 +127,7 @@ export default function UserCard() {
         first_name: editedUser.first_name,
         last_name: editedUser.last_name,
         email: editedUser.email,
-        password: "admin123",
+        role: editedUser.role
       };
 
     try {
@@ -163,7 +167,6 @@ export default function UserCard() {
   const handleToggleStatus = async () => {
     if (!editedUser) return;
 
-    // Invertir el estado de 'is_active'
     const updatedStatus = !editedUser.is_active;
     setEditedUser(prevState => ({
       ...prevState!,
@@ -171,7 +174,7 @@ export default function UserCard() {
     }));
 
     try {
-      // Enviar solicitud PATCH al backend para actualizar el estado
+
       const response = await fetch(`http://localhost:3001/user/toggle-status/`, {
         method: 'PATCH',
         headers: {

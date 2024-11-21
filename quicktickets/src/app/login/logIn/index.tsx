@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation";
-import Message from "@/components/UI/Message";
 import Image from "next/image"
 import { formLogin } from "@/actions/authActions";  
 import { FaEye, FaEyeSlash } from "react-icons/fa";
@@ -37,7 +36,7 @@ export default function LogIn(){
                     
                 }else{
                     setError(result.error);
-                    toast.error(error);
+                    toast.error('error');
                     setLoading(false)
                 }
             } catch (error) {

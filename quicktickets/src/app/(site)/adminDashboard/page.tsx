@@ -3,18 +3,24 @@
 import { useState, useEffect } from "react";
 import EventCard from "@/components/UI/EventAdminCard";
 import UserCard from "@/components/UI/UserAdminCard";
+import PausedEventCard from "@/components/UI/PausedEvents";
+import CategoryCard from "@/components/UI/CategoryAdminCard";
 
 export default function AdminPage(){
     const [selectedSection, setSelectedSection] = useState<
-    "users" | "events"
-  >("users");
+    "Users" | "Events" | "Paused Events" | "Categories"
+  >("Users");
 
   const renderSection = () => {
     switch (selectedSection) {
-      case "users":
+      case "Users":
         return <UserCard/>;
-      case "events":
+      case "Events":
         return <EventCard/>;
+      case "Paused Events":
+        return <PausedEventCard/>
+      case "Categories":
+        return <CategoryCard/>
       default:
         return <p>default</p>;
     }
@@ -29,11 +35,11 @@ export default function AdminPage(){
               <li className="mb-4">
                 <button
                   className={`w-full text-left p-3 pl-6  ${
-                    selectedSection === "users"
+                    selectedSection === "Users"
                       ? "bg-white font-bold"
                       : "text-gray-700"
                   }`}
-                  onClick={() => setSelectedSection("users")}
+                  onClick={() => setSelectedSection("Users")}
                 >
                   Users
                 </button>
@@ -41,16 +47,42 @@ export default function AdminPage(){
               <li className="mb-4">
                 <button
                   className={`w-full text-left p-3 pl-6  ${
-                    selectedSection === "events"
+                    selectedSection === "Events"
                       ? "bg-white font-bold"
                       : "text-gray-700"
                   }`}
-                  onClick={() => setSelectedSection("events")}
+                  onClick={() => setSelectedSection("Events")}
                 >
                   Events
                 </button>
               </li>
+              <li className="mb-4">
+                <button
+                  className={`w-full text-left p-3 pl-6  ${
+                    selectedSection === "Paused Events"
+                      ? "bg-white font-bold"
+                      : "text-gray-700"
+                  }`}
+                  onClick={() => setSelectedSection("Paused Events")}
+                >
+                  Paused Events
+                </button>
+              </li>
+              <li className="mb-4">
+                <button
+                  className={`w-full text-left p-3 pl-6  ${
+                    selectedSection === "Categories"
+                      ? "bg-white font-bold"
+                      : "text-gray-700"
+                  }`}
+                  onClick={() => setSelectedSection("Categories")}
+                >
+                  Categories
+                </button>
+              </li>
             </ul>
+            
+              
           </div>
           <div className="flex-1 p-8 bg-white shadow-md">{renderSection()}</div>
         </div>
