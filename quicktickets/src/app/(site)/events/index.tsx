@@ -34,7 +34,7 @@ export default function EventsPage() {
     location: "",
     price: "",
     date: "",
-    categoryImageUrl: "",
+    categoryImageUrl: "", 
   });
 
   const searchParams = useSearchParams();

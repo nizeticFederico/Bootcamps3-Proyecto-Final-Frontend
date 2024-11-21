@@ -17,7 +17,7 @@ interface Event {
   latitude: number;
   longitude: number;
   creatorId: string;
-}
+} 
 
 interface FilterCriteria {
   category?: string | null;
