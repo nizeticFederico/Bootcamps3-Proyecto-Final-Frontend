@@ -94,7 +94,7 @@ export default function TicketCard() {
     return <div>{error}</div>;
   }
 
-  const downloadPdf = async (ticketId:string) => {
+  const downloadPdf = async (ticketId:string, eventName:string | undefined) => {
     try {
       const response = await fetch(`http://localhost:3001/ticket/download?ticketId=${ticketId}`, {
         method: "GET",
@@ -113,7 +113,7 @@ export default function TicketCard() {
       
       const link = document.createElement("a");
       link.href = url;
-      link.download = "my-ticket.pdf";  
+      link.download = `${eventName}`;  
       link.click();
 
       window.URL.revokeObjectURL(url);
@@ -131,7 +131,7 @@ export default function TicketCard() {
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
       {ticketsWithEvents.length > 0 ? (
         ticketsWithEvents.map((ticket, index) => (
-          <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col w-full ">
+          <div key={index} className="bg-white shadow-lg rounded-lg overflow-hidden flex flex-col w-full transform transition-all cursor-pointer duration-350 hover:scale-105 ">
             
             <div
               className="w-full h-48 bg-cover bg-center"
@@ -144,14 +144,12 @@ export default function TicketCard() {
               <h3 className="text-xl font-semibold ">{ticket.event?.name}</h3>
 
               
-              <p className="text-sm text-gray-500 ">
+              <p className="text-sm text-red-500 font-bold text-lg">
                 {ticket?.event?.dateTime
                   ? new Date(ticket.event.dateTime).toLocaleDateString()
                   : 'Fecha no disponible'}
               </p>
 
-              
-              <p className="">Comprador: {session?.user?.email}</p>
               <p className="text-gray-600">
                 Fecha de compra: {new Date(ticket.purchaseDateTime).toLocaleString()}
               </p>
@@ -161,9 +159,9 @@ export default function TicketCard() {
                 <img src={ticket.qrCode} alt="QR Code" className="w-24 h-24" />
               </div>
 
-              <div className="flex items-center gap-2">
-                <button onClick= {() => downloadPdf(ticket._id)} className="rounded rounded-md p-3 bg-red-500 text-sm text-white">Download PDF</button>
-                <button className="rounded rounded-md p-3 bg-blue-500 text-sm text-white">Re-send email</button>
+              <div className="flex items-center justify-center">
+                <button onClick= {() => downloadPdf(ticket._id, ticket.event?.name)} className="rounded rounded-md p-3 bg-red-500 text-sm text-white">Download PDF</button>
+
               </div>
             </div>
           </div>

@@ -38,7 +38,7 @@ export default function TicketsPage(){
               </li>
             </ul>
           </div>
-          <div className="flex-1 p-8 bg-white shadow-md">{renderSection()}</div>
+          <div className="flex-1 p-8 bg-gray-100 shadow-md">{renderSection()}</div>
         </div>
       );
 }
