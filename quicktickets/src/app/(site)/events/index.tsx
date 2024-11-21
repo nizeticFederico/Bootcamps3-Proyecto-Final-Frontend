@@ -26,6 +26,9 @@ export default function EventsPage() {
   const [events, setEvents] = useState<Event[]>([]);
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const eventsPerPage = 8;
+
   const [filters, setFilters] = useState({
     category: "",
     location: "",
@@ -35,21 +38,17 @@ export default function EventsPage() {
   });
 
   const searchParams = useSearchParams();
-
-  // Hook para obtener ubicaciones únicas
   const locations = useFetchLocations("http://localhost:3001/event/all");
 
   const onSearch = (name: string, location: string) => {
     let filtered = events;
 
-    // Filtro por país (location)
     if (location) {
       filtered = filtered.filter(
         (event) => event.location.split(", ")[1] === location
       );
     }
 
-    // Filtro por nombre (name)
     if (name) {
       const lowercasedName = name.toLowerCase();
       filtered = filtered.filter((event) =>
@@ -57,14 +56,12 @@ export default function EventsPage() {
       );
     }
 
-    // Filtro por categoría
     if (filters.category) {
       filtered = filtered.filter(
         (event) => event.category === filters.category
       );
     }
 
-    // Filtro por precio
     if (filters.price) {
       if (filters.price === "Free") {
         filtered = filtered.filter((event) => event.price === 0);
@@ -73,7 +70,6 @@ export default function EventsPage() {
       }
     }
 
-    // Filtro por fecha
     if (filters.date) {
       const today = new Date();
       if (filters.date === "Today") {
@@ -88,31 +84,11 @@ export default function EventsPage() {
           (event) =>
             new Date(event.dateTime).toDateString() === tomorrow.toDateString()
         );
-      } else if (filters.date === "This Week") {
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay());
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6);
-
-        filtered = filtered.filter((event) => {
-          const eventDate = new Date(event.dateTime);
-          return eventDate >= startOfWeek && eventDate <= endOfWeek;
-        });
-      } else if (filters.date === "This Weekend") {
-        const startOfWeekend = new Date(today);
-        const endOfWeekend = new Date(today);
-
-        startOfWeekend.setDate(today.getDate() + (6 - today.getDay()));
-        endOfWeekend.setDate(today.getDate() + (7 - today.getDay()));
-
-        filtered = filtered.filter((event) => {
-          const eventDate = new Date(event.dateTime);
-          return eventDate >= startOfWeekend && eventDate <= endOfWeekend;
-        });
       }
     }
 
     setFilteredEvents(filtered);
+    setCurrentPage(1);
   };
 
   useEffect(() => {
@@ -159,6 +135,12 @@ export default function EventsPage() {
     }));
   };
 
+  const indexOfLastEvent = currentPage * eventsPerPage;
+  const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
+  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+
+  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
+
   return (
     <main className="flex flex-col items-center min-h-screen bg-white">
       <div
@@ -188,10 +170,29 @@ export default function EventsPage() {
           {loading ? (
             <p>Loading events...</p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
-              {filteredEvents.map((event) => (
-                <EventCard key={event._id} {...event} />
-              ))}
+            <div>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
+                {currentEvents.map((event) => (
+                  <EventCard key={event._id} {...event} />
+                ))}
+              </div>
+
+              {/* Paginación numérica */}
+              <div className="flex justify-center mt-6 space-x-2">
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    className={`px-3 py-1 rounded ${
+                      currentPage === index + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                    onClick={() => setCurrentPage(index + 1)}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+              </div>
             </div>
           )}
         </div>

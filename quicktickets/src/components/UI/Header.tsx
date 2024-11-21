@@ -110,7 +110,7 @@ const NavBar = () => {
           </Link>
           <div className="flex gap-6 items-center justify-center relative">
             <div className="flex flex-col items-center justify-center text-sm">
-              <Link href="/" className="flex flex-col text-white hover:text-yellow-400 items-center">
+              <Link href="/tickets" className="flex flex-col text-white hover:text-yellow-400 items-center">
                 <IoTicketOutline className="text-white text-2xl" />
                 Tickets
               </Link>
@@ -134,6 +134,15 @@ const NavBar = () => {
                   className="block p-2 text-black hover:bg-gray-200 rounded"
                 >
                   Account setting
+                </Link>
+                <Link
+                 href="/my-events"
+                 onClick={() => setIsOpen(false)}
+                 >
+                  <button
+                  className="block font-bold p-2 text-orange-500 hover:bg-gray-200 rounded">
+                    My Events
+                  </button>
                 </Link>
                 {isAdmin && (<Link
                   href="/adminDashboard"
