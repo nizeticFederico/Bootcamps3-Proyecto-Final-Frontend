@@ -1,7 +1,8 @@
 // HomeSections.tsx
+
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import CardSections from "./CardSection";
 
 interface Event {
@@ -29,16 +30,18 @@ interface FilterCriteria {
 interface HomeSectionsProps {
   title: string;
   filterCriteria: FilterCriteria;
-  sectionId: string; // Nuevo prop para el ID de la sección
+  sectionId: string;
 }
 
 export default function HomeSections({ title, filterCriteria, sectionId }: HomeSectionsProps) {
   const [filteredEvents, setFilteredEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [showAll, setShowAll] = useState(false);
 
-  const visibleEvents = showAll ? filteredEvents : filteredEvents.slice(0, 6);
+  
+  const [currentPage, setCurrentPage] = useState(1); 
+  const eventsPerPage = 6; 
 
+  
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
@@ -61,37 +64,29 @@ export default function HomeSections({ title, filterCriteria, sectionId }: HomeS
   }, [filterCriteria]);
 
   const applyFilters = (events: Event[], criteria: FilterCriteria) => {
-    const today = new Date();
-    const startOfDay = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-    const startOfWeek = new Date(startOfDay);
-    startOfWeek.setDate(startOfDay.getDate() - (startOfDay.getDay() || 7) + 1);
-    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
-
-    return events.filter(event => {
-      const eventDate = new Date(event.dateTime);
-      if (isNaN(eventDate.getTime())) return false;
-
+    return events.filter((event) => {
       const matchesCategory = criteria.category ? event.category === criteria.category : true;
       const matchesMinPrice = criteria.minPrice !== null ? event.price >= criteria.minPrice : true;
       const matchesMaxPrice = criteria.maxPrice !== null ? event.price <= criteria.maxPrice : true;
       const matchesLocation = criteria.location ? event.location.includes(criteria.location) : true;
-
-      let matchesDateRange = true;
-      switch (criteria.dateRange) {
-        case "today":
-          matchesDateRange = eventDate >= startOfDay && eventDate < new Date(startOfDay.getTime() + 24 * 60 * 60 * 1000);
-          break;
-        case "week":
-          matchesDateRange = eventDate >= startOfWeek && eventDate < new Date(startOfWeek.getTime() + 7 * 24 * 60 * 60 * 1000);
-          break;
-        case "month":
-          matchesDateRange = eventDate >= startOfMonth && eventDate < new Date(today.getFullYear(), today.getMonth() + 1, 1);
-          break;
-      }
-
-      return matchesCategory && matchesMinPrice && matchesMaxPrice && matchesLocation && matchesDateRange;
+      return matchesCategory && matchesMinPrice && matchesMaxPrice && matchesLocation;
     });
   };
+
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filteredEvents]);
+
+  
+  const visibleEvents = useMemo(() => {
+    const startIndex = (currentPage - 1) * eventsPerPage;
+    const endIndex = startIndex + eventsPerPage;
+    return filteredEvents.slice(startIndex, endIndex);
+  }, [filteredEvents, currentPage, eventsPerPage]);
+
+  
+  const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
 
   return (
     <div id={sectionId} className="flex flex-col items-center min-h-screen bg-white">
@@ -104,29 +99,30 @@ export default function HomeSections({ title, filterCriteria, sectionId }: HomeS
           {loading ? (
             <p>Loading section...</p>
           ) : (
-            <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {visibleEvents.map((event) => (
-                <CardSections key={event.name} {...event} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                {visibleEvents.map((event) => (
+                  <CardSections key={event.name} {...event} />
+                ))}
+              </div>
+              
+              <div className="flex justify-center mt-4">          
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`px-3 py-1 mx-1 rounded ${
+                      currentPage === index + 1
+                        ? "bg-blue-500 text-white"
+                        : "bg-gray-200 hover:bg-gray-300"
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}              
+              </div>
+            </>
           )}
-
-          <div className="flex justify-center mt-4">
-            <button
-              onClick={() => {
-                setShowAll(!showAll);
-                if (showAll) {
-                  window.scrollTo({
-                    top: document.getElementById(sectionId)?.offsetTop || 0,
-                    behavior: "smooth",
-                  });
-                }
-              }}
-              className="px-4 py-2 bg-white border border-blue-500 text-blue-500 rounded-md hover:bg-blue-100 transition"
-            >
-              {showAll ? "Ver menos" : "Ver más"}
-            </button>
-          </div>
         </div>
       </div>
     </div>
