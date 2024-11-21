@@ -1,6 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
+
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const Account = () => {
   // Estado para la sección seleccionada
   const [selectedSection, setSelectedSection] = useState<
@@ -69,147 +75,166 @@ const Account = () => {
     </div>
   );
 };
-{
-  /* AccountInfo Section */
-}
-const AccountInfo = () => (
-  <div className="p-6 max-w-4xl mx-auto">
-    <h2 className="text-3xl font-bold mb-4">Account Information</h2>
-    <hr />
+/* AccountInfo Section */
 
-    {/* Profile Photo Section */}
-    <h3 className="flex justify-center font-semibold text-1xl mb-4 mt-8">
-      Profile Photo
-    </h3>
-    <div className="flex items-center justify-center mb-6 mt-5">
-      <div className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center relative">
-        <span className="text-gray-500">Photo</span>
-        <button className="absolute bottom-0 right-0 bg-gray-300 rounded-full p-1">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 text-gray-500"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 4v16m8-8H4"
+const AccountInfo = () => {
+  const [profileImage, setProfileImage] = useState<string | null>(null);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => setProfileImage(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  };
+  return (
+    <div className="p-6 max-w-4xl mx-auto">
+      <h2 className="text-3xl font-bold mb-4">Account Information</h2>
+      <hr />
+
+      {/* Profile Photo Section */}
+      <h3 className="flex justify-center font-semibold text-1xl mb-4 mt-8">
+        Profile Photo
+      </h3>
+      <div className="flex items-center justify-center mb-6 mt-5">
+        <label className="w-24 h-24 rounded-full bg-gray-200 flex items-center justify-center relative overflow-hidden cursor-pointer">
+          {profileImage ? (
+            <Image
+              src={profileImage}
+              alt="Profile"
+              className="w-full h-full object-cover rounded-full"
+              width={40}
+              height={40}
             />
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    {/* Profile Information Section */}
-    <form>
-      <div className="mb-6">
-        <h3 className="flex justify-center font-semibold text-1xl mb-4">
-          Profile Information
-        </h3>
-
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            First Name:
-          </label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
-
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Last Name:
-          </label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
-
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">Website:</label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
-
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">Company:</label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
+          ) : (
+            <span className="text-gray-500 text-3xl font-bold flex items-center justify-center ">
+              +
+            </span>
+          )}
+          <input
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={handleImageChange}
+          />
+          <span className="absolute bottom-0 right-0 bg-gray-300 rounded-full p-1"></span>
+        </label>
       </div>
 
-      {/* Contact Details Section */}
-      <div className="mb-6">
-        <h3 className="flex justify-center font-semibold text-1xl mb-4">
-          Contact Details
-        </h3>
-        <span className="font-light flex text-center justify-center text-sm mb-4">
-          These details are private and only used to contact you for ticketing
-          or prizes.
-        </span>
+      <form>
+        {/* Profile Information Section */}
+        <div className="mb-6">
+          <h3 className="flex justify-center font-semibold text-1xl mb-4">
+            Profile Information
+          </h3>
 
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            Phone Number:
-          </label>
-          <input type="text" className="border p-2 w-3/4" />
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">
+              First Name:
+            </label>
+            <input
+              type="text"
+              className="border p-2 w-3/4 bg-gray-100"
+              // value={firstName}
+              readOnly
+            />
+          </div>
+
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">
+              Last Name:
+            </label>
+            <input
+              type="text"
+              className="border p-2 w-3/4 bg-gray-100"
+              // value={lastName}
+              readOnly
+            />
+          </div>
+
+          {/* <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">Website:</label>
+            <input type="text" className="border p-2 w-3/4" />
+          </div>
+
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">Company:</label>
+            <input type="text" className="border p-2 w-3/4" />
+          </div> */}
         </div>
 
-        <div className="flex items-center mb-4 justify-center">
+        {/* Contact Details Section */}
+        <div className="mb-6">
+          <h3 className="flex justify-center font-semibold text-1xl mb-4">
+            Contact Details
+          </h3>
+          <span className="font-light flex text-center justify-center text-sm mb-4">
+            These details are private and only used to contact you for ticketing
+            or prizes.
+          </span>
+
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">
+              Phone Number:
+            </label>
+            <input type="text" className="border p-2 w-3/4" />
+          </div>
+
+          {/* <div className="flex items-center mb-4 justify-center">
           <label className="w-32 text-gray-700 text-right pr-4">Address:</label>
           <input type="text" className="border p-2 w-3/4" />
-        </div>
+        </div> */}
 
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">
-            City/Town:
-          </label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">State:</label>
+            <input type="text" className="border p-2 w-3/4" />
+          </div>
 
-        <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">Country:</label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div>
+          <div className="flex items-center mb-4 justify-center">
+            <label className="w-32 text-gray-700 text-right pr-4">
+              Country:
+            </label>
+            <input type="text" className="border p-2 w-3/4" />
+          </div>
 
-        <div className="flex items-center mb-4 justify-center">
+          {/* <div className="flex items-center mb-4 justify-center">
           <label className="w-32 text-gray-700 text-right pr-4">Pincode:</label>
           <input type="text" className="border p-2 w-3/4" />
+        </div> */}
         </div>
-      </div>
 
-      {/* Save Button */}
-      <div className="flex justify-center mt-6">
-        <button className="bg-blue-950 text-white rounded py-2 px-4 mt-4">
-          Save My Profile
-        </button>
-      </div>
-    </form>
-  </div>
-);
+        {/* Save Button */}
+        <div className="flex justify-center mt-6">
+          <button className="bg-blue-950 text-white rounded py-2 px-4 mt-4">
+            Save My Profile
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+/* ChangeEmail Section */
 
 const ChangeEmail = () => {
-  // Definir el estado de los emails
   const [newEmail, setNewEmail] = useState("");
   const [confirmEmail, setConfirmEmail] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-  const { data: session, status } = useSession();
+  const { data: session } = useSession();
 
-  // Función para manejar el cambio de email
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Verificar que los emails coincidan
     if (newEmail !== confirmEmail) {
-      setError("Los emails no coinciden.");
+      toast.error("Los emails no coinciden.");
       return;
     }
 
-    // Preparar los datos
     const requestBody = {
       email: newEmail,
     };
 
     try {
-      // Realizar la solicitud fetch
       const response = await fetch("http://localhost:3001/user/update", {
         method: "PUT",
         headers: {
@@ -222,15 +247,17 @@ const ChangeEmail = () => {
       const data = await response.json();
 
       if (response.ok) {
-        setSuccess("Email cambiado con éxito");
-        setError(""); // Limpiar el error si el cambio es exitoso
+        toast.success("Email cambiado con éxito.", {
+          position: "bottom-center",
+        });
+        // Limpiar los campos después del éxito
+        setNewEmail("");
+        setConfirmEmail("");
       } else {
-        setError(data.message || "Error al cambiar el email");
-        setSuccess(""); // Limpiar el éxito si hay un error
+        toast.error(data.message || "Error al cambiar el email.");
       }
-    } catch (error) {
-      setError("Hubo un error al intentar cambiar el email.");
-      setSuccess(""); // Limpiar el éxito si hay un error
+    } catch {
+      toast.error("Hubo un error al intentar cambiar el email.");
     }
   };
 
@@ -239,19 +266,8 @@ const ChangeEmail = () => {
       <h2 className="text-2xl font-bold mb-4">Change Email</h2>
       <hr />
       <form onSubmit={handleSubmit}>
-        <div className="flex items-center mb-4 mt-8">
-          <label className="w-1/4 text-gray-700 text-right pr-4">
-            Current Email:
-          </label>
-          <input
-            type="email"
-            className="border p-2 w-3/4"
-            value="user@example.com" // Esto debe ser el email actual del usuario
-            disabled
-          />
-        </div>
-
-        <div className="flex items-center mb-4">
+        {/* Nuevo correo electrónico */}
+        <div className="flex items-center mb-4 mt-9">
           <label className="w-1/4 text-gray-700 text-right pr-4">
             New Email:
           </label>
@@ -263,6 +279,7 @@ const ChangeEmail = () => {
           />
         </div>
 
+        {/* Confirmar correo electrónico */}
         <div className="flex items-center mb-4">
           <label className="w-1/4 text-gray-700 text-right pr-4">
             Confirm Email:
@@ -275,9 +292,7 @@ const ChangeEmail = () => {
           />
         </div>
 
-        {error && <p className="text-red-500">{error}</p>}
-        {success && <p className="text-green-500">{success}</p>}
-
+        {/* Botón para guardar */}
         <div className="flex justify-center mt-6">
           <button
             type="submit"
@@ -287,37 +302,37 @@ const ChangeEmail = () => {
           </button>
         </div>
       </form>
+
+      <ToastContainer position="bottom-center" autoClose={3000} />
     </div>
   );
 };
 
-const ChangePassword = () => {
-  // Defino el estado de las contraseñas
-  const [currentPassword, setCurrentPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [repeatedNewPassword, setRepeatedNewPassword] = useState("");
-  const [error, setError] = useState("");
-  const { data: session, status } = useSession();
+/* ChangePassword Section */
 
-  // Función para manejar el cambio de contraseña
+const ChangePassword = () => {
+  const [currentPassword, setCurrentPassword] = useState("");
+  const [showCurrentPassword, setShowCurrentPassword] = useState(false);
+
+  const [newPassword, setNewPassword] = useState("");
+  const [showNewPassword, setShowNewPassword] = useState(false);
+
+  const [repeatedNewPassword, setRepeatedNewPassword] = useState("");
+  const [showRepeatedNewPassword, setShowRepeatedNewPassword] = useState(false);
+
+  const { data: session } = useSession();
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // Verifico que las contraseñas nuevas coincidan
     if (newPassword !== repeatedNewPassword) {
-      setError("Las contraseñas no coinciden.");
+      toast.error("Las contraseñas no coinciden.");
       return;
     }
 
-    // Preparo los datos
-    const requestBody = {
-      currentPassword,
-      newPassword,
-      repeatedNewPassword,
-    };
+    const requestBody = { currentPassword, newPassword, repeatedNewPassword };
 
     try {
-      // Realizo la solicitud fetch
       const response = await fetch(
         "http://localhost:3001/user/update-password",
         {
@@ -333,12 +348,16 @@ const ChangePassword = () => {
       const data = await response.json();
 
       if (response.ok) {
-        alert("Contraseña cambiada con éxito");
+        toast.success("Contraseña cambiada con éxito.");
+        // Limpia los campos después del éxito
+        setCurrentPassword("");
+        setNewPassword("");
+        setRepeatedNewPassword("");
       } else {
-        setError(data.message || "Error al cambiar la contraseña");
+        toast.error(data.message || "Error al cambiar la contraseña.");
       }
-    } catch (error) {
-      setError("Hubo un error al intentar cambiar la contraseña.");
+    } catch {
+      toast.error("Hubo un error al intentar cambiar la contraseña.");
     }
   };
 
@@ -347,40 +366,72 @@ const ChangePassword = () => {
       <h2 className="text-2xl font-bold mb-4">Change Password</h2>
       <hr />
       <form onSubmit={handleSubmit}>
+        {/* Current Password */}
         <div className="flex items-center mb-4 mt-8">
           <label className="w-1/3 text-gray-700 text-right pr-4">
             Current Password:
           </label>
-          <input
-            type="password"
-            className="border p-2 w-2/3"
-            value={currentPassword}
-            onChange={(e) => setCurrentPassword(e.target.value)}
-          />
+          <div className="relative w-2/3">
+            <input
+              type={showCurrentPassword ? "text" : "password"}
+              className="border p-2 w-full"
+              value={currentPassword}
+              onChange={(e) => setCurrentPassword(e.target.value)}
+            />
+            <span
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+              onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+            >
+              {showCurrentPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
         </div>
+
+        {/* New Password */}
         <div className="flex items-center mb-4">
           <label className="w-1/3 text-gray-700 text-right pr-4">
             New Password:
           </label>
-          <input
-            type="password"
-            className="border p-2 w-2/3"
-            value={newPassword}
-            onChange={(e) => setNewPassword(e.target.value)}
-          />
+          <div className="relative w-2/3">
+            <input
+              type={showNewPassword ? "text" : "password"}
+              className="border p-2 w-full"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+            />
+            <span
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+              onClick={() => setShowNewPassword(!showNewPassword)}
+            >
+              {showNewPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
         </div>
+
+        {/* Confirm New Password */}
         <div className="flex items-center mb-4">
           <label className="w-1/3 text-gray-700 text-right pr-4">
             Confirm New Password:
           </label>
-          <input
-            type="password"
-            className="border p-2 w-2/3"
-            value={repeatedNewPassword}
-            onChange={(e) => setRepeatedNewPassword(e.target.value)}
-          />
+          <div className="relative w-2/3">
+            <input
+              type={showRepeatedNewPassword ? "text" : "password"}
+              className="border p-2 w-full"
+              value={repeatedNewPassword}
+              onChange={(e) => setRepeatedNewPassword(e.target.value)}
+            />
+            <span
+              className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+              onClick={() =>
+                setShowRepeatedNewPassword(!showRepeatedNewPassword)
+              }
+            >
+              {showRepeatedNewPassword ? <FaEyeSlash /> : <FaEye />}
+            </span>
+          </div>
         </div>
-        {error && <p className="text-red-500">{error}</p>}
+
+        {/* Submit Button */}
         <div className="flex justify-center mt-6">
           <button
             type="submit"
@@ -390,6 +441,8 @@ const ChangePassword = () => {
           </button>
         </div>
       </form>
+
+      <ToastContainer position="bottom-center" autoClose={3000} />
     </div>
   );
 };
