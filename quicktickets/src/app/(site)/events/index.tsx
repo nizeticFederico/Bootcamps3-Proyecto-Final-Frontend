@@ -59,7 +59,9 @@ export default function EventsPage() {
 
     // Filtro por categoría
     if (filters.category) {
-      filtered = filtered.filter((event) => event.category === filters.category);
+      filtered = filtered.filter(
+        (event) => event.category === filters.category
+      );
     }
 
     // Filtro por precio
@@ -76,13 +78,15 @@ export default function EventsPage() {
       const today = new Date();
       if (filters.date === "Today") {
         filtered = filtered.filter(
-          (event) => new Date(event.dateTime).toDateString() === today.toDateString()
+          (event) =>
+            new Date(event.dateTime).toDateString() === today.toDateString()
         );
       } else if (filters.date === "Tomorrow") {
         const tomorrow = new Date(today);
         tomorrow.setDate(tomorrow.getDate() + 1);
         filtered = filtered.filter(
-          (event) => new Date(event.dateTime).toDateString() === tomorrow.toDateString()
+          (event) =>
+            new Date(event.dateTime).toDateString() === tomorrow.toDateString()
         );
       } else if (filters.date === "This Week") {
         const startOfWeek = new Date(today);
@@ -175,7 +179,10 @@ export default function EventsPage() {
       </div>
       <div className="flex flex-row w-full max-w-screen-xl">
         <div className="flex-none ml-0">
-          <FilterColumn setFilters={setFilters} onCategoryFilter={handleCategoryFilter} />
+          <FilterColumn
+            setFilters={setFilters}
+            onCategoryFilter={handleCategoryFilter}
+          />
         </div>
         <div className="flex-grow ml-4 p-10">
           {loading ? (
