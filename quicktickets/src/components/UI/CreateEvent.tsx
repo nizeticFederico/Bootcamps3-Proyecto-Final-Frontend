@@ -15,7 +15,7 @@ import GoogleMapComponent from "./GoogleMaps";
 export default function EventCreate() {
   const { data: session } = useSession();
   const [file, setFile] = useState<File | null>(null);
-  /* const [imageUrl, setImageUrl] = useState(null); // Estado donde se va a guardar la URL de la imagen como "string" */
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
   const searchParams = useSearchParams(); // Para acceder a los datos enviados desde `DataEvent.tsx`
   const [values, setValues] = useState({
     name: "",
@@ -70,6 +70,11 @@ export default function EventCreate() {
       ...prevValues,
       ...eventData,
     }));
+
+      // Actualizar la previsualización de la imagen
+  if (eventData.imageUrl) {
+    setPreviewImage(decodeURIComponent(eventData.imageUrl));
+  }
   }, [searchParams]);
   
 
@@ -95,6 +100,14 @@ export default function EventCreate() {
     }));
   };
 
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFile(file); // Almacena el archivo
+      setPreviewImage(URL.createObjectURL(file)); // Genera una URL para previsualizar la imagen
+    }
+  };
+
   const handleChange = (
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
   ) => {
@@ -112,15 +125,16 @@ export default function EventCreate() {
     });
   };
   
-  // Submit form
   const handleSaveAndContinue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
   
-    if (!file) {
+    // Validar que haya una imagen seleccionada o cargada
+    if (!file && !values.imageUrl) {
       alert("Please select an image for the event.");
       return;
     }
   
+    // Validar campos obligatorios
     if (!values.name || !values.category || !values.date || !values.time) {
       alert("Please complete all required fields.");
       return;
@@ -129,23 +143,26 @@ export default function EventCreate() {
     setLoading(true);
   
     try {
-      // Subir imagen al servidor
-      const formData = new FormData();
-      formData.append("image", file);
+      let uploadedImageUrl = values.imageUrl; // Por defecto, la URL de la imagen existente
   
-      const response = await fetch("http://localhost:3001/image/upload", {
-        method: "POST",
-        body: formData,
-      });
+      // Subir imagen si hay un nuevo archivo seleccionado
+      if (file) {
+        const formData = new FormData();
+        formData.append("image", file);
   
-      if (!response.ok) {
-        throw new Error("Image upload failed.");
+        const response = await fetch("http://localhost:3001/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error("Image upload failed.");
+        }
+  
+        const dataImage = await response.json();
+        uploadedImageUrl = dataImage.url.secure_url;
+        console.log(uploadedImageUrl);
       }
-  
-      const dataImage = await response.json();
-      const uploadedImageUrl = dataImage.url.secure_url;
-  
-      console.log(uploadedImageUrl);
   
       // Preparar datos del evento
       const dateTime = `${values.date}T${values.time}`; // Asegurar formato ISO
@@ -177,7 +194,6 @@ export default function EventCreate() {
     } catch (error) {
       console.error("Error creating or editing event:", error);
   
-      // Puedes agregar más lógica para mostrar el mensaje de error exacto
       alert("An error occurred while processing the event. Please try again.");
     } finally {
       setLoading(false);
@@ -307,25 +323,39 @@ export default function EventCreate() {
             <h3 className="text-lg font-medium mb-2 ml-1">Upload Image</h3>
             <label htmlFor="imageUpload" className="cursor-pointer">
               <div className="flex flex-col items-center justify-center border rounded-lg p-6 bg-gray-50 w-full h-72">
-                <div className="relative">
-                  <FaCloudUploadAlt className="text-gray-500 text-8xl" />
-                </div>
-                <span className="text-blue-600 mb-2">Upload your Event Image</span>
-                <div>
-                  <p className="text-sm text-gray-500 text-center">Valid file formats: JPG, JPEG, PNG.</p>
-                </div>
+                {previewImage ? (
+                  <div className="relative w-full h-full">
+                    <Image
+                      src={previewImage}
+                      alt="Preview"
+                      layout="fill" // Asegura que ocupe todo el contenedor manteniendo proporciones
+                      objectFit="cover" // Recorta la imagen para llenar el espacio sin distorsión
+                      quality={100} // Calidad máxima de la imagen
+                      className="rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <div className="relative">
+                      <FaCloudUploadAlt className="text-gray-500 text-8xl" />
+                    </div>
+                    <span className="text-blue-600 mb-2">Upload your Event Image</span>
+                    <p className="text-sm text-gray-500 text-center">
+                      Valid file formats: JPG, JPEG, PNG.
+                    </p>
+                  </>
+                )}
               </div>
             </label>
             <input
               type="file"
               id="imageUpload"
               accept=".jpg,.jpeg,.png"
-              onChange={(e) => {setFile(e.target.files[0])}}
-/*               onChange={(e) => setFile(e.target.files ? e.target.files[0] : null)} */
+              onChange={handleFileChange}
               className="hidden"
             />
           </div>
-        </div>
+          </div>
         {/* Finak Sección de imagen */}
 
         {/* Final Seccion Date and Time */}
