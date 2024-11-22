@@ -107,6 +107,21 @@ const EventData: React.FC<EventDataProps> = ({
     window.open(data);
   };
 
+  const addToCalendar = () => {
+    const startDate = new Date(dateTime).toISOString().replace(/[-:]|\.\d{3}/g, "");
+    const endDate = new Date(new Date(dateTime).getTime() + 2 * 60 * 60 * 1000) // +2 horas
+      .toISOString()
+      .replace(/[-:]|\.\d{3}/g, "");
+    const locationEncoded = encodeURIComponent(location);
+    const descriptionEncoded = encodeURIComponent(description);
+
+    const calendarUrl = `https://calendar.google.com/calendar/render?action=TEMPLATE&text=${encodeURIComponent(
+      name
+    )}&dates=${startDate}/${endDate}&details=${descriptionEncoded}&location=${locationEncoded}`;
+
+    window.open(calendarUrl, "_blank");
+  };
+
   return (
     <main>
       <div className="max-w-3xl mx-auto p-6 space-y-8 bg-white shadow-lg rounded-lg">
@@ -158,7 +173,12 @@ const EventData: React.FC<EventDataProps> = ({
               <p>{formattedTime}</p>
             </div>
             <div>
-              <p className="text-blue-500 cursor-pointer">+ Add to Calendar</p>
+              <button
+                  className="text-blue-500 cursor-pointer"
+                  onClick={addToCalendar}
+                >
+                  + Add to Calendar
+                </button>
             </div>
           </div>
         </div>

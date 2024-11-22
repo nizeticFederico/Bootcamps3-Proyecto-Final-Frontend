@@ -55,20 +55,24 @@ export default function MyEvents() {
   }, [session]);
 
   return (
-    <div className="min-h-screen bg-gray-100">
-      <h1 className="text-3xl font-bold text-center mt-6">My Events</h1>
-      <div className="flex-grow ml-4 p-10">
-        {loading ? (
-          <p className="text-center mt-4">Loading...</p>
-        ) : events.length > 0 ? (
-          <div className="grid grid-cols-3 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {events.map((event) => (
-              <CardSections key={event._id} {...event} />
-            ))}
-          </div>
-        ) : (
-          <p className="text-center mt-4">You have no events.</p>
-        )}
+    <div className="flex flex-col items-center min-h-screen bg-white">
+      <div className="flex flex-col w-full max-w-screen-xl">
+        <div className="flex-grow ml-4 p-10">
+          <h1 className="text-3xl font-bold text-center mt-6">My Events</h1>
+        </div>
+        <div className="flex-grow ml-4 p-10">
+          {loading ? (
+            <p className="text-center mt-4">Loading...</p>
+          ) : events.length > 0 ? (
+            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {events.map((event) => (
+                <CardSections key={event._id} {...event} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center mt-4">You have no events.</p>
+          )}
+        </div>
       </div>
     </div>
   );

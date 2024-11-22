@@ -1,5 +1,3 @@
-// src/components/UI/CategoriesBanner.tsx
-
 "use client";
 
 import Categories from './Categories';
@@ -21,15 +19,15 @@ const CategoriesBanner: React.FC = () => {
 
   return (
     <div className="items-center my-8">
-      <div className="flex flex-row space-x-20 items-center justify-center">
+      <div className="flex flex-row space-x-12 md:space-x-16 lg:space-x-20 items-center justify-center">
         <Categories
           renderCategory={(category) => (
-            <label key={category.name} className="block mb-1">
+            <label key={category.name} className="block mb-4">
               <div
                 className='flex flex-col items-center justify-center'
                 onClick={() => handleCategoryClick(category.name, category.imageUrl)}
               >
-                <button className="p-10 bg-white rounded-full shadow-md hover:bg-gray-100 transition overflow-hidden relative">
+                <button className="p-12 md:p-16 bg-white rounded-full shadow-xl hover:bg-gray-100 transition-all transform hover:scale-105 overflow-hidden relative">
                   <Image
                     src={category.imageUrl}
                     fill
@@ -38,7 +36,7 @@ const CategoriesBanner: React.FC = () => {
                     sizes="(max-width: 600px) 100vw, 50vw"
                   />
                 </button>
-                <p className="text-gray-700">{category.name}</p>
+                <p className="text-gray-700 text-lg md:text-xl font-semibold">{category.name}</p>
               </div>
             </label>
           )}
