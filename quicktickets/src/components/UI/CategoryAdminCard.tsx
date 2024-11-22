@@ -6,12 +6,13 @@ import Modal from "./Modal";
 import { toast } from "react-toastify";
 import CreateCategoryModal from "./CategoryModal";
 import { CategoryData } from "./CategoryModal";
+import Image from "next/image";
 
 interface Category {
   _id:string
   name: string;
   description: string;
-  
+  imageUrl: string;
 }
 
 
@@ -42,10 +43,10 @@ export default function CategoryCard() {
   }, []);
 
   const filteredCategories = searchTerm
-    ? categories.filter(category =>
-        category.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
-    : categories;
+  ? categories.filter((category) =>
+      category.name.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+  : categories;
 
 
   const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Category) => {
@@ -110,30 +111,34 @@ export default function CategoryCard() {
 
   const handleSaveClick = async (categoryId: string) => {
     if (!editedCategory) return;
-
+  
     try {
       const response = await fetch(`http://localhost:3001/category/${categoryId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'token':`${session?.accessToken}`
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
         },
         body: JSON.stringify(editedCategory),
       });
-
-      if (response.ok) {
-        const { category: updatedCategory } = await response.json();
-        setCategories(categories.map(category =>
-          category._id === categoryId ? updatedCategory : category
-        ));
-        setEditingCategoryId(null);
-        setEditedCategory(null); 
-        toast.success('Categorysuccesfully updated ');
-      } else {
-        toast.error('Error due to save changes')
-      }
+  
+      if (!response.ok) throw new Error("Failed to save changes");
+  
+      const { category: updatedCategory } = await response.json();
+  
+      // Actualizar directamente en el estado local
+      setCategories((prev) =>
+        prev.map((category) =>
+          category._id === categoryId ? { ...category, ...updatedCategory } : category
+        )
+      );
+  
+      setEditingCategoryId(null);
+      setEditedCategory(null);
+      toast.success("Category successfully updated!");
     } catch (error) {
-      console.error('Error al enviar los datos a la API:' , error);
+      console.error("Error saving category:", error);
+      toast.error("Error saving changes.");
     }
   };
 
@@ -149,33 +154,65 @@ export default function CategoryCard() {
     const newCategoryData = {
       name: categoryData.categoryName,
       description: categoryData.description,
-      imageUrl: categoryData.imageUrl
+      imageUrl: categoryData.imageUrl,
     };
   
     try {
-      const response = await fetch('http://localhost:3001/category', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/category", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'token': `${session?.accessToken}`,
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
         },
         body: JSON.stringify(newCategoryData),
       });
   
-      if (!response.ok) {
-        console.log(response);
-        throw new Error('Failed to create category');
-      }
+      if (!response.ok) throw new Error("Failed to create category");
   
       const newCategory = await response.json();
-      setCategories((prevCategories) => [...prevCategories, newCategory]);
-      toast.success('Category created successfully!');
+  
+      // Actualizar la lista de categorías
+      setCategories((prevCategories) => [newCategory, ...prevCategories]);
+  
+      toggleCategoryModal(); // Cerrar el modal
+      toast.success("Category created successfully!");
     } catch (error) {
-      console.error('Error al crear la categoría:', error);
-      toast.error('Error creating category');
+      console.error("Error creating category:", error);
+      toast.error("Error creating category.");
     }
   };
-
+  
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editedCategory) {
+      try {
+        const formData = new FormData();
+        formData.append("image", file);
+  
+        // Subir la imagen a Cloudinary
+        const response = await fetch("http://localhost:3001/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+  
+        if (!response.ok) {
+          throw new Error("Failed to upload image");
+        }
+  
+        const dataImage = await response.json();
+        const uploadedImageUrl = dataImage.url.secure_url;
+  
+        // Actualizar la URL de la imagen en la categoría editada
+        setEditedCategory({
+          ...editedCategory,
+          imageUrl: uploadedImageUrl,
+        });
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("Error uploading the image. Please try again.");
+      }
+    }
+  };
 
 
   return (
@@ -189,19 +226,23 @@ export default function CategoryCard() {
         onChange={(e) => setSearchTerm(e.target.value)}
       />
 
-      <ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
-        {filteredCategories.length > 0 ? (
-          filteredCategories.map((category) => (
-            <li key={category._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
-              {editingCategoryId === category._id && editedCategory ? (
-                <div className="flex flex-col gap-2 w-full p-2">
+<ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
+  {filteredCategories.length > 0 ? (
+    filteredCategories.map((category) =>
+      category && category._id ? ( // Validar que `category` y `_id` existan
+        <li
+          key={category._id}
+          className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer"
+        >
+          {editingCategoryId === category._id && editedCategory ? (
+            <div className="flex flex-col gap-2 w-full p-2">
                   <div className="flex items-center gap-2">
                     <label>Name:</label>
                     <input
                       type="text"
                       value={editedCategory.name}
                       onChange={(e) => handleEditChange(e, 'name')}
-                      className="border p-1 focus:outline-none rounded rounded-md p-2"
+                      className="border p-1 focus:outline-none rounded-md"
                     />
                   </div>
 
@@ -212,17 +253,36 @@ export default function CategoryCard() {
                       type="text"
                       value={editedCategory.description}
                       onChange={(e) => handleEditChange(e, 'description')}
-                      className="border p-1 mb-2 focus:outline-none rounded rounded-md"
+                      className="border p-1 mb-2 focus:outline-none rounded-md"
                     />
                   </div>
 
-                  <div className="flex items-center gap-2">
-                    <label>Description:</label>
+                  <div className="flex flex-col">
+                    <h3 className="text-lg font-medium mb-2 ml-1">Category Image</h3>
+                    <label htmlFor={`imageUpload-${category._id}`} className="cursor-pointer">
+                      <div className="flex flex-col items-center justify-center border rounded-lg p-6 bg-gray-50 w-full h-72">
+                        {editedCategory.imageUrl ? (
+                          <div className="relative w-full h-full">
+                            <Image
+                              src={editedCategory.imageUrl}
+                              fill
+                              alt="Preview"
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                          </div>
+                        ) : (
+                          <div className="text-center">
+                            <p className="text-sm text-gray-500">No image uploaded</p>
+                          </div>
+                        )}
+                      </div>
+                    </label>
                     <input
-                      type="text"
-                      value={editedCategory.description}
-                      onChange={(e) => handleEditChange(e, 'description')}
-                      className="border p-1 mb-2 focus:outline-none rounded rounded-md"
+                      type="file"
+                      id={`imageUpload-${category._id}`}
+                      accept=".jpg,.jpeg,.png"
+                      onChange={(e) => handleFileChange(e, category._id)}
+                      className="hidden"
                     />
                   </div>
 
@@ -231,31 +291,31 @@ export default function CategoryCard() {
                   
                   <button
                     onClick={() => handleSaveClick(category._id)}
-                    className="bg-green-500 text-white p-2 rounded rounded-md"
+                    className="bg-green-500 text-white p-2 rounded-md"
                   >
                     Save
                   </button>
                   <button
                     onClick={handleCancelClick}
-                    className="bg-red-500 text-white p-2 rounded rounded-md"
+                    className="bg-red-500 text-white p-2 rounded-md"
                   >
                     Cancel
                   </button>
-                </div>
-              ) : (
-                <div className="flex gap-2 p-2 items-center justify-between w-full">
+                  </div>
+          ) : (
+            <div className="flex gap-2 p-2 items-center justify-between w-full">
                  
                   <span>{category.name}</span>
                   <div>
                   <button
                     onClick={() => handleEditClick(category._id)}
-                    className=" bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
+                    className=" bg-gray-500 text-white p-1 rounded-md min-w-16"
                   >
                     Edit
                   </button>
                   <button
                     onClick={() => handleDelete(category._id)}
-                    className="ml-2 bg-red-500 text-white p-1 rounded rounded-md min-w-16"
+                    className="ml-2 bg-red-500 text-white p-1 rounded-md min-w-16"
                   >
                     Delete
                   </button>
@@ -264,13 +324,13 @@ export default function CategoryCard() {
                 </div>
               )}
             </li>
-          ))
+          ): null )
         ) : (
-          <p>Didn't find categories</p>
+          <p>Didn`&apos`t find categories</p>
         )}
       </ul>
       <div className="flex items-center justify-center p-3">
-              <button onClick = {toggleCategoryModal} className="p-3 rounded rounded-md bg-green-600 text-white">
+              <button onClick = {toggleCategoryModal} className="p-3 rounded-md bg-green-600 text-white">
                 Create a new
               </button>
             </div>

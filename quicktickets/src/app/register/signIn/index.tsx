@@ -73,8 +73,22 @@ export default function SignIn(){
         <main className="flex items-center h-screen">
            <div className="flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
             <div>
-                <a href="/"><Image src="/assets/images/icons/icon.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image></a>
-                <Image src="/assets/images/icons/quickticketswhite.svg" width={128} height={38} alt="Aplication Logo" className="ml-4"></Image>
+                <a href="/">
+                    <Image
+                        src="/assets/images/icons/icon.svg"
+                        alt="Aplication Logo"
+                        width={128}
+                        height={38}
+                        className="ml-4"
+                    />
+                </a>
+                <Image
+                    src="/assets/images/icons/quickticketswhite.svg"
+                    alt="Aplication Logo"
+                    width={128}
+                    height={38}
+                    className="ml-4"
+                />
             </div>
                 <h2 className="font-bold text-4xl text-white p-8 leading-[1.5]">Discover Tailored <br /> events.<br /> Sign up for personalized <br />  recommendations <br />  today!</h2>
            </div> 
