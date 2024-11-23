@@ -65,7 +65,7 @@ const EventCard: React.FC<EventCardProps> = ({
         </div>
       </div>
       <div className="flex flex-col justify-between p-2 w-1/2">
-        <div className="h-1/3 mb-1">
+        <div className="h-1/3 mb-1 truncate-2-lines">
           <h4 className="font-semibold text-sm">{name}</h4>
         </div>
         <div className="text-gray-600 text-xs">

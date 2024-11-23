@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation"; // Router para redirección
@@ -71,6 +71,37 @@ const EventData: React.FC<EventDataProps> = ({
   const isCreator = session?.user?.id === creatorId; // Verificar si el usuario es el creador
 
   const [showShareMenu, setShowShareMenu] = useState(false);
+  const [creatorName, setCreatorName] = useState<string | null>(null);
+
+  // Obtener el nombre del creador
+  useEffect(() => {
+    const fetchCreatorName = async () => {
+      try {
+        console.log("Sending request to /creator-name with eventId:", _id);
+        const response = await fetch("http://localhost:3001/event/creator-name", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ eventId: _id }),
+        });
+  
+        console.log("Response status:", response.status);
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+  
+        const data = await response.json();
+        console.log("Creator name fetched:", data.username);
+        setCreatorName(data.username || "Unknown");
+      } catch (error) {
+        console.error("Error fetching creator name:", error);
+        setCreatorName("Error loading creator name");
+      }
+    };
+  
+    fetchCreatorName();
+  }, [_id]);
 
   const handleEditEvent = () => {
     const query = new URLSearchParams({
@@ -86,7 +117,6 @@ const EventData: React.FC<EventDataProps> = ({
       latitude: latitude.toString(),
       longitude: longitude.toString(),
     }).toString();
-  
     router.push(`/events/create-event?${query}`);
     console.log(query);
   };
@@ -236,7 +266,6 @@ const EventData: React.FC<EventDataProps> = ({
             <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
-          {/* Map Section */}
           <div className="w-full max-w-3xl mt-6">
             <GoogleMapComponent
               apiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}
@@ -247,8 +276,13 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-3">Description</h3>
+          <h2 className="text-xl font-semibold text-gray-700 mb-3">Description</h2>
           <p className="text-gray-600">{description}</p>
+          {creatorName && (
+            <p className="text-sm text-gray-500 mt-4">
+              Created by: <span className="font-semibold">{creatorName}</span>
+            </p>
+          )}
         </div>
       </div>
     </main>
