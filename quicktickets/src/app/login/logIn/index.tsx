@@ -59,17 +59,9 @@ export default function LogIn(){
            <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] pl-16 pr-16 gap-5">
                 <h1 className="font-bold  text-3xl pl-32">Login</h1>
                 <div className="p-32 pb-4 pt-4">
-                <div className="flex items-center justify-center gap-5 pb-8">
-                    <div className="flex items-center justify-center border rounded-md border-gray-400 p-2 w-1/2">
-                    Google
-                    </div>
-                    <div className="flex items-center justify-center border rounded-md border-gray-400 p-2 w-1/2 ">
-                    Facebook
-                    </div>
-                </div>
            <div className="flex items-center">
                 <div className="flex-grow border-t border-gray-300"></div>
-                  <span className="mx-4 text-gray-400">OR</span>
+                  
                 <div className="flex-grow border-t border-gray-300"></div>
             </div>
            
@@ -111,7 +103,7 @@ export default function LogIn(){
                         'Login'
                 )}
                 </button>
-                
+                <a href="" className="text-sm text-gray-500">Forgot your password?</a>
                 <p className="text-sm my-4">Do you not have an account? 
                     <a href="/register" className="text-gray-500"> Register</a>
                 </p>

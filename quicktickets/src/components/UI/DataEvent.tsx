@@ -47,7 +47,7 @@ const EventData: React.FC<EventDataProps> = ({
   availability,
 }) => {
   const router = useRouter();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const eventDate = new Date(dateTime);
   const formattedDate = eventDate.toLocaleDateString("es-AR", {
     day: "2-digit",
@@ -178,7 +178,7 @@ const EventData: React.FC<EventDataProps> = ({
                 </div>
               )}
             </div>
-            {isCreator ? (
+            {status === "authenticated" ? (isCreator ? (
               <button
                 onClick={handleEditEvent}
                 className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
@@ -193,7 +193,13 @@ const EventData: React.FC<EventDataProps> = ({
                 <FaTicketAlt className="h-5 w-5" />
                 <span>Buy Tickets</span>
               </button>
-            )}
+            )) : (<button
+              onClick={() => router.push('/login')}
+              className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+            >
+              <span>Login to buy a ticket</span>
+            </button>)}
+            
           </div>
         </div>
         <div className="space-y-2">

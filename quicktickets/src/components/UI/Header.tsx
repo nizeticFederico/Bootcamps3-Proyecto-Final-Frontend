@@ -165,9 +165,6 @@ const NavBar = () => {
         </div>
       ) : (
         <div className="flex items-center space-x-4">
-          <Link href="/events/create-event" className="text-white hover:text-yellow-400">
-            Create Event
-          </Link>
           <Link href="/login" className="text-white hover:text-yellow-400">
             Login
           </Link>
