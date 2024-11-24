@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession  } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
@@ -15,17 +15,12 @@ interface User {
   is_active: boolean;
 }
 
-
 export default function UserCard() {
   const [users, setUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const [editingUserId, setEditingUserId] = useState<string | null>(null);
-  const [editedUser, setEditedUser] = useState<User| null>(null); 
+  const [searchTerm, setSearchTerm] = useState<string>('');;
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado del modal
   const [userIdToDelete, setUserIdToDelete] = useState<string | null>(null);
-  const {data:session , status}= useSession();
-  
-
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     if (status === "authenticated") {
@@ -58,27 +53,6 @@ export default function UserCard() {
       )
     : users;
 
-
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof User) => {
-    if (editedUser) {
-      setEditedUser({
-        ...editedUser,
-        [field]: e.target.value,
-      });
-    }
-  };
-
-
-  const handleEditClick = (userId: string) => {
-    const userToEdit = users.find(user => user._id === userId);
-    if (userToEdit) {
-      setEditingUserId(userId);
-      setEditedUser({ ...userToEdit });
-    }
-  };
-
-
-
   const deleteEvent = async (userId: string) => {
     try {
       const response = await fetch(`http://localhost:3001/user/full-delete/${userId}`, {
@@ -88,93 +62,42 @@ export default function UserCard() {
           'token': `${session?.accessToken}`,
         },
       });
-  
+
       if (response.ok) {
         setUsers(users.filter(user => user._id !== userId));
-        toast.success('User deleted succesfully')
+        toast.success('User deleted successfully');
       } else {
-          toast.error('Error');
+        toast.error('Error');
       }
     } catch (error) {
       console.error('Error de conexión:', error);
     }
   };
 
-  const handleDelete = async (userId:string) => {
-
+  const handleDelete = async (userId: string) => {
     setUserIdToDelete(userId);
     setIsModalOpen(true);
-
   };
 
   const handleDeleteConfirm = async () => {
     if (userIdToDelete) {
-      await deleteEvent(userIdToDelete); 
-      setIsModalOpen(false); 
+      await deleteEvent(userIdToDelete);
+      setIsModalOpen(false);
     }
   };
 
   const handleDeleteCancel = () => {
     setIsModalOpen(false);
-    setUserIdToDelete(null); 
+    setUserIdToDelete(null);
   };
 
-  const handleSaveClick = async (userId:string) => {
-    if (!editedUser) return;
-    console.log(session?.accessToken);
-
-    const userToUpdate = {
-        first_name: editedUser.first_name,
-        last_name: editedUser.last_name,
-        email: editedUser.email,
-        role: editedUser.role
-      };
+  const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
+    const updatedStatus = !currentStatus;
+    setUsers(users.map(user => 
+      user._id === userId ? { ...user, is_active: updatedStatus } : user
+    ));
 
     try {
-      const response = await fetch(`http://localhost:3001/user/update`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'token':`${session?.accessToken}`
-        },
-        body: JSON.stringify(userToUpdate),
-      });
-
-      if (response.ok) {
-
-        console.log(response)
-        const updatedUser = await response.json();
-        setUsers(users.map(user =>
-          user._id === userId ? updatedUser : user
-        ));
-        setEditingUserId(null);
-        setEditedUser(null); 
-        toast.success('Event succesfully updated ');
-      } else {
-        console.log(response)
-        toast.error('Error due to save changes')
-      }
-    } catch (error) {
-      console.error('Error al enviar los datos a la API:' , error);
-    }
-  };
-
-  const handleCancelClick = () => {
-    setEditingUserId(null);
-    setEditedUser(null);
-  };
-
-  const handleToggleStatus = async () => {
-    if (!editedUser) return;
-
-    const updatedStatus = !editedUser.is_active;
-    setEditedUser(prevState => ({
-      ...prevState!,
-      is_active: updatedStatus,
-    }));
-
-    try {
-
       const response = await fetch(`http://localhost:3001/user/toggle-status/`, {
         method: 'PATCH',
         headers: {
@@ -182,7 +105,7 @@ export default function UserCard() {
           'token': `${session?.accessToken}`,
         },
         body: JSON.stringify({
-          userId: editedUser._id,
+          userId,
         }),
       });
 
@@ -190,18 +113,16 @@ export default function UserCard() {
         toast.success(`User status ${updatedStatus ? 'activated' : 'deactivated'}`);
       } else {
         toast.error('Error updating user status');
-        setEditedUser(prevState => ({
-          ...prevState!,
-          is_active: !updatedStatus,
-        }));
+        setUsers(users.map(user => 
+          user._id === userId ? { ...user, is_active: !updatedStatus } : user
+        ));
       }
     } catch (error) {
       console.error('Error updating user status:', error);
       toast.error('Error updating user status');
-      setEditedUser(prevState => ({
-        ...prevState!,
-        is_active: !updatedStatus,
-      }));
+      setUsers(users.map(user => 
+        user._id === userId ? { ...user, is_active: !updatedStatus } : user
+      ));
     }
   };
 
@@ -220,93 +141,19 @@ export default function UserCard() {
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <li key={user._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
-              {editingUserId === user._id && editedUser ? (
-                <div className="flex flex-col gap-2 w-full p-2">
-                  <div className="flex items-center gap-2">
-                    <label>Name:</label>
-                    <input
-                      type="text"
-                      value={editedUser.first_name}
-                      onChange={(e) => handleEditChange(e, 'first_name')}
-                      className="border p-1 focus:outline-none rounded rounded-md p-2"
-                    />
-                  </div>
-
-                  
-                  <div className="flex items-center gap-2">
-                    <label>Lastname:</label>
-                    <input
-                      type="text"
-                      value={editedUser.last_name}
-                      onChange={(e) => handleEditChange(e, 'last_name')}
-                      className="border p-1 mb-2 focus:outline-none rounded rounded-md"
-                    />
-                  </div>
-
-                  
-                  <div className="flex items-center gap-2">
-                    <label>Email:</label>
-                    <input
-                      type="email"
-                      value={editedUser.email}
-                      onChange={(e) => handleEditChange(e, 'email')}
-                      className="border p-1 mb-2 focus:outline-none  rounded rounded-md"
-                    />
-                  </div>
-
-                
-                  <div className="flex items-center gap-2">
-                    <label>Phone: <p className="inline-block">{editedUser.phone}</p></label>
-                    
-                  </div>
-
-                  
-                  <div className="flex items-center gap-2">
-                    <label>Role:</label>
-                    <input
-                      type="text"
-                      value={editedUser.role}
-                      onChange={(e) => handleEditChange(e, 'role')}
-                      className="border p-1 mb-2 focus:outline-none rounded rounded-md"
-                    />
-                  </div>
-
-                  
-                  <div className="flex items-center gap-2">
-                    {editedUser.is_active ? 
-                    ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(editedUser.is_active)}</p></label>) 
-                    : 
-                    (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(editedUser.is_active)}</p></label>)}
-                    
-                    <button className="p-1 rounded rounded-md bg-gray-500 text-white ml-2"
-                            onClick={handleToggleStatus}>Toggle Status</button>
-                    
-                  </div>
-
-                  
+              <div className="flex gap-2 p-2 items-center justify-between w-full">
+                <span className="min-w-32">{`${user.first_name}  ${user.last_name}`}</span> 
+                {user.is_active ? 
+                  ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(user.is_active)}</p></label>) 
+                  : 
+                  (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(user.is_active)}</p></label>)
+                }
+                <div>
                   <button
-                    onClick={() => handleSaveClick(user._id)}
-                    className="bg-green-500 text-white p-2 rounded rounded-md"
+                    onClick={() => handleToggleStatus(user._id, user.is_active)}
+                    className="bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
                   >
-                    Save
-                  </button>
-                  <button
-                    onClick={handleCancelClick}
-                    className="bg-red-500 text-white p-2 rounded rounded-md"
-                  >
-                    Cancel
-                  </button>
-                </div>
-              ) : (
-                <div className="flex gap-2 p-2 items-center justify-between w-full">
-                 
-                  <span>{`${user.first_name}  ${user.last_name}`}</span>
-                  <div>
-                  <button
-                    onClick={() => handleEditClick(user._id)}
-                    className=" bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
-                  >
-                    Edit
+                    Toggle Status
                   </button>
                   <button
                     onClick={() => handleDelete(user._id)}
@@ -314,10 +161,8 @@ export default function UserCard() {
                   >
                     Delete
                   </button>
-
-                  </div>
                 </div>
-              )}
+              </div>
             </li>
           ))
         ) : (
