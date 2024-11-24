@@ -1,32 +1,62 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation";
 import Message from "@/components/UI/Message";
 import Image from "next/image"
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+interface Country {
+    name: {
+      common: string;
+    };
+    cca3: string;
+  }
+
 export default function SignIn(){
 
-    const [values, setValues] = useState({name:"", lastname:"" , email:"", number:"", password:""});
+    const [countries, setCountries] = useState<Country[]>([]);
+    const [values, setValues] = useState({name:"", lastname:"" , email:"", number:"", password:"" , country:"", state:""});
     const [loading, setLoading] = useState<boolean>(false);
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [status , setStatus] = useState<number | null >(null)
 
     const router = useRouter();
 
+    useEffect(() => {
+        const fetchCountries = async () => {
+          try {
+            const response = await fetch('https://restcountries.com/v3.1/all');
+            const data = await response.json();
+            const sortedCountries = data.sort((a:Country, b:Country) => {
+                if (a.name.common < b.name.common) return -1;
+                if (a.name.common > b.name.common) return 1;
+                return 0;
+              });
+        
+              setCountries(sortedCountries);
+            
+          } catch (error) {
+            console.error('Error fetching countries:', error);
+          }
+        };
+        fetchCountries();
+      }, []);
+
     async function handleSubmit(e:React.FormEvent<HTMLFormElement>){
         e.preventDefault();
         setLoading(true);
 
         const data = {
-            first_name: values.name.toLocaleLowerCase(),
+            first_name: values.name,
             last_name: values.lastname,
             email: values.email,
             phone: values.number,
             password: values.password,
-            role: "admin",
+            country: values.country,
+            state: values.state,
+            role: "customer",
         }
 
 
@@ -61,7 +91,7 @@ export default function SignIn(){
         }
     }
 
-    function handleChange(event: React.ChangeEvent<HTMLInputElement>){
+    function handleChange(event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>){
         const {currentTarget} = event;
         const {name , value} = currentTarget;
        
@@ -94,7 +124,7 @@ export default function SignIn(){
            </div> 
            <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] pl-16 pr-16 ">
            <h1 className="font-bold  text-3xl mt-4 pl-32">Create Account</h1>
-            <form className="flex flex-col gap-2 p-32 pb-4 pt-4" onSubmit={handleSubmit}>
+            <form className="flex flex-col gap-2 p-32 pb-1 pt-1 text-sm" onSubmit={handleSubmit}>
                 
                 <label htmlFor="name">Name</label>
                 <input  type="text" 
@@ -149,8 +179,37 @@ export default function SignIn(){
                         className="absolute right-3 top-1/2 transform -translate-y-1/2">
                             { showPassword ? 
                             (<FaEye className="text-2xl"/>) :
-                            (<FaEyeSlash className="text-2xl"/>)}</button>
+                            (<FaEyeSlash className="text-2xl"/>)}
+                            
+                </button>
+
+                
+
                 </div>
+                <label htmlFor="country">Country</label>
+                <select
+            name="country"
+            value={values.country}
+            onChange={handleChange}
+            className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
+            required
+          >
+            <option value="">Select a Country</option>
+            {countries.map((country: any) => (
+              <option key={country.cca3} value={country.cca3}>
+                {country.name.common}
+              </option>
+            ))}
+          </select>
+
+          <label htmlFor="state">State</label>
+                <input  type="text" 
+                        name="state" 
+                        placeholder="Enter your state" 
+                        value={values.state}  
+                        onChange = {handleChange} 
+                        className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
+                        required/>
                 <button type="submit" 
                         className=" flex items-center justify-center text-lg rounded-md p-3 mt-4 min-h-[50px] text-white text-bold bg-[#2B293D] hover:bg-[#3F3D51] w-full relative">
                     {loading ? (
