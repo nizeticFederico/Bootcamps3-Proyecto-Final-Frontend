@@ -100,8 +100,8 @@ export default function SignIn(){
 
 
     return(
-        <main className="flex items-center h-screen">
-           <div className="flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
+        <main className="flex items-center ">
+           <div className="hidden sm:flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
             <div>
                 <a href="/">
                     <Image
@@ -122,9 +122,10 @@ export default function SignIn(){
             </div>
                 <h2 className="font-bold text-4xl text-white p-8 leading-[1.5]">Discover Tailored <br /> events.<br /> Sign up for personalized <br />  recommendations <br />  today!</h2>
            </div> 
-           <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] pl-16 pr-16 ">
-           <h1 className="font-bold  text-3xl mt-4 pl-32">Create Account</h1>
-            <form className="flex flex-col gap-2 p-32 pb-1 pt-1 text-sm" onSubmit={handleSubmit}>
+           <div className="flex flex-col justify-center w-full h-screen overflow-auto p-2 bg-white  sm:pl-16 sm:pr-16 sm:rounded-tl-[50px] sm:rounded-bl-[50px] ">
+    
+           <h1 className="font-bold  text-3xl mt-4">Create Account</h1>
+            <form className="flex flex-col gap-2  pb-1 pt-1 text-sm" onSubmit={handleSubmit}>
                 
                 <label htmlFor="name">Name</label>
                 <input  type="text" 
@@ -211,7 +212,7 @@ export default function SignIn(){
                         className="border rounded-md p-2 focus:outline-none border-gray-300 focus:border-gray-500"
                         required/>
                 <button type="submit" 
-                        className=" flex items-center justify-center text-lg rounded-md p-3 mt-4 min-h-[50px] text-white text-bold bg-[#2B293D] hover:bg-[#3F3D51] w-full relative">
+                        className=" flex items-center justify-center text-lg rounded-md p-3  min-h-[50px] text-white text-bold bg-[#2B293D] hover:bg-[#3F3D51] w-full relative sm:mt-4">
                     {loading ? (
                     <div className="absolute left-1/2 transform -translate-x-1/2">
                         <div className="loader"></div>
@@ -221,7 +222,7 @@ export default function SignIn(){
                 )}
                 </button>
                 
-                <p className="text-sm my-4">Already have an account? 
+                <p className="text-sm sm:my-4">Already have an account? 
                     <a href="/login" className="text-gray-500"> Login</a>
                 </p>
                 <Message status={status}/>
