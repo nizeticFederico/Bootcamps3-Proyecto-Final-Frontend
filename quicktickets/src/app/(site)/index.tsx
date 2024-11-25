@@ -42,11 +42,7 @@ export default function HomePage() {
       {/* Dynamic Sections with Banners */}
       {sectionsConfig.map((section, index) => (
         <React.Fragment key={section.sectionId}>
-          <HomeSections
-            title={section.title}
-            filterCriteria={section.filterCriteria}
-            sectionId={section.sectionId}
-          />
+          <HomeSections section={section} />
           {/* Add banners at specific intervals */}
           {index === 0 && <NewsletterBanner />}
           {index === 1 && <CreateEventBanner />}

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Image from 'next/image';
+import { LuChevronUpCircle } from "react-icons/lu";
 
 const ScrollToTopButton: React.FC = () => {
     const [isVisible, setIsVisible] = useState<boolean>(false);
@@ -34,12 +35,15 @@ const ScrollToTopButton: React.FC = () => {
         onClick={scrollToTop}
         style={{ display: isVisible ? 'block' : 'none' }}
       >
-        <Image
+        <div className='h-6 w-6 flex items-center justify-center'>
+          <LuChevronUpCircle className='text-[#2D2A3E] text-2xl'/>
+        </div>
+{/*         <Image
             src="/assets/images/icons/flecha-arriba.svg"
             width={30}
             height={30}
             alt="Picture of the author"
-        />
+        /> */}
       </button>
     );
   };

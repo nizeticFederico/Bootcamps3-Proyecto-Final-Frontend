@@ -122,65 +122,62 @@ export default function CategoryCard() {
         body: JSON.stringify(editedCategory),
       });
   
-      if (!response.ok) throw new Error("Failed to save changes");
+      const result = await response.json();
+      console.log("PUT Response:", result);
   
-      const { category: updatedCategory } = await response.json();
+      const updatedCategory = result?.category || result; // Manejar varias estructuras
+      if (!updatedCategory?._id) {
+        throw new Error("Invalid response format");
+      }
   
-      // Actualizar directamente en el estado local
-      setCategories((prev) =>
-        prev.map((category) =>
-          category._id === categoryId ? { ...category, ...updatedCategory } : category
+      setCategories((prevCategories) =>
+        prevCategories.map((category) =>
+          category._id === updatedCategory._id ? updatedCategory : category
         )
       );
   
       setEditingCategoryId(null);
       setEditedCategory(null);
-      toast.success("Category successfully updated!");
+      toast.success("Category updated successfully!");
     } catch (error) {
       console.error("Error saving category:", error);
-      toast.error("Error saving changes.");
+      toast.error("Error updating category.");
     }
   };
+  
 
-  const handleCancelClick = () => {
-    setEditingCategoryId(null);
-    setEditedCategory(null);
-  };
-  const toggleCategoryModal = () => {
-    setIsCategoryModalOpen(!isCategoryModalOpen);
-  };
-
+  
   const handleCreateCategory = async (categoryData: CategoryData) => {
     const newCategoryData = {
-      name: categoryData.categoryName,
-      description: categoryData.description,
-      imageUrl: categoryData.imageUrl,
+        name: categoryData.categoryName,
+        description: categoryData.description,
+        imageUrl: categoryData.imageUrl,
     };
-  
+
     try {
-      const response = await fetch("http://localhost:3001/category", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token: `${session?.accessToken}`,
-        },
-        body: JSON.stringify(newCategoryData),
-      });
-  
-      if (!response.ok) throw new Error("Failed to create category");
-  
-      const newCategory = await response.json();
-  
-      // Actualizar la lista de categorías
-      setCategories((prevCategories) => [newCategory, ...prevCategories]);
-  
-      toggleCategoryModal(); // Cerrar el modal
-      toast.success("Category created successfully!");
+        const response = await fetch("http://localhost:3001/category", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                token: `${session?.accessToken}`,
+            },
+            body: JSON.stringify(newCategoryData),
+        });
+
+        if (!response.ok) throw new Error("Failed to create category");
+
+        const newCategory = await response.json();
+
+        // Agregar la categoría al final de la lista
+        setCategories((prevCategories) => [...prevCategories, newCategory]);
+
+        toggleCategoryModal(); // Cerrar el modal
+        toast.success("Category created successfully!");
     } catch (error) {
-      console.error("Error creating category:", error);
-      toast.error("Error creating category.");
+        console.error("Error creating category:", error);
+        toast.error("Error creating category.");
     }
-  };
+};
   
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -188,20 +185,20 @@ export default function CategoryCard() {
       try {
         const formData = new FormData();
         formData.append("image", file);
-  
+        
         // Subir la imagen a Cloudinary
         const response = await fetch("http://localhost:3001/image/upload", {
           method: "POST",
           body: formData,
         });
-  
+        
         if (!response.ok) {
           throw new Error("Failed to upload image");
         }
-  
+        
         const dataImage = await response.json();
         const uploadedImageUrl = dataImage.url.secure_url;
-  
+        
         // Actualizar la URL de la imagen en la categoría editada
         setEditedCategory({
           ...editedCategory,
@@ -213,8 +210,15 @@ export default function CategoryCard() {
       }
     }
   };
-
-
+  
+  const handleCancelClick = () => {
+    setEditingCategoryId(null);
+    setEditedCategory(null);
+  };
+  const toggleCategoryModal = () => {
+    setIsCategoryModalOpen(!isCategoryModalOpen);
+  };
+  
   return (
     <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
       <h3 className="text-4xl">Events</h3>
@@ -227,7 +231,7 @@ export default function CategoryCard() {
       />
 
 <ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
-  {filteredCategories.length > 0 ? (
+  {filteredCategories.length > -1 ? (
     filteredCategories.map((category) =>
       category && category._id ? ( // Validar que `category` y `_id` existan
         <li

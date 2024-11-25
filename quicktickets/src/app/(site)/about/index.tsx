@@ -1,4 +1,7 @@
 import Image from "next/image"
+import { FaLinkedinIn } from "react-icons/fa";
+import { TbBrandGithubFilled } from "react-icons/tb";
+import { IoIosMail } from "react-icons/io";
 
 export default async function AboutUs(){
     return(
@@ -18,7 +21,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/icons/user-default.svg"
+                                    src="https://res.cloudinary.com/dsxdtlwsy/image/upload/v1732301035/ew0oevrysgusoi4kbqe9.jpg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -28,29 +31,20 @@ export default async function AboutUs(){
                             <strong className="text-lg text-gray-800 mt-2">Fede Nizetic</strong>
                         </div>
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
-                        <a href="" target="_blank">
-                                <Image
-                                    src="/assets/images/icons/linkedin.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Linkedin"
-                                />
+                            <a href="" target="_blank">
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <FaLinkedinIn className="text-white"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/github.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo GitHub"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <TbBrandGithubFilled className="text-white text-2xl"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/sobre.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Mail"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <IoIosMail className="text-white text-2xl"/>
+                                </div>
                             </a>
                         </div>
                 </div>
@@ -60,7 +54,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/icons/user-default.svg"
+                                    src="https://res.cloudinary.com/dsxdtlwsy/image/upload/v1732302809/lr0nsv7my3y9oxqkqtkf.jpg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -71,28 +65,19 @@ export default async function AboutUs(){
                         </div>
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
-                                <Image
-                                    src="/assets/images/icons/linkedin.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Linkedin"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <FaLinkedinIn className="text-white"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/github.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo GitHub"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <TbBrandGithubFilled className="text-white text-2xl"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/sobre.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Mail"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <IoIosMail className="text-white text-2xl"/>
+                                </div>
                             </a>
                         </div>
                 </div>
@@ -103,7 +88,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/icons/user-default.svg"
+                                    src="https://res.cloudinary.com/dsxdtlwsy/image/upload/v1732301047/naxu7fx0rlbe1bsetsw8.jpg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -114,28 +99,19 @@ export default async function AboutUs(){
                         </div>
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
-                                <Image
-                                    src="/assets/images/icons/linkedin.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Linkedin"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <FaLinkedinIn className="text-white"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/github.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo GitHub"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <TbBrandGithubFilled className="text-white text-2xl"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/sobre.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Mail"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <IoIosMail className="text-white text-2xl"/>
+                                </div>
                             </a>
                         </div>
                 </div>
@@ -145,7 +121,7 @@ export default async function AboutUs(){
                             <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/icons/user-default.svg"
+                                    src="https://res.cloudinary.com/dsxdtlwsy/image/upload/v1732301019/fxkznsxxayzvahsggnkh.jpg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -156,28 +132,19 @@ export default async function AboutUs(){
                         </div>
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                         <a href="" target="_blank">
-                                <Image
-                                    src="/assets/images/icons/linkedin.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Linkedin"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <FaLinkedinIn className="text-white"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/github.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo GitHub"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <TbBrandGithubFilled className="text-white text-2xl"/>
+                                </div>
                             </a>
                             <a href="" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/sobre.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Mail"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <IoIosMail className="text-white text-2xl"/>
+                                </div>
                             </a>
                         </div>
                 </div>
@@ -188,7 +155,7 @@ export default async function AboutUs(){
                         <div className="w-20 h-20 rounded-full overflow-hidden relative">
                             {/* El contenedor div con relative es necesario cuando se utiliza fill en el componente Image. */}
                                 <Image
-                                    src="/assets/images/RubenLedesmaPerfil.jpeg"
+                                    src="https://res.cloudinary.com/dsxdtlwsy/image/upload/v1732309449/tco1pml6v6xkadhvbiim.jpg"
                                     alt="Imagen de Perfil"
                                     fill
                                     //fill permite que la imagen ocupe todo el espacio del contenedor con object-cover, lo que garantiza que la imagen mantenga su forma circular y se centre correctamente
@@ -199,28 +166,19 @@ export default async function AboutUs(){
                         </div>
                         <div className="flex justify-center mt-4 space-x-4 text-[#2D2A3E]">
                             <a href="https://www.linkedin.com/in/rubendledesma/" target="_blank" className="fill-current-yellow">
-                                <Image
-                                    src="/assets/images/icons/linkedin.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Linkedin"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <FaLinkedinIn className="text-white"/>
+                                </div>
                             </a>
                             <a href="https://github.com/ElRubenD" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/github.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo GitHub"
-                                />
+                               <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <TbBrandGithubFilled className="text-white text-2xl"/>
+                                </div>
                             </a>
                             <a href="mailto:ruben.d.ledesma@gmail.com" target="_blank" >
-                                <Image
-                                    src="/assets/images/icons/sobre.svg"
-                                    width={30}
-                                    height={30}
-                                    alt="Logo Mail"
-                                />
+                                <div className="w-8 h-8 bg-black rounded-full flex items-center justify-center">
+                                    <IoIosMail className="text-white text-2xl"/>
+                                </div>
                             </a>
                         </div>
                 </div>

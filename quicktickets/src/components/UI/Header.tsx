@@ -6,11 +6,13 @@ import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { signOut } from "next-auth/react";
-import { RxDropdownMenu } from "react-icons/rx";
 import { IoMdArrowDropdown } from "react-icons/io";
 import { CgProfile } from "react-icons/cg";
 import { IoTicketOutline } from "react-icons/io5";
 import { MdLogout } from "react-icons/md";
+import { TbCirclePlus } from "react-icons/tb";
+import { CgMenuRound } from "react-icons/cg";
+
 
 const NavBar = () => {
   const [isOpen, setIsOpen] = useState<boolean>(false);
@@ -37,7 +39,7 @@ const NavBar = () => {
   };
 
   return (
-    <nav className="bg-[#2D2A3E] flex justify-between items-center h-20 px-10">
+    <nav className="bg-[#2D2A3E] flex justify-between items-center h-20 pr-8">
       {/* Logo */}
       <div className="flex items-center justify-start space-x-0">
         {/* Ícono */}
@@ -51,7 +53,7 @@ const NavBar = () => {
           />
         </div>
         {/* Logo */}
-        <div className="w-40 h-12 relative">
+        <div className="hidden md:block w-40 h-12 relative">
           <Image
             src="/assets/images/icons/quickticketswhite.svg"
             alt="LogoQuickTickets"
@@ -80,8 +82,14 @@ const NavBar = () => {
 
       {/* Menú desplegable para pantallas pequeñas */}
       <div className="md:hidden flex items-center">
-        <button onClick={toggleMenu} className="text-white">
-          <RxDropdownMenu className="text-4xl" />
+        <button
+          onClick={toggleMenu}
+          className="text-white hover:text-yellow-400 flex items-center"
+        >
+          <div className="flex flex-col items-center">
+            <CgMenuRound className="text-2xl" />
+            <span className="text-sm hidden sm:block">Menu</span>
+          </div>
         </button>
       </div>
 
@@ -104,22 +112,25 @@ const NavBar = () => {
 
       {/* Login / Profile */}
       {session ? (
-        <div className="flex items-center justify-center gap-6">
-          <Link href="/events/create-event" className="text-white hover:text-yellow-400">
-            Create Event
-          </Link>
+        <div className="flex items-center justify-center gap-6 relative">
+            <div className="flex flex-col items-center justify-center text-sm">
+            <Link href="/events/create-event" className="flex flex-col items-center justify-center text-white hover:text-yellow-400">
+                <TbCirclePlus className="text-2xl" />
+                <span className="text-sm hidden sm:block">Create</span>
+                </Link>
+            </div>
           <div className="flex gap-6 items-center justify-center relative">
             <div className="flex flex-col items-center justify-center text-sm">
               <Link href="/tickets" className="flex flex-col text-white hover:text-yellow-400 items-center">
-                <IoTicketOutline className="text-white text-2xl" />
-                Tickets
+                    <IoTicketOutline className="text-white text-2xl" />
+                    <span className="text-sm hidden sm:block">Tickets</span>    
               </Link>
             </div>
             <div className="flex items-center justify-center text-sm gap-2">
               <div className="flex flex-col items-center justify-center">
                 <Link href="/userProfile" className="flex flex-col text-white hover:text-yellow-400 items-center">
-                  <CgProfile className="text-white text-2xl" />
-                  Profile
+                    <CgProfile className="text-white text-2xl" />
+                    <span className="text-sm hidden sm:block">Profile</span>
                 </Link>
               </div>
               <button onClick={toggleDropdown} className="flex items-center justify-center">
