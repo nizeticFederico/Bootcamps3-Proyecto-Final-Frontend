@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import Image from "next/image";
 import Categories from "./Categories";
@@ -6,7 +6,7 @@ import Categories from "./Categories";
 const Footer = () => {
   return (
     <footer className="bg-[#2D2A3E] text-white py-10">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 px-4 md:px-8">
+      <div className="hidden md:grid max-w-7xl mx-auto grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 px-4 md:px-8">
         {/* Company Info */}
         <div>
           <h3 className="font-bold text-lg mb-4">Company Info</h3>
@@ -140,9 +140,14 @@ const Footer = () => {
         </div>
       </div>
 
-      {/* Copyright */}
-      <div className="mt-8 border-t border-gray-600 pt-4 text-center text-sm">
-        ©2024 QuickTickets. All rights reserved.
+
+      <div className="mt-8 md:border-t md:border-gray-600 md:pt-4 text-center text-sm flex flex-col justify-center items-center h-16">
+        <span className="hidden md:block md:mt-4">
+          ©2024 QuickTickets. All rights reserved.
+        </span>
+        <span className="block md:hidden">
+          ©2024 QuickTickets. All rights reserved.
+        </span>
       </div>
     </footer>
   );
