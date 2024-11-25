@@ -78,7 +78,7 @@ const EventData: React.FC<EventDataProps> = ({
     const fetchCreatorName = async () => {
       try {
         console.log("Sending request to /creator-name with eventId:", _id);
-        const response = await fetch("http://localhost:3001/event/creator-name", {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/event/creator-name", {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -123,7 +123,7 @@ const EventData: React.FC<EventDataProps> = ({
 
   const buyStripe = async () => {
     const payData = { eventId: _id, quantity: 1 };
-    const response = await fetch("http://localhost:3001/pay", {
+    const response = await fetch("https://kit-rich-starling.ngrok-free.app/pay", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

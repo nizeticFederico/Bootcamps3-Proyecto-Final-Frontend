@@ -42,7 +42,7 @@ export default function HomeSections({ section }: HomeSectionsProps) {
       setLoading(true);
       try {
         // Construir la URL dinámica
-        const url = new URL(`http://localhost:3001${section.endpoint}`);
+        const url = new URL(`https://kit-rich-starling.ngrok-free.app${section.endpoint}`);
         if (section.params) {
           Object.entries(section.params).forEach(([key, value]) =>
             url.searchParams.append(key, value)

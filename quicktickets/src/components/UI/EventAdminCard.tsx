@@ -37,7 +37,7 @@ export default function EventCard() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:3001/event/all'); 
+        const response = await fetch('https://kit-rich-starling.ngrok-free.app/event/all'); 
         const data: Event[] = await response.json();
         setEvents(data);
       } catch (error) {
@@ -77,7 +77,7 @@ export default function EventCard() {
 
   const deleteEvent = async (eventId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -119,7 +119,7 @@ export default function EventCard() {
     if (!editedEvent) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`, {
         method: 'PUT',
         headers: {
           'Content-Type': 'application/json',
@@ -161,7 +161,7 @@ export default function EventCard() {
 
     try {
       // Enviar solicitud PATCH al backend para actualizar el estado
-      const response = await fetch(`http://localhost:3001/event/toggle-status`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/toggle-status`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

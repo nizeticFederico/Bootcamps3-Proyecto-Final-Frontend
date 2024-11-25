@@ -31,7 +31,7 @@ export default function CategoryCard() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch('http://localhost:3001/category/all'); 
+        const response = await fetch('https://kit-rich-starling.ngrok-free.app/category/all'); 
         const data: Category[] = await response.json();
         setCategories(data);
       } catch (error) {
@@ -71,7 +71,7 @@ export default function CategoryCard() {
 
   const deleteEvent = async (categoryId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/category/${categoryId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/category/${categoryId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -113,7 +113,7 @@ export default function CategoryCard() {
     if (!editedCategory) return;
   
     try {
-      const response = await fetch(`http://localhost:3001/category/${categoryId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/category/${categoryId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -155,7 +155,7 @@ export default function CategoryCard() {
     };
 
     try {
-        const response = await fetch("http://localhost:3001/category", {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/category", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -187,7 +187,7 @@ export default function CategoryCard() {
         formData.append("image", file);
         
         // Subir la imagen a Cloudinary
-        const response = await fetch("http://localhost:3001/image/upload", {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/image/upload", {
           method: "POST",
           body: formData,
         });

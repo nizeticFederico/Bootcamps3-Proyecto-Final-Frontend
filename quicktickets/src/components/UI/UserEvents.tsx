@@ -31,7 +31,7 @@ export default function MyEvents() {
     if (session?.user) {
       async function fetchUserEvents() {
         try {
-          const response = await fetch("http://localhost:3001/event/own-events", {
+          const response = await fetch("https://kit-rich-starling.ngrok-free.app/event/own-events", {
             method: "GET",
             headers: {
               "Content-Type": "application/json",

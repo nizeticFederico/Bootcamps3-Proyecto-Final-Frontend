@@ -29,7 +29,7 @@ export default function EventPage({ id }: EventPageProps) {
   useEffect(() => {
     async function fetchEvent() {
       try {
-        const response = await fetch(`http://localhost:3001/event/${id}`);
+        const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${id}`);
         if (response.ok) {
           const data = await response.json();
           setEvent(data);

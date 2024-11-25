@@ -32,7 +32,7 @@ const Page: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('http://localhost:3001/order/success', {
+      const response = await fetch('https://kit-rich-starling.ngrok-free.app/order/success', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

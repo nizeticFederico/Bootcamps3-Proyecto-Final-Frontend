@@ -24,7 +24,7 @@ export default function TicketCard() {
 
   const getEventById = async (eventId: string): Promise<Event | null> => {
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`);
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`);
       if (!response.ok) {
         throw new Error(`No se pudo obtener el evento con eventId: ${eventId}`);
       }
@@ -45,7 +45,7 @@ export default function TicketCard() {
     }
 
     try {
-      const response = await fetch('http://localhost:3001/ticket/my-tickets', {
+      const response = await fetch('https://kit-rich-starling.ngrok-free.app/ticket/my-tickets', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -96,7 +96,7 @@ export default function TicketCard() {
 
   const downloadPdf = async (ticketId:string, eventName:string | undefined) => {
     try {
-      const response = await fetch(`http://localhost:3001/ticket/download?ticketId=${ticketId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/ticket/download?ticketId=${ticketId}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/pdf",

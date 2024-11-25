@@ -18,7 +18,7 @@ const AllEventsMap: React.FC = () => {
     // Fetch events from the backend
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3001/events"); // Ajusta la URL de tu backend
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/events"); // Ajusta la URL de tu backend
         const data = await response.json();
         setEvents(data);
       } catch (error) {
