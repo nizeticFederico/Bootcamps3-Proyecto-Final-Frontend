@@ -21,7 +21,7 @@ const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('https://kit-rich-starling.ngrok-free.app/category/all');
+        const response = await axios.get('http://localhost:3001/category/all');
         console.log(response.data);
         setCategories(response.data);
       } catch (error) {
