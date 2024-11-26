@@ -300,7 +300,7 @@ export default function EventCard() {
                   </button>
                 </div>
               ) : (
-                <div className="flex gap-2 p-2 items-center justify-between w-full">
+                <div className="flex gap-2 p-2 items-center justify-between w-full ">
                  
                   <span>{event.name}</span>
                   <div>

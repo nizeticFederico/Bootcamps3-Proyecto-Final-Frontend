@@ -200,7 +200,7 @@ export default function PausedEventCard() {
 
   return (
     <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
-      <h3 className="text-4xl">Events</h3>
+      <h3 className="text-4xl">Paused events</h3>
       <input
         className="rounded border border-black w-[50%] p-2 focus:outline-none"
         type="text"

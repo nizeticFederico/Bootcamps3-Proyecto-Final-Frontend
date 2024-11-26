@@ -138,7 +138,7 @@ const NavBar = () => {
               </button>
             </div>
             {isOpen && (
-              <div className="absolute bg-white rounded shadow-lg mt-[167px] text-sm min-w-[140px]">
+              <div className="absolute z-50 bg-white rounded shadow-lg mt-[167px] text-sm min-w-[140px]">
                 <Link
                   href="/userProfile"
                   onClick={() => setIsOpen(false)}
@@ -151,7 +151,7 @@ const NavBar = () => {
                  onClick={() => setIsOpen(false)}
                  >
                   <button
-                  className="block font-bold p-2 text-orange-500 hover:bg-gray-200 rounded">
+                  className="block font-bold text-start w-full p-2 text-orange-500 hover:bg-gray-200 rounded">
                     My Events
                   </button>
                 </Link>
