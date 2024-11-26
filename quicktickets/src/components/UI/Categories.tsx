@@ -22,6 +22,7 @@ const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
     const fetchCategories = async () => {
       try {
         const response = await axios.get('http://localhost:3001/category/all');
+        console.log(response.data);
         setCategories(response.data);
       } catch (error) {
         console.error('Error fetching categories:', error);

@@ -31,13 +31,16 @@ export default function MyEvents() {
     if (session?.user) {
       async function fetchUserEvents() {
         try {
-          const response = await fetch("http://localhost:3001/event/own-events", {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              token: `${session?.accessToken || ""}`, // Usamos el token si está disponible
-            },
-          });
+          const response = await fetch(
+            "http://localhost:3001/event/own-events",
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                token: `${session?.accessToken || ""}`, // Usamos el token si está disponible
+              },
+            }
+          );
           if (!response.ok) {
             console.error("Failed to fetch user events:", response.statusText);
             return;

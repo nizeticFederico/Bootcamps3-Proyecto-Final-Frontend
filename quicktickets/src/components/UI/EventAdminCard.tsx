@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { useSession  } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 
@@ -22,26 +22,23 @@ export interface Event {
   is_active: boolean;
 }
 
-
 export default function EventCard() {
   const [events, setEvents] = useState<Event[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [editingEventId, setEditingEventId] = useState<string | null>(null);
-  const [editedEvent, setEditedEvent] = useState<Event | null>(null); 
+  const [editedEvent, setEditedEvent] = useState<Event | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado del modal
   const [eventIdToDelete, setEventIdToDelete] = useState<string | null>(null);
-  const {data:session , status}= useSession();
-  
-
+  const { data: session, status } = useSession();
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('http://localhost:3001/event/all'); 
+        const response = await fetch("http://localhost:3001/event/all");
         const data: Event[] = await response.json();
         setEvents(data);
       } catch (error) {
-        console.error('Error fetching events:', error);
+        console.error("Error fetching events:", error);
       }
     };
 
@@ -49,13 +46,15 @@ export default function EventCard() {
   }, []);
 
   const filteredEvents = searchTerm
-    ? events.filter(event =>
+    ? events.filter((event) =>
         event.name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : events;
 
-
-  const handleEditChange = (e: React.ChangeEvent<HTMLInputElement>, field: keyof Event) => {
+  const handleEditChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    field: keyof Event
+  ) => {
     if (editedEvent) {
       setEditedEvent({
         ...editedEvent,
@@ -64,43 +63,38 @@ export default function EventCard() {
     }
   };
 
-
   const handleEditClick = (eventId: string) => {
-    const eventToEdit = events.find(event => event._id === eventId);
+    const eventToEdit = events.find((event) => event._id === eventId);
     if (eventToEdit) {
       setEditingEventId(eventId);
       setEditedEvent({ ...eventToEdit });
     }
   };
 
-
-
   const deleteEvent = async (eventId: string) => {
     try {
       const response = await fetch(`http://localhost:3001/event/${eventId}`, {
-        method: 'DELETE',
+        method: "DELETE",
         headers: {
-          'Content-Type': 'application/json',
-          'token': `${session?.accessToken}`,
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
         },
       });
-  
+
       if (response.ok) {
-        setEvents(events.filter(event => event._id !== eventId));
-        toast.success('Event deleted succesfully')
+        setEvents(events.filter((event) => event._id !== eventId));
+        toast.success("Event deleted succesfully");
       } else {
-          toast.error('Error');
+        toast.error("Error");
       }
     } catch (error) {
-      console.error('Error de conexión:', error);
+      console.error("Error de conexión:", error);
     }
   };
 
-  const handleDelete = async (eventId:string) => {
-
+  const handleDelete = async (eventId: string) => {
     setEventIdToDelete(eventId);
     setIsModalOpen(true);
-
   };
 
   const handleDeleteConfirm = async () => {
@@ -112,7 +106,7 @@ export default function EventCard() {
 
   const handleDeleteCancel = () => {
     setIsModalOpen(false);
-    setEventIdToDelete(null); 
+    setEventIdToDelete(null);
   };
 
   const handleSaveClick = async (eventId: string) => {
@@ -120,27 +114,27 @@ export default function EventCard() {
 
     try {
       const response = await fetch(`http://localhost:3001/event/${eventId}`, {
-        method: 'PUT',
+        method: "PUT",
         headers: {
-          'Content-Type': 'application/json',
-          'token':`${session?.accessToken}`
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
         },
         body: JSON.stringify(editedEvent),
       });
 
       if (response.ok) {
         const { event: updatedEvent } = await response.json();
-        setEvents(events.map(event =>
-          event._id === eventId ? updatedEvent : event
-        ));
+        setEvents(
+          events.map((event) => (event._id === eventId ? updatedEvent : event))
+        );
         setEditingEventId(null);
-        setEditedEvent(null); 
-        toast.success('Event succesfully updated ');
+        setEditedEvent(null);
+        toast.success("Event succesfully updated ");
       } else {
-        toast.error('Error due to save changes')
+        toast.error("Error due to save changes");
       }
     } catch (error) {
-      console.error('Error al enviar los datos a la API:' , error);
+      console.error("Error al enviar los datos a la API:", error);
     }
   };
 
@@ -154,38 +148,43 @@ export default function EventCard() {
 
     // Invertir el estado de 'is_active'
     const updatedStatus = !editedEvent.is_active;
-    setEditedEvent(prevState => ({
+    setEditedEvent((prevState) => ({
       ...prevState!,
       is_active: updatedStatus,
     }));
 
     try {
       // Enviar solicitud PATCH al backend para actualizar el estado
-      const response = await fetch(`http://localhost:3001/event/toggle-status`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'token': `${session?.accessToken}`,
-        },
-        body: JSON.stringify({
-          eventId: editedEvent._id,
-        }),
-      });
+      const response = await fetch(
+        `http://localhost:3001/event/toggle-status`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+          body: JSON.stringify({
+            eventId: editedEvent._id,
+          }),
+        }
+      );
 
       if (response.ok) {
-        console.log(response)
-        toast.success(`Event status ${updatedStatus ? 'activated' : 'deactivated'}`);
+        console.log(response);
+        toast.success(
+          `Event status ${updatedStatus ? "activated" : "deactivated"}`
+        );
       } else {
-        toast.error('Error updating event status');
-        setEditedEvent(prevState => ({
+        toast.error("Error updating event status");
+        setEditedEvent((prevState) => ({
           ...prevState!,
           is_active: !updatedStatus,
         }));
       }
     } catch (error) {
-      console.error('Error updating user status:', error);
-      toast.error('Error updating user status');
-      setEditedEvent(prevState => ({
+      console.error("Error updating user status:", error);
+      toast.error("Error updating user status");
+      setEditedEvent((prevState) => ({
         ...prevState!,
         is_active: !updatedStatus,
       }));
@@ -206,7 +205,10 @@ export default function EventCard() {
       <ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
         {filteredEvents.length > 0 ? (
           filteredEvents.map((event) => (
-            <li key={event._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
+            <li
+              key={event._id}
+              className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer"
+            >
               {editingEventId === event._id && editedEvent ? (
                 <div className="flex flex-col gap-2 w-full p-2">
                   <div className="flex items-center gap-2">
@@ -214,78 +216,86 @@ export default function EventCard() {
                     <input
                       type="text"
                       value={editedEvent.name}
-                      onChange={(e) => handleEditChange(e, 'name')}
+                      onChange={(e) => handleEditChange(e, "name")}
                       className="border p-1 focus:outline-none rounded rounded-md p-2"
                     />
                   </div>
 
-                  
                   <div className="flex items-center gap-2">
                     <label>Description:</label>
                     <input
                       type="text"
                       value={editedEvent.description}
-                      onChange={(e) => handleEditChange(e, 'description')}
+                      onChange={(e) => handleEditChange(e, "description")}
                       className="border p-1 mb-2 focus:outline-none rounded rounded-md"
                     />
                   </div>
 
-                  
                   <div className="flex items-center gap-2">
                     <label>Date & Time:</label>
                     <input
                       type="datetime-local"
                       value={editedEvent.dateTime.toString().slice(0, 16)}
-                      onChange={(e) => handleEditChange(e, 'dateTime')}
+                      onChange={(e) => handleEditChange(e, "dateTime")}
                       className="border p-1 mb-2 focus:outline-none  rounded rounded-md"
                     />
                   </div>
 
-                
                   <div className="flex items-center gap-2">
                     <label>Price:</label>
                     <input
                       type="number"
                       value={editedEvent.price}
-                      onChange={(e) => handleEditChange(e, 'price')}
+                      onChange={(e) => handleEditChange(e, "price")}
                       className="border p-1 mb-2 focus:outline-none rounded rounded-md"
                     />
                   </div>
 
-                  
                   <div className="flex items-center gap-2">
                     <label>Capacity:</label>
                     <input
                       type="number"
                       value={editedEvent.capacity}
-                      onChange={(e) => handleEditChange(e, 'capacity')}
+                      onChange={(e) => handleEditChange(e, "capacity")}
                       className="border p-1 mb-2 focus:outline-none rounded rounded-md"
                     />
                   </div>
 
-                  
                   <div className="flex items-center gap-2">
                     <label>Availability:</label>
                     <input
                       type="number"
                       value={editedEvent.availability}
-                      onChange={(e) => handleEditChange(e, 'availability')}
+                      onChange={(e) => handleEditChange(e, "availability")}
                       className="border p-1 mb-2 focus:outline-none  rounded rounded-md"
                     />
                   </div>
 
                   <div className="flex items-center gap-2">
-                    {editedEvent.is_active ? 
-                    ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(editedEvent.is_active)}</p></label>) 
-                    : 
-                    (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(editedEvent.is_active)}</p></label>)}
-                    
-                    <button className="p-1 rounded rounded-md bg-gray-500 text-white ml-2"
-                            onClick={handleToggleStatus}>Toggle Status</button>
-                    
+                    {editedEvent.is_active ? (
+                      <label>
+                        Is active:{" "}
+                        <p className="font-bold text-blue-500 inline-block">
+                          {String(editedEvent.is_active)}
+                        </p>
+                      </label>
+                    ) : (
+                      <label>
+                        Is active:{" "}
+                        <p className="font-bold text-red-500 inline-block">
+                          {String(editedEvent.is_active)}
+                        </p>
+                      </label>
+                    )}
+
+                    <button
+                      className="p-1 rounded rounded-md bg-gray-500 text-white ml-2"
+                      onClick={handleToggleStatus}
+                    >
+                      Toggle Status
+                    </button>
                   </div>
 
-                  
                   <button
                     onClick={() => handleSaveClick(event._id)}
                     className="bg-green-500 text-white p-2 rounded rounded-md"
@@ -301,22 +311,20 @@ export default function EventCard() {
                 </div>
               ) : (
                 <div className="flex gap-2 p-2 items-center justify-between w-full ">
-                 
                   <span>{event.name}</span>
                   <div>
-                  <button
-                    onClick={() => handleEditClick(event._id)}
-                    className=" bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
-                  >
-                    Edit
-                  </button>
-                  <button
-                    onClick={() => handleDelete(event._id)}
-                    className="ml-2 bg-red-500 text-white p-1 rounded rounded-md min-w-16"
-                  >
-                    Delete
-                  </button>
-
+                    <button
+                      onClick={() => handleEditClick(event._id)}
+                      className=" bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => handleDelete(event._id)}
+                      className="ml-2 bg-red-500 text-white p-1 rounded rounded-md min-w-16"
+                    >
+                      Delete
+                    </button>
                   </div>
                 </div>
               )}

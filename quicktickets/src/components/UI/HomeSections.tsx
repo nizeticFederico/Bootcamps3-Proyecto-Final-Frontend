@@ -34,8 +34,8 @@ export default function HomeSections({ section }: HomeSectionsProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [currentPage, setCurrentPage] = useState(1); 
-  const eventsPerPage = 6; 
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 6;
 
   useEffect(() => {
     async function fetchEvents() {
@@ -98,8 +98,8 @@ export default function HomeSections({ section }: HomeSectionsProps) {
                   <CardSections key={event._id} {...event} />
                 ))}
               </div>
-              
-              <div className="flex justify-center mt-4">          
+
+              <div className="flex justify-center mt-4">
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button
                     key={index + 1}
@@ -112,7 +112,7 @@ export default function HomeSections({ section }: HomeSectionsProps) {
                   >
                     {index + 1}
                   </button>
-                ))}              
+                ))}
               </div>
             </>
           )}
