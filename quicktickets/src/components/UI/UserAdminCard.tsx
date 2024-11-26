@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 
 interface User {
   _id: string;
@@ -126,20 +127,33 @@ export default function UserCard() {
     }
   };
 
- /* const changeRole = async (role:string) => {
+const handleChangeRole = async (userId:string , firstName:string , lastName:string) => {
 
     try {
-      const response = await fetch(`http://localhost:3001/user/update`, {
+      const response = await fetch(`http://localhost:3001/user/new-admin`, {
+        method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',
           'token': `${session?.accessToken}`,
-        }
+        },
+        body: JSON.stringify({
+          userId,
+        })
       })
+
+      if (response.ok) {
+        toast.success(`User ${firstName} ${lastName} is now Admin`);
+        setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
+      } else {
+        toast.error('Error updating user role');
+        
+      }
     } catch (error) {
-      
+      console.error('Error updating user role:', error);
+      toast.error('Error updating user role');
     }
 
-  }*/
+  }
 
   return (
     <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
@@ -160,7 +174,7 @@ export default function UserCard() {
                 <span className="min-w-32 font-bold ">{`${user.first_name}  ${user.last_name}`}</span> 
 
                 
-                <label>Role:  <p className="font-bold text-blue-500 inline-block">{String(user.role)}</p></label>
+                <label>Role:  <p className="font-bold text-orange-500 inline-block">{String(user.role)}</p></label>
                 
                 
                 {user.is_active ? 
@@ -170,8 +184,11 @@ export default function UserCard() {
                 }
                 <div>
                   <button
+                   onClick={() => handleChangeRole(user._id , user.first_name , user.last_name)}
+                  className="bg-violet-500 text-white p-1 rounded rounded-md min-w-16"
+                  >Make admin
+                  </button>
                   
-                  className="bg-violet-500 text-white p-1 rounded rounded-md min-w-16">Make admin</button>
                   <button
                     onClick={() => handleToggleStatus(user._id, user.is_active)}
                     className="ml-2 bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
