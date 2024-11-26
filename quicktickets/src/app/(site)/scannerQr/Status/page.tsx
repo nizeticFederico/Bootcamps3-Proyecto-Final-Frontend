@@ -38,7 +38,7 @@ const TicketStatusSimple = () => {
         if (data.message === "Authorized") {
           setStatus("Available");
         } else {
-          setStatus("Denied");
+          setStatus("Used");
         }
 
         
