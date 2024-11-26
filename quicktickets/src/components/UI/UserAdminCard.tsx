@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 
 interface User {
   _id: string;
@@ -126,6 +127,34 @@ export default function UserCard() {
     }
   };
 
+const handleChangeRole = async (userId:string , firstName:string , lastName:string) => {
+
+    try {
+      const response = await fetch(`http://localhost:3001/user/new-admin`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': `${session?.accessToken}`,
+        },
+        body: JSON.stringify({
+          userId,
+        })
+      })
+
+      if (response.ok) {
+        toast.success(`User ${firstName} ${lastName} is now Admin`);
+        setUsers(prevUsers => prevUsers.filter(user => user._id !== userId));
+      } else {
+        toast.error('Error updating user role');
+        
+      }
+    } catch (error) {
+      console.error('Error updating user role:', error);
+      toast.error('Error updating user role');
+    }
+
+  }
+
   return (
     <div className="flex flex-col w-full items-center justify-center p-8 gap-4">
       <h3 className="text-4xl">Users</h3>
@@ -141,8 +170,13 @@ export default function UserCard() {
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
             <li key={user._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
-              <div className="flex gap-2 p-2 items-center justify-between w-full">
-                <span className="min-w-32">{`${user.first_name}  ${user.last_name}`}</span> 
+              <div className="flex gap-5 p-2 items-center justify-between w-full">
+                <span className="min-w-32 font-bold ">{`${user.first_name}  ${user.last_name}`}</span> 
+
+                
+                <label>Role:  <p className="font-bold text-orange-500 inline-block">{String(user.role)}</p></label>
+                
+                
                 {user.is_active ? 
                   ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(user.is_active)}</p></label>) 
                   : 
@@ -150,8 +184,14 @@ export default function UserCard() {
                 }
                 <div>
                   <button
+                   onClick={() => handleChangeRole(user._id , user.first_name , user.last_name)}
+                  className="bg-violet-500 text-white p-1 rounded rounded-md min-w-16"
+                  >Make admin
+                  </button>
+                  
+                  <button
                     onClick={() => handleToggleStatus(user._id, user.is_active)}
-                    className="bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
+                    className="ml-2 bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
                   >
                     Toggle Status
                   </button>

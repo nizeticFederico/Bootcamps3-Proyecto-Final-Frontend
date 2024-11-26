@@ -81,8 +81,8 @@ const CreateCategoryModal: React.FC<CreateCategoryModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
-      <div className="bg-white p-6 rounded-lg w-96 shadow-lg">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center ">
+      <div className="bg-white p-6 rounded-lg sm:w-96 max-w-lg overflow-auto sm:overflow-y-auto sm:h-[100vh] h-[80vh]">
         <h2 className="text-2xl mb-4">Create New Category</h2>
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
