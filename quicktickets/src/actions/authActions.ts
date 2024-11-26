@@ -1,6 +1,6 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
+import { signIn } from "@/auth";
 
 export async function login(credentials: { email: string; password: string }) {
   try {
@@ -51,6 +51,7 @@ export async function formLogin(formData: FormData) {
     }
     return { success: true, result };
   } catch (error) {
+    console.log(error);
     return { success: false, error: "Invalid email or password." };
   }
 }
