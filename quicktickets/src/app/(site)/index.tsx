@@ -12,7 +12,7 @@ import sectionsConfig from "@/components/UI/sectionsConfig";
 
 export default function HomePage() {
   const router = useRouter();
-  const locations = useFetchLocations("https://kit-rich-starling.ngrok-free.app/event/all");
+  const locations = useFetchLocations("http://localhost:3001/event/all");
 
   // Función que redirige a EventsPage con los parámetros de búsqueda
   const handleSearch = (name: string, location: string) => {
@@ -29,7 +29,10 @@ export default function HomePage() {
       <div className="flex flex-col w-full h-80 bg-[url('../../public/assets/images/home2.jpg')] bg-cover bg-center items-center justify-center">
         <h2 className="font-bold text-4xl text-white text-left p-4 mb-5">
           Don&apos;t miss out! <br />
-          Explore the <span className="text-[#FFE047]">vibrant events</span> happening locally and globally.
+          Explore the <span className="text-[#FFE047]">
+            vibrant events
+          </span>{" "}
+          happening locally and globally.
         </h2>
         <div className="w-full text-base">
           <SearchBar onSearch={handleSearch} locations={locations} />

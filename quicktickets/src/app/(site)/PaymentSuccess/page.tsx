@@ -1,29 +1,29 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import { useSession } from 'next-auth/react';
-import { useSearchParams } from 'next/navigation';
+import { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
 
 const Page: React.FC = () => {
   const searchParams = useSearchParams();
-  const eventId = searchParams.get('eventId');
-  const quantity = searchParams.get('quantity');
+  const eventId = searchParams.get("eventId");
+  const quantity = searchParams.get("quantity");
   const { data: session, status } = useSession();
 
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<boolean>(false);
-  const [isFetchDone, setIsFetchDone] = useState(false)
+  const [isFetchDone, setIsFetchDone] = useState(false);
 
   useEffect(() => {
-    if (status === 'loading') {
+    if (status === "loading") {
       // Si la sesión está cargando, no hacer nada por ahora
       return;
     }
-    if (eventId && quantity &&session?.accessToken && !isFetchDone) {
+    if (eventId && quantity && session?.accessToken && !isFetchDone) {
       sendPostRequest(eventId, parseInt(quantity));
-      setIsFetchDone(true)
+      setIsFetchDone(true);
     }
   }, [eventId, quantity, session, status]);
 
@@ -32,17 +32,17 @@ const Page: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch('https://kit-rich-starling.ngrok-free.app/order/success', {
-        method: 'POST',
+      const response = await fetch("http://localhost:3001/order/success", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
           token: `${session?.accessToken || ""}`,
         },
         body: JSON.stringify({ eventId, quantity }),
       });
 
       if (!response.ok) {
-        throw new Error('Error en la solicitud');
+        throw new Error("Error en la solicitud");
       }
 
       setSuccess(true);
@@ -52,7 +52,7 @@ const Page: React.FC = () => {
       setLoading(false);
     }
   };
-console.log(session);
+  console.log(session);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">

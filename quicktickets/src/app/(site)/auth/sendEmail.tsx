@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "https://kit-rich-starling.ngrok-free.app/user/send-forgot-password-email",
+        "http://localhost:3001/user/send-forgot-password-email",
         {
           method: "POST",
           headers: {
@@ -30,22 +30,21 @@ const ForgotPassword = () => {
           },
           body: JSON.stringify({ email }),
         }
-      )
+      );
 
       const data = await response.json();
 
       if (response.ok) {
         setStatus("Check your email for the reset link.");
         setEmail("");
-      } else {   
+      } else {
         if (data.message === "Email not found") {
           setError("The email address is not registered.");
         } else {
           setError(data.message || "Error sending reset email.");
         }
       }
-    } catch (err) 
-    {
+    } catch (err) {
       setError("An error occurred while sending the reset email.");
     } finally {
       setLoading(false);
@@ -54,7 +53,6 @@ const ForgotPassword = () => {
 
   return (
     <main className="flex items-center h-screen">
-      
       <div className="flex flex-col justify-center w-2/3 h-screen gap-4 p-4 bg-[#2B293D]">
         <h2 className="font-bold text-4xl text-white p-8 leading-[1.5]">
           Enter your email <br />
@@ -62,7 +60,6 @@ const ForgotPassword = () => {
         </h2>
       </div>
 
-      
       <div className="flex flex-col justify-center w-full h-screen bg-white pl-16 pr-16 gap-5">
         <h1 className="font-bold text-3xl pl-32">Reset Your Password</h1>
         <div className="p-32 pb-4 pt-4">
