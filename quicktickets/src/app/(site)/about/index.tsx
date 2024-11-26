@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image"
 import { FaLinkedinIn } from "react-icons/fa";
 import { TbBrandGithubFilled } from "react-icons/tb";

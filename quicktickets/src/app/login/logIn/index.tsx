@@ -6,6 +6,7 @@ import Image from "next/image";
 import { formLogin } from "@/actions/authActions";  
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Link from "next/link";
 
 export default function LogIn() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -43,7 +44,7 @@ export default function LogIn() {
     <main className="flex items-center h-screen">
       <div className="hidden sm:flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
         <div>
-          <a href="/">
+          <Link href="/">
             <Image
               src="/assets/images/icons/icon.svg"
               width={128}
@@ -51,7 +52,7 @@ export default function LogIn() {
               alt="Aplication Logo"
               className="ml-4"
             />
-          </a>
+          </Link>
           <Image
             src="/assets/images/icons/quickticketswhite.svg"
             width={128}
@@ -68,7 +69,7 @@ export default function LogIn() {
       <div className="flex flex-col justify-center w-full h-screen bg-white rounded-tl-[50px] rounded-bl-[50px] sm:pl-32 sm:pr-32 gap-5">
         
         <div className="sm:hidden flex justify-center mb-8">
-        <a href="/">
+        <Link href="/">
             <Image
               src="/assets/images/icons/icon.svg"
               width={200}
@@ -76,7 +77,7 @@ export default function LogIn() {
               alt="Aplication Logo"
               className="ml-4"
             />
-          </a>
+          </Link>
         </div>
 
         <h1 className="font-bold text-3xl pl-8 ">Login</h1>
@@ -132,15 +133,15 @@ export default function LogIn() {
               )}
             </button>
 
-            <a href="http://localhost:3000/auth" className="text-sm text-gray-500">
+            <Link href="http://localhost:3000/auth" className="text-sm text-gray-500">
               Forgot your password?
-            </a>
+            </Link>
 
             <p className="text-sm my-4">
               Do you not have an account?{" "}
-              <a href="/register" className="text-gray-500">
+              <Link href="/register" className="text-gray-500">
                 Register
-              </a>
+              </Link>
             </p>
           </form>
         </div>
