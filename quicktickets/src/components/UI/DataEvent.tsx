@@ -71,41 +71,38 @@ const EventData: React.FC<EventDataProps> = ({
   const isCreator = session?.user?.id === creatorId; // Verificar si el usuario es el creador
 
   const [showShareMenu, setShowShareMenu] = useState(false);
-  const [creatorName, setCreatorName] = useState<string | null>(null);
+  // const [creatorName, setCreatorName] = useState<string | null>(null);
 
   // Obtener el nombre del creador
-  /*useEffect(() => {
-    const fetchCreatorName = async () => {
-      try {
-        console.log("Sending request to /creator-name with eventId:", _id);
-        const response = await fetch(
-          "http://localhost:3001/event/creator-name",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({ eventId: _id }),
-          }
-        );
+  // useEffect(() => {
+  //   const fetchCreatorName = async () => {
+  //     try {
+  //       console.log("Sending request to /creator-name with eventId:", _id);
+  //       const response = await fetch("https://kit-rich-starling.ngrok-free.app/event/creator-name", {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //         },
+  //         body: JSON.stringify({ eventId: _id }),
+  //       });
+  
+  //       console.log("Response status:", response.status);
+  //       if (!response.ok) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  
+  //       const data = await response.json();
+  //       console.log("Creator name fetched:", data.username);
+  //       setCreatorName(data.username || "Unknown");
+  //     } catch (error) {
+  //       console.error("Error fetching creator name:", error);
+  //       setCreatorName("Error loading creator name");
+  //     }
+  //   };
+  
+  //   fetchCreatorName();
+  // }, [_id]);
 
-        console.log("Response status:", response.status);
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-
-        const data = await response.json();
-        console.log("Creator name fetched:", data.username);
-        setCreatorName(data.username || "Unknown");
-      } catch (error) {
-        console.error("Error fetching creator name:", error);
-        setCreatorName("Error loading creator name");
-      }
-    };
-
-    fetchCreatorName();
-  }, [_id]);
-*/
   const handleEditEvent = () => {
     const query = new URLSearchParams({
       _id,
@@ -126,7 +123,7 @@ const EventData: React.FC<EventDataProps> = ({
 
   const buyStripe = async () => {
     const payData = { eventId: _id, quantity: 1 };
-    const response = await fetch("http://localhost:3001/pay", {
+    const response = await fetch("https://kit-rich-starling.ngrok-free.app/pay", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -296,16 +293,14 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-gray-700 mb-3">
-            Description
-          </h2>
-           <p className="text-gray-600">{description}</p>
-          {/*{creatorName && (
+          <h2 className="text-xl font-semibold text-gray-700 mb-3">Description</h2>
+          <p className="text-gray-600">{description}</p>
+          {/* {creatorName && (
             <p className="text-sm text-gray-500 mt-4">
               Created by: <span className="font-semibold">{creatorName}</span>
-            </p> */}
-          
-        </div> 
+            </p>
+          )} */}
+        </div>
       </div>
     </main>
   );

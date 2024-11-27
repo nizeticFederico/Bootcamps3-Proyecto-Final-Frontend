@@ -13,7 +13,14 @@ export const useCategories = () => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get("http://localhost:3001/category/all");
+        const response = await axios.get(
+          "https://kit-rich-starling.ngrok-free.app/category/all",
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "1",
+            },
+          }
+        );
         setCategories(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);

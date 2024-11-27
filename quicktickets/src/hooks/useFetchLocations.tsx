@@ -10,7 +10,11 @@ export function useFetchLocations(apiUrl: string) {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const response = await fetch(apiUrl);
+        const response = await fetch(apiUrl, {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        });
         if (response.ok) {
           const data: Event[] = await response.json();
 

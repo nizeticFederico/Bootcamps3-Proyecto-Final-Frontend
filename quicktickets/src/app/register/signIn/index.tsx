@@ -67,13 +67,17 @@ export default function SignIn() {
     };
 
     try {
-      const response = await fetch(`http://localhost:3001/auth/register`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `https://kit-rich-starling.ngrok-free.app/auth/register`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "ngrok-skip-browser-warning": "1",
+          },
+          body: JSON.stringify(data),
+        }
+      );
 
       if (response.status === 201) {
         setLoading(false);

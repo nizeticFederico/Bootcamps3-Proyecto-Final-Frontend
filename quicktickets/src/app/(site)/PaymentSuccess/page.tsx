@@ -32,14 +32,17 @@ const Page: React.FC = () => {
     setError(null);
 
     try {
-      const response = await fetch("http://localhost:3001/order/success", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token: `${session?.accessToken || ""}`,
-        },
-        body: JSON.stringify({ eventId, quantity }),
-      });
+      const response = await fetch(
+        "https://kit-rich-starling.ngrok-free.app/order/success",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken || ""}`,
+          },
+          body: JSON.stringify({ eventId, quantity }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Error en la solicitud");

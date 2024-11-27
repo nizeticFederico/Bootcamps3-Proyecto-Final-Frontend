@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import axios from "axios";
 
 interface Category {
   id: string;
@@ -21,11 +21,15 @@ const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await axios.get('http://localhost:3001/category/all');
-        console.log(response.data);
-        setCategories(response.data);
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/category/all", {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        });
+        const data = await response.json()
+        setCategories(data);
       } catch (error) {
-        console.error('Error fetching categories:', error);
+        console.error("Error fetching categories:", error);
       } finally {
         setLoading(false);
       }
@@ -38,11 +42,7 @@ const Categories: React.FC<CategoriesProps> = ({ renderCategory }) => {
     return <option>Loading categories...</option>;
   }
 
-  return (
-    <>
-      {categories.map((category) => renderCategory(category))}
-    </>
-  );
+  return <>{categories.map((category) => renderCategory(category))}</>;
 };
 
 export default Categories;

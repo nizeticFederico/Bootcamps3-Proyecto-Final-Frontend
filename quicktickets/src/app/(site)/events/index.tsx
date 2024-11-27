@@ -39,7 +39,7 @@ export default function EventsPage() {
   });
 
   const searchParams = useSearchParams();
-  const locations = useFetchLocations("http://localhost:3001/event/all");
+  const locations = useFetchLocations("https://kit-rich-starling.ngrok-free.app/event/all");
 
   const onSearch = (name: string, location: string) => {
     let filtered = events;
@@ -95,7 +95,11 @@ export default function EventsPage() {
   useEffect(() => {
     async function fetchEvents() {
       try {
-        const response = await fetch("http://localhost:3001/event/all");
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/event/all", {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setEvents(data);

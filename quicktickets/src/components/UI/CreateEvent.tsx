@@ -146,8 +146,8 @@ export default function EventCreate() {
       if (file) {
         const formData = new FormData();
         formData.append("image", file);
-
-        const response = await fetch("http://localhost:3001/image/upload", {
+  
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/image/upload", {
           method: "POST",
           body: formData,
         });

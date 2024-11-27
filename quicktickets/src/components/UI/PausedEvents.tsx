@@ -35,12 +35,13 @@ export default function PausedEventCard() {
     const fetchEvents = async () => {
       try {
         const response = await fetch(
-          `http://localhost:3001/event/all-paused-events`,
+          `https://kit-rich-starling.ngrok-free.app/event/all-paused-events`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               token: `${session?.accessToken}`,
+              "ngrok-skip-browser-warning": "1",
             },
           }
         );
@@ -122,14 +123,17 @@ export default function PausedEventCard() {
     if (!editedEvent) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          token: `${session?.accessToken}`,
-        },
-        body: JSON.stringify(editedEvent),
-      });
+      const response = await fetch(
+        `https://kit-rich-starling.ngrok-free.app/event/${eventId}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+          body: JSON.stringify(editedEvent),
+        }
+      );
 
       if (response.ok) {
         const { event: updatedEvent } = await response.json();
@@ -165,7 +169,7 @@ export default function PausedEventCard() {
     try {
       // Enviar solicitud PATCH al backend para actualizar el estado
       const response = await fetch(
-        `http://localhost:3001/event/toggle-status`,
+        `https://kit-rich-starling.ngrok-free.app/event/toggle-status`,
         {
           method: "PATCH",
           headers: {

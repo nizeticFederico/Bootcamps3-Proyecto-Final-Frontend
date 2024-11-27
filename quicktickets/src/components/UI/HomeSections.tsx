@@ -44,14 +44,20 @@ export default function HomeSections({ section }: HomeSectionsProps) {
       setLoading(true);
       try {
         // Construir la URL dinámica
-        const url = new URL(`http://localhost:3001${section.endpoint}`);
+        const url = new URL(
+          `https://kit-rich-starling.ngrok-free.app${section.endpoint}`
+        );
         if (section.params) {
           Object.entries(section.params).forEach(([key, value]) =>
             url.searchParams.append(key, value)
           );
         }
 
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setEvents(data);

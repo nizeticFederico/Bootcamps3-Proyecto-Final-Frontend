@@ -12,7 +12,7 @@ import sectionsConfig from "@/components/UI/sectionsConfig";
 
 export default function HomePage() {
   const router = useRouter();
-  const locations = useFetchLocations("http://localhost:3001/event/all");
+  const locations = useFetchLocations("https://kit-rich-starling.ngrok-free.app/event/all");
 
   // Función que redirige a EventsPage con los parámetros de búsqueda
   const handleSearch = (name: string, location: string) => {

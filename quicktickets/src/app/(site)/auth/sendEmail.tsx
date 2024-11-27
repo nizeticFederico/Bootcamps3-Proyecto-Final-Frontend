@@ -22,7 +22,7 @@ const ForgotPassword = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3001/user/send-forgot-password-email",
+        "https://kit-rich-starling.ngrok-free.app/user/send-forgot-password-email",
         {
           method: "POST",
           headers: {

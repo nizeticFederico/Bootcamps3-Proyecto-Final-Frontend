@@ -33,7 +33,14 @@ export default function CategoryCard() {
   useEffect(() => {
     const fetchCategories = async () => {
       try {
-        const response = await fetch("http://localhost:3001/category/all");
+        const response = await fetch(
+          "https://kit-rich-starling.ngrok-free.app/category/all",
+          {
+            headers: {
+              "ngrok-skip-browser-warning": "1",
+            },
+          }
+        );
         const data: Category[] = await response.json();
         setCategories(data);
       } catch (error) {
@@ -75,7 +82,7 @@ export default function CategoryCard() {
   const deleteEvent = async (categoryId: string) => {
     try {
       const response = await fetch(
-        `http://localhost:3001/category/${categoryId}`,
+        `https://kit-rich-starling.ngrok-free.app/category/${categoryId}`,
         {
           method: "DELETE",
           headers: {
@@ -120,7 +127,7 @@ export default function CategoryCard() {
 
     try {
       const response = await fetch(
-        `http://localhost:3001/category/${categoryId}`,
+        `https://kit-rich-starling.ngrok-free.app/category/${categoryId}`,
         {
           method: "PUT",
           headers: {
@@ -162,14 +169,17 @@ export default function CategoryCard() {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/category", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          token: `${session?.accessToken}`,
-        },
-        body: JSON.stringify(newCategoryData),
-      });
+      const response = await fetch(
+        "https://kit-rich-starling.ngrok-free.app/category",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+          body: JSON.stringify(newCategoryData),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to create category");
 
@@ -194,10 +204,13 @@ export default function CategoryCard() {
         formData.append("image", file);
 
         // Subir la imagen a Cloudinary
-        const response = await fetch("http://localhost:3001/image/upload", {
-          method: "POST",
-          body: formData,
-        });
+        const response = await fetch(
+          "https://kit-rich-starling.ngrok-free.app/image/upload",
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
 
         if (!response.ok) {
           throw new Error("Failed to upload image");

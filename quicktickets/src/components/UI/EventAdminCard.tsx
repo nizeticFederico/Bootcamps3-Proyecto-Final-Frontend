@@ -34,7 +34,11 @@ export default function EventCard() {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch("http://localhost:3001/event/all");
+        const response = await fetch('https://kit-rich-starling.ngrok-free.app/event/all', {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        }); 
         const data: Event[] = await response.json();
         setEvents(data);
       } catch (error) {
@@ -73,8 +77,8 @@ export default function EventCard() {
 
   const deleteEvent = async (eventId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
-        method: "DELETE",
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`, {
+        method: 'DELETE',
         headers: {
           "Content-Type": "application/json",
           token: `${session?.accessToken}`,
@@ -113,8 +117,8 @@ export default function EventCard() {
     if (!editedEvent) return;
 
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
-        method: "PUT",
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`, {
+        method: 'PUT',
         headers: {
           "Content-Type": "application/json",
           token: `${session?.accessToken}`,
@@ -155,19 +159,16 @@ export default function EventCard() {
 
     try {
       // Enviar solicitud PATCH al backend para actualizar el estado
-      const response = await fetch(
-        `http://localhost:3001/event/toggle-status`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            token: `${session?.accessToken}`,
-          },
-          body: JSON.stringify({
-            eventId: editedEvent._id,
-          }),
-        }
-      );
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/toggle-status`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+          'token': `${session?.accessToken}`,
+        },
+        body: JSON.stringify({
+          eventId: editedEvent._id,
+        }),
+      });
 
       if (response.ok) {
         console.log(response);
