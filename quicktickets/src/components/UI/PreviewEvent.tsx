@@ -4,7 +4,12 @@ import React, { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation"; // Para manejar query params
 import Image from "next/image";
-import { FaMapMarkerAlt, FaCalendarAlt, FaRegClock, FaTicketAlt } from "react-icons/fa";
+import {
+  FaMapMarkerAlt,
+  FaCalendarAlt,
+  FaRegClock,
+  FaTicketAlt,
+} from "react-icons/fa";
 import { TiGroup } from "react-icons/ti";
 import { TfiBackLeft } from "react-icons/tfi";
 import GoogleMapComponent from "./GoogleMaps";
@@ -38,7 +43,9 @@ const PreviewEvent: React.FC = () => {
   useEffect(() => {
     try {
       // Obtener datos del evento desde localStorage
-      const storedEventData = JSON.parse(localStorage.getItem("eventData") || "{}");
+      const storedEventData = JSON.parse(
+        localStorage.getItem("eventData") || "{}"
+      );
       console.log("Datos del evento desde localStorage:", storedEventData);
 
       // Obtener ID del evento desde los query params
@@ -64,11 +71,17 @@ const PreviewEvent: React.FC = () => {
         if (!isNaN(lat) && !isNaN(lng)) {
           setMarker({ lat, lng });
         } else {
-          console.warn("Coordenadas no válidas:", storedEventData.latitude, storedEventData.longitude);
+          console.warn(
+            "Coordenadas no válidas:",
+            storedEventData.latitude,
+            storedEventData.longitude
+          );
         }
       } else {
         // No hay datos en localStorage, redirigir
-        console.warn("No se encontraron datos en localStorage. Redirigiendo...");
+        console.warn(
+          "No se encontraron datos en localStorage. Redirigiendo..."
+        );
         router.push("/events/create-event");
       }
     } catch (error) {
@@ -174,9 +187,10 @@ const PreviewEvent: React.FC = () => {
   };
 
   if (!eventData) {
-    return <p className="text-center text-gray-600">Cargando datos del evento...</p>;
+    return (
+      <p className="text-center text-gray-600">Cargando datos del evento...</p>
+    );
   }
-  
 
   const {
     id,
@@ -277,7 +291,9 @@ const PreviewEvent: React.FC = () => {
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700">Ticket Information</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Ticket Information
+          </h3>
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
@@ -292,7 +308,7 @@ const PreviewEvent: React.FC = () => {
         </div>
         <div>
           <h3 className="text-lg font-medium">Location</h3>
-          <div className='flex'>
+          <div className="flex">
             <FaMapMarkerAlt className="mr-2 mt-0.5 text-red-500" />
             <p>{location}</p>
           </div>
@@ -305,8 +321,10 @@ const PreviewEvent: React.FC = () => {
             />
           </div>
         </div>
-        <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-3">Hosted by</h3>
+        {/* <div>
+          <h3 className="text-xl font-semibold text-gray-700 mb-3">
+            Hosted by
+          </h3>
           <div className="flex items-center space-x-4">
             <div className="h-10 w-10 rounded-full bg-gray-300"></div>
             <div>
@@ -321,9 +339,11 @@ const PreviewEvent: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div>
-          <h3 className="text-xl font-semibold text-gray-700">Event Description</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Event Description
+          </h3>
           <div className="max-w-lg">
             <p>{description}</p>
           </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
+import { json } from "stream/consumers";
 
 interface User {
   _id: string;
@@ -17,7 +18,7 @@ interface User {
 
 export default function UserCard() {
   const [users, setUsers] = useState<User[]>([]);
-  const [searchTerm, setSearchTerm] = useState<string>('');;
+  const [searchTerm, setSearchTerm] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false); // Estado del modal
   const [userIdToDelete, setUserIdToDelete] = useState<string | null>(null);
   const { data: session, status } = useSession();
@@ -33,12 +34,12 @@ export default function UserCard() {
               'token': `${session?.accessToken}`,
               'ngrok-skip-browser-warning': '1',
             }
-          });
+          );
 
           const data: User[] = await response.json();
           setUsers(data);
         } catch (error) {
-          console.error('Error fetching users:', error);
+          console.error("Error fetching users:", error);
         }
       };
 
@@ -49,7 +50,7 @@ export default function UserCard() {
   }, [session, status]);
 
   const filteredUsers = searchTerm
-    ? users.filter(user =>
+    ? users.filter((user) =>
         user.first_name.toLowerCase().includes(searchTerm.toLowerCase())
       )
     : users;
@@ -65,13 +66,13 @@ export default function UserCard() {
       });
 
       if (response.ok) {
-        setUsers(users.filter(user => user._id !== userId));
-        toast.success('User deleted successfully');
+        setUsers(users.filter((user) => user._id !== userId));
+        toast.success("User deleted successfully");
       } else {
-        toast.error('Error');
+        toast.error("Error");
       }
     } catch (error) {
-      console.error('Error de conexión:', error);
+      console.error("Error de conexión:", error);
     }
   };
 
@@ -94,16 +95,18 @@ export default function UserCard() {
 
   const handleToggleStatus = async (userId: string, currentStatus: boolean) => {
     const updatedStatus = !currentStatus;
-    setUsers(users.map(user => 
-      user._id === userId ? { ...user, is_active: updatedStatus } : user
-    ));
+    setUsers(
+      users.map((user) =>
+        user._id === userId ? { ...user, is_active: updatedStatus } : user
+      )
+    );
 
     try {
       const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/toggle-status/`, {
         method: 'PATCH',
         headers: {
-          'Content-Type': 'application/json',
-          'token': `${session?.accessToken}`,
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
         },
         body: JSON.stringify({
           userId,
@@ -111,19 +114,16 @@ export default function UserCard() {
       });
 
       if (response.ok) {
-        toast.success(`User status ${updatedStatus ? 'activated' : 'deactivated'}`);
+        toast.success(`User ${firstName} ${lastName} is now Admin`);
+        setUsers((prevUsers) =>
+          prevUsers.filter((user) => user._id !== userId)
+        );
       } else {
-        toast.error('Error updating user status');
-        setUsers(users.map(user => 
-          user._id === userId ? { ...user, is_active: !updatedStatus } : user
-        ));
+        toast.error("Error updating user role");
       }
     } catch (error) {
-      console.error('Error updating user status:', error);
-      toast.error('Error updating user status');
-      setUsers(users.map(user => 
-        user._id === userId ? { ...user, is_active: !updatedStatus } : user
-      ));
+      console.error("Error updating user role:", error);
+      toast.error("Error updating user role");
     }
   };
 
@@ -141,18 +141,52 @@ export default function UserCard() {
       <ul className="flex flex-col items-start p-4 gap-4 min-w-[50%]">
         {filteredUsers.length > 0 ? (
           filteredUsers.map((user) => (
-            <li key={user._id} className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer">
-              <div className="flex gap-2 p-2 items-center justify-between w-full">
-                <span className="min-w-32">{`${user.first_name}  ${user.last_name}`}</span> 
-                {user.is_active ? 
-                  ( <label>Is active:  <p className="font-bold text-blue-500 inline-block">{String(user.is_active)}</p></label>) 
-                  : 
-                  (<label>Is active: <p className="font-bold text-red-500 inline-block">{String(user.is_active)}</p></label>)
-                }
+            <li
+              key={user._id}
+              className="flex border border-gray-200 p-1 rounded-md w-full min-w-full transition-transform transform hover:scale-105 hover:shadow-lg duration-300 hover:rounded-lg hover:cursor-pointer"
+            >
+              <div className="flex gap-5 p-2 items-center justify-between w-full">
+                <span className="min-w-32 font-bold ">{`${user.first_name}  ${user.last_name}`}</span>
+
+                <label>
+                  Role:{" "}
+                  <p className="font-bold text-orange-500 inline-block">
+                    {String(user.role)}
+                  </p>
+                </label>
+
+                {user.is_active ? (
+                  <label>
+                    Is active:{" "}
+                    <p className="font-bold text-blue-500 inline-block">
+                      {String(user.is_active)}
+                    </p>
+                  </label>
+                ) : (
+                  <label>
+                    Is active:{" "}
+                    <p className="font-bold text-red-500 inline-block">
+                      {String(user.is_active)}
+                    </p>
+                  </label>
+                )}
                 <div>
                   <button
+                    onClick={() =>
+                      handleChangeRole(
+                        user._id,
+                        user.first_name,
+                        user.last_name
+                      )
+                    }
+                    className="bg-violet-500 text-white p-1 rounded rounded-md min-w-16"
+                  >
+                    Make admin
+                  </button>
+
+                  <button
                     onClick={() => handleToggleStatus(user._id, user.is_active)}
-                    className="bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
+                    className="ml-2 bg-gray-500 text-white p-1 rounded rounded-md min-w-16"
                   >
                     Toggle Status
                   </button>

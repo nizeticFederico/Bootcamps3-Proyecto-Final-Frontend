@@ -34,7 +34,7 @@ export default function EventCreate() {
     creatorId: session?.user?.id || "",
   });
   const router = useRouter();
-  
+
   // Revisar si hay datos iniciales
   useEffect(() => {
     const eventData = {
@@ -71,14 +71,12 @@ export default function EventCreate() {
       ...eventData,
     }));
 
-      // Actualizar la previsualización de la imagen
-  if (eventData.imageUrl) {
-    setPreviewImage(decodeURIComponent(eventData.imageUrl));
-  }
+    // Actualizar la previsualización de la imagen
+    if (eventData.imageUrl) {
+      setPreviewImage(decodeURIComponent(eventData.imageUrl));
+    }
   }, [searchParams]);
-  
 
-  
   const [loading, setLoading] = useState<boolean>(false);
   const [status, setStatus] = useState<number | null>(null);
 
@@ -86,9 +84,6 @@ export default function EventCreate() {
   const today = new Date().toISOString().split("T")[0];
   const currentTime = new Date().toTimeString().slice(0, 5);
   const [eventType, setEventType] = useState<"ticketed" | "free" | null>(null);
-
-
-  
 
   // Handle marker drag end
   const handleMarkerDragEnd = (coords: { lat: number; lng: number }) => {
@@ -109,42 +104,44 @@ export default function EventCreate() {
   };
 
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     const { name, value } = event.target;
-  
+
     setValues((prevValues) => {
       const newValues = { ...prevValues, [name]: value };
-  
+
       // Si los campos country o city cambian, actualiza location
       if (name === "country" || name === "city") {
         newValues.location = `${newValues.city}, ${newValues.country}`.trim();
       }
-  
+
       return newValues;
     });
   };
-  
+
   const handleSaveAndContinue = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  
+
     // Validar que haya una imagen seleccionada o cargada
     if (!file && !values.imageUrl) {
       alert("Please select an image for the event.");
       return;
     }
-  
+
     // Validar campos obligatorios
     if (!values.name || !values.category || !values.date || !values.time) {
       alert("Please complete all required fields.");
       return;
     }
-  
+
     setLoading(true);
-  
+
     try {
       let uploadedImageUrl = values.imageUrl; // Por defecto, la URL de la imagen existente
-  
+
       // Subir imagen si hay un nuevo archivo seleccionado
       if (file) {
         const formData = new FormData();
@@ -154,16 +151,16 @@ export default function EventCreate() {
           method: "POST",
           body: formData,
         });
-  
+
         if (!response.ok) {
           throw new Error("Image upload failed.");
         }
-  
+
         const dataImage = await response.json();
         uploadedImageUrl = dataImage.url.secure_url;
         console.log(uploadedImageUrl);
       }
-  
+
       // Preparar datos del evento
       const dateTime = `${values.date}T${values.time}`; // Asegurar formato ISO
       const eventData = {
@@ -180,28 +177,28 @@ export default function EventCreate() {
         longitude: parseFloat(values.longitude) || null,
         creatorId: session?.user?.id,
       };
-  
+
       localStorage.setItem("eventData", JSON.stringify(eventData));
       console.log("Datos del evento guardados en localStorage:", eventData);
-  
+
       // Redirigir a PreviewEvent con el ID si está disponible
       const redirectUrl = eventData.id
         ? `/events/previewEvent?_id=${eventData.id}`
         : "/events/previewEvent";
-  
+
       console.log("Redirigiendo a:", redirectUrl);
       router.push(redirectUrl);
     } catch (error) {
       console.error("Error creating or editing event:", error);
-  
+
       alert("An error occurred while processing the event. Please try again.");
     } finally {
       setLoading(false);
     }
   };
 
-   // Geocoding based on country and city
-   const geocodeLocation = async (country: string, city: string) => {
+  // Geocoding based on country and city
+  const geocodeLocation = async (country: string, city: string) => {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!;
     const response = await fetch(
       `https://maps.googleapis.com/maps/api/geocode/json?address=${encodeURIComponent(
@@ -275,25 +272,25 @@ export default function EventCreate() {
 
           {/* Inicio Seccion Categoria */}
           <div>
-          <label htmlFor="category" className="ml-1 text-lg font-medium">
-            Category
-          </label>
-          <select
-            name="category"
-            value={values.category}
-            onChange={handleChange}
-            className="p-3 border rounded-lg w-full"
-            required
-          >
-            <option value="">Select a category</option>
-            <Categories
-              renderCategory={(category) => (
-                <option key={category.name} value={category.name}>
-                  {category.name}
-                </option>
-              )}
-            />
-          </select>
+            <label htmlFor="category" className="ml-1 text-lg font-medium">
+              Category
+            </label>
+            <select
+              name="category"
+              value={values.category}
+              onChange={handleChange}
+              className="p-3 border rounded-lg w-full"
+              required
+            >
+              <option value="">Select a category</option>
+              <Categories
+                renderCategory={(category) => (
+                  <option key={category.name} value={category.name}>
+                    {category.name}
+                  </option>
+                )}
+              />
+            </select>
           </div>
           {/* Final Seccion Categoria */}
         </div>
@@ -339,7 +336,9 @@ export default function EventCreate() {
                     <div className="relative">
                       <FaCloudUploadAlt className="text-gray-500 text-8xl" />
                     </div>
-                    <span className="text-blue-600 mb-2">Upload your Event Image</span>
+                    <span className="text-blue-600 mb-2">
+                      Upload your Event Image
+                    </span>
                     <p className="text-sm text-gray-500 text-center">
                       Valid file formats: JPG, JPEG, PNG.
                     </p>
@@ -355,7 +354,7 @@ export default function EventCreate() {
               className="hidden"
             />
           </div>
-          </div>
+        </div>
         {/* Finak Sección de imagen */}
 
         {/* Final Seccion Date and Time */}
@@ -398,7 +397,7 @@ export default function EventCreate() {
           </div>
         </div>
         {/* Final Seccion Date and Time */}
-      {/* Location Section */}
+        {/* Location Section */}
         <div className="mt-6">
           <h3 className="text-2xl font-bold mb-2">Location</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -413,7 +412,7 @@ export default function EventCreate() {
                 value={values.country}
                 onChange={handleChange}
                 className="p-3 border rounded-lg w-full"
-                />
+              />
             </div>
             <div>
               <label htmlFor="city" className="ml-1 text-lg font-medium">
@@ -458,7 +457,7 @@ export default function EventCreate() {
             }`}
           >
             <div className="flex justify-center mb-2">
-              <IoTicketOutline className="text-gray-500 text-5xl"/>
+              <IoTicketOutline className="text-gray-500 text-5xl" />
             </div>
             <p className="text-lg font-semibold mt-2">Ticketed Event</p>
             <p className="text-sm text-gray-500">
@@ -500,7 +499,7 @@ export default function EventCreate() {
             <label className="text-lg font-medium">Event Capacity</label>
             <div className="flex items-center border border-gray-300 rounded">
               <span className="pl-4 text-gray-500 mr-1">
-              <TiGroup className="" />
+                <TiGroup className="" />
               </span>
               <input
                 type="number"

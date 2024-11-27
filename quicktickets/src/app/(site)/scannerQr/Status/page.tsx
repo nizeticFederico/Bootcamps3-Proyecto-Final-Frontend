@@ -33,7 +33,7 @@ const TicketStatusSimple = () => {
         }
 
         const data = await response.json();
-        
+
         // Actualiza el estado con la información del ticket
         if (data.message === "Authorized") {
           setStatus("Available");
@@ -41,7 +41,6 @@ const TicketStatusSimple = () => {
           setStatus("Used");
         }
 
-        
         setEventTitle(data.event?.name || "Unknown Event");
       } catch (error) {
         console.error("Error fetching ticket status:", error);
@@ -94,9 +93,6 @@ const TicketStatusSimple = () => {
 };
 
 export default TicketStatusSimple;
-
-
-
 
 // "use client";
 // import React, { useState, useEffect } from "react";

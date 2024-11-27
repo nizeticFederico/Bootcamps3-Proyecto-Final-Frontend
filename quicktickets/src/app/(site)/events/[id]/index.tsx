@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import DataEvent from "@/components/UI/DataEvent";
 
 interface Event {
+  _id:string
   name: string;
   description: string;
   imageUrl: string;
@@ -46,7 +47,7 @@ export default function EventPage({ id }: EventPageProps) {
         setLoading(false);
       }
     }
-    if (id) fetchEvent();
+      fetchEvent();
   }, [id]);
 
   if (loading) return <p>Loading event...</p>;

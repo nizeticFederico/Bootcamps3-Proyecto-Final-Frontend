@@ -28,7 +28,7 @@ const CardSections: React.FC<CardSectionsProps> = ({
   imageUrl,
   dateTime,
   price,
-  capacity,
+ /*  capacity, */
   category,
   location,
   availability,

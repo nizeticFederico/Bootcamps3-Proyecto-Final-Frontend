@@ -15,6 +15,7 @@ interface Event {
   dateTime: string;
   price: number;
   capacity: number;
+  availability: number;
   category: string;
   location: string; // Formato: "City, Country"
   latitude: number;
@@ -141,7 +142,10 @@ export default function EventsPage() {
 
   const indexOfLastEvent = currentPage * eventsPerPage;
   const indexOfFirstEvent = indexOfLastEvent - eventsPerPage;
-  const currentEvents = filteredEvents.slice(indexOfFirstEvent, indexOfLastEvent);
+  const currentEvents = filteredEvents.slice(
+    indexOfFirstEvent,
+    indexOfLastEvent
+  );
 
   const totalPages = Math.ceil(filteredEvents.length / eventsPerPage);
 

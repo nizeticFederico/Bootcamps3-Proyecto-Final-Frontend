@@ -6,6 +6,7 @@ import Message from "@/components/UI/Message";
 import Image from "next/image";
 import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import Link from "next/link";
 
 interface Country {
   name: {
@@ -110,7 +111,7 @@ export default function SignIn() {
     <main className="flex items-center ">
       <div className="hidden sm:flex flex-col justify-start w-2/3 h-screen gap-4 p-4">
         <div>
-          <a href="/">
+          <Link href="/">
             <Image
               src="/assets/images/icons/icon.svg"
               alt="Aplication Logo"
@@ -118,7 +119,7 @@ export default function SignIn() {
               height={38}
               className="ml-4"
             />
-          </a>
+          </Link>
           <Image
             src="/assets/images/icons/quickticketswhite.svg"
             alt="Aplication Logo"
@@ -250,10 +251,10 @@ export default function SignIn() {
 
           <p className="text-sm sm:my-4">
             Already have an account?
-            <a href="/login" className="text-gray-500">
+            <Link href="/login" className="text-gray-500">
               {" "}
               Login
-            </a>
+            </Link>
           </p>
           <Message status={status} />
         </form>

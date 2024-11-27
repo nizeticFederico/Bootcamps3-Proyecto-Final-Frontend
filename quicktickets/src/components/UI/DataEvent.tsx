@@ -136,7 +136,9 @@ const EventData: React.FC<EventDataProps> = ({
   };
 
   const addToCalendar = () => {
-    const startDate = new Date(dateTime).toISOString().replace(/[-:]|\.\d{3}/g, "");
+    const startDate = new Date(dateTime)
+      .toISOString()
+      .replace(/[-:]|\.\d{3}/g, "");
     const endDate = new Date(new Date(dateTime).getTime() + 2 * 60 * 60 * 1000) // +2 horas
       .toISOString()
       .replace(/[-:]|\.\d{3}/g, "");
@@ -155,7 +157,11 @@ const EventData: React.FC<EventDataProps> = ({
   };
 
   const shareOnWhatsapp = () => {
-    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(name)}%0A${encodeURIComponent(description)}%0A${encodeURIComponent(location)}%0A${window.location.href}`;
+    const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(
+      name
+    )}%0A${encodeURIComponent(description)}%0A${encodeURIComponent(
+      location
+    )}%0A${window.location.href}`;
     window.open(whatsappUrl, "_blank");
   };
 
@@ -208,28 +214,31 @@ const EventData: React.FC<EventDataProps> = ({
                 </div>
               )}
             </div>
-            {status === "authenticated" ? (isCreator ? (
-              <button
-                onClick={handleEditEvent}
-                className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
-              >
-                <span>Edit Event</span>
-              </button>
+            {status === "authenticated" ? (
+              isCreator ? (
+                <button
+                  onClick={handleEditEvent}
+                  className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                >
+                  <span>Edit Event</span>
+                </button>
+              ) : (
+                <button
+                  onClick={buyStripe}
+                  className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                >
+                  <FaTicketAlt className="h-5 w-5" />
+                  <span>Buy Tickets</span>
+                </button>
+              )
             ) : (
               <button
-                onClick={buyStripe}
-                className="bg-yellow-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
+                onClick={() => router.push("/login")}
+                className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
               >
-                <FaTicketAlt className="h-5 w-5" />
-                <span>Buy Tickets</span>
+                <span>Login to buy a ticket</span>
               </button>
-            )) : (<button
-              onClick={() => router.push('/login')}
-              className="bg-blue-500 text-white px-5 py-2 rounded-md font-semibold flex items-center space-x-2"
-            >
-              <span>Login to buy a ticket</span>
-            </button>)}
-            
+            )}
           </div>
         </div>
         <div className="space-y-2">
@@ -254,7 +263,9 @@ const EventData: React.FC<EventDataProps> = ({
           </div>
         </div>
         <div>
-          <h3 className="text-xl font-semibold text-gray-700">Ticket Information</h3>
+          <h3 className="text-xl font-semibold text-gray-700">
+            Ticket Information
+          </h3>
           <div className="flex flex-col mt-3">
             <div className={`flex items-center gap-1 text-green-500`}>
               <FaTicketAlt className="mr-2" />
