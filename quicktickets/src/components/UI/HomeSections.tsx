@@ -6,12 +6,14 @@ import { useEffect, useState, useMemo } from "react";
 import CardSections from "./CardSection";
 
 interface Event {
+  _id: string;
   name: string;
   description: string;
   imageUrl: string;
   dateTime: string;
   price: number;
   capacity: number;
+  availability: number;
   category: string;
   location: string;
   latitude: number;

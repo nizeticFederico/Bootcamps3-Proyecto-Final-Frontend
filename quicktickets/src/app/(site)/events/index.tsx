@@ -15,6 +15,7 @@ interface Event {
   dateTime: string;
   price: number;
   capacity: number;
+  availability: number;
   category: string;
   location: string; // Formato: "City, Country"
   latitude: number;
