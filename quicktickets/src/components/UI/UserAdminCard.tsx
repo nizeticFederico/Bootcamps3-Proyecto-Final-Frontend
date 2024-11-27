@@ -34,6 +34,7 @@ export default function UserCard() {
               headers: {
                 "Content-Type": "application/json",
                 token: `${session?.accessToken}`,
+                'ngrok-skip-browser-warning': '1'
               },
             }
           );
