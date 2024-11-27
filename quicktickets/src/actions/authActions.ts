@@ -1,10 +1,10 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
+import { signIn } from "@/auth";
 
 export async function login(credentials: { email: string; password: string }) {
   try {
-    const result = await fetch(`https://kit-rich-starling.ngrok-free.app/auth/login`, {
+    const result = await fetch(`http://localhost:3001/auth/login`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -22,7 +22,7 @@ export async function login(credentials: { email: string; password: string }) {
 export async function getUserByMail(email: string) {
   try {
     const result = await fetch(
-      `https://kit-rich-starling.ngrok-free.app/user/information-by-email?email=${email}`
+      `http://localhost:3001/user/information-by-email?email=${email}`
     );
     const data = await result.json();
     return {
