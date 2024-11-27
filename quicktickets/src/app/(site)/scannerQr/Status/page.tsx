@@ -16,7 +16,7 @@ const TicketStatusSimple = () => {
 
   // if (!ticketId) return; // Evita hacer la petición si no hay ticketId
   useEffect(() => {
-    if (ticketId) {
+    if (ticketId != null) {
       fetchTicketStatus();
     }
   }, [ticketId]);
