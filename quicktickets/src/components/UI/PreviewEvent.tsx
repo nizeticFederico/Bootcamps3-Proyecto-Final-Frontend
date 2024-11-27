@@ -324,7 +324,7 @@ const PreviewEvent: React.FC = () => {
             />
           </div>
         </div>
-        <div>
+        {/* <div>
           <h3 className="text-xl font-semibold text-gray-700 mb-3">
             Hosted by
           </h3>
@@ -342,7 +342,7 @@ const PreviewEvent: React.FC = () => {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         <div>
           <h3 className="text-xl font-semibold text-gray-700">
             Event Description
