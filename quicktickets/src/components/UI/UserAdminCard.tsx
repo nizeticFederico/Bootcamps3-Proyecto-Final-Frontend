@@ -26,11 +26,12 @@ export default function UserCard() {
     if (status === "authenticated") {
       const fetchUsers = async () => {
         try {
-          const response = await fetch(`http://localhost:3001/user/all-customers`, {
+          const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/all-customers`, {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
               'token': `${session?.accessToken}`,
+              'ngrok-skip-browser-warning': '1',
             }
           });
 
@@ -55,7 +56,7 @@ export default function UserCard() {
 
   const deleteEvent = async (userId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/user/full-delete/${userId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/full-delete/${userId}`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -98,7 +99,7 @@ export default function UserCard() {
     ));
 
     try {
-      const response = await fetch(`http://localhost:3001/user/toggle-status/`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/toggle-status/`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

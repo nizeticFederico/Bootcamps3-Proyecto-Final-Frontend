@@ -235,7 +235,7 @@ const ChangeEmail = () => {
     };
 
     try {
-      const response = await fetch("http://localhost:3001/user/update", {
+      const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/update", {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -334,7 +334,7 @@ const ChangePassword = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:3001/user/update-password",
+        "https://kit-rich-starling.ngrok-free.app/user/update-password",
         {
           method: "PATCH",
           headers: {

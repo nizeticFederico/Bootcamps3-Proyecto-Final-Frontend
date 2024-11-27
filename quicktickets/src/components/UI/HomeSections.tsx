@@ -34,22 +34,28 @@ export default function HomeSections({ section }: HomeSectionsProps) {
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
-  const [currentPage, setCurrentPage] = useState(1); 
-  const eventsPerPage = 6; 
+  const [currentPage, setCurrentPage] = useState(1);
+  const eventsPerPage = 6;
 
   useEffect(() => {
     async function fetchEvents() {
       setLoading(true);
       try {
         // Construir la URL dinámica
-        const url = new URL(`http://localhost:3001${section.endpoint}`);
+        const url = new URL(
+          `https://kit-rich-starling.ngrok-free.app${section.endpoint}`
+        );
         if (section.params) {
           Object.entries(section.params).forEach(([key, value]) =>
             url.searchParams.append(key, value)
           );
         }
 
-        const response = await fetch(url.toString());
+        const response = await fetch(url.toString(), {
+          headers: {
+            "ngrok-skip-browser-warning": "1",
+          },
+        });
         if (response.ok) {
           const data = await response.json();
           setEvents(data);
@@ -98,8 +104,8 @@ export default function HomeSections({ section }: HomeSectionsProps) {
                   <CardSections key={event._id} {...event} />
                 ))}
               </div>
-              
-              <div className="flex justify-center mt-4">          
+
+              <div className="flex justify-center mt-4">
                 {Array.from({ length: totalPages }, (_, index) => (
                   <button
                     key={index + 1}
@@ -112,7 +118,7 @@ export default function HomeSections({ section }: HomeSectionsProps) {
                   >
                     {index + 1}
                   </button>
-                ))}              
+                ))}
               </div>
             </>
           )}

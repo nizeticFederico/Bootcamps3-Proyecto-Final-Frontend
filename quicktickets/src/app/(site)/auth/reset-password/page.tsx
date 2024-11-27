@@ -32,17 +32,20 @@ const ResetPassword = () => {
     setError("");
 
     try {
-      const response = await fetch("http://localhost:3001/user/new-password", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          newPassword,
-          newPasswordRepeated: confirmPassword,
-          token: token,
-        }),
-      });
+      const response = await fetch(
+        "https://kit-rich-starling.ngrok-free.app/user/new-password",
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            newPassword,
+            newPasswordRepeated: confirmPassword,
+            token: token,
+          }),
+        }
+      );
 
       if (!response.ok) {
         throw new Error("Failed to update password");

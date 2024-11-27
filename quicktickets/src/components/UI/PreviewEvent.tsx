@@ -111,7 +111,7 @@ const PreviewEvent: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch("http://localhost:3001/event", {
+      const response = await fetch("https://kit-rich-starling.ngrok-free.app/event", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -151,7 +151,7 @@ const PreviewEvent: React.FC = () => {
 
     try {
       setIsLoading(true);
-      const response = await fetch(`http://localhost:3001/event/${eventData.id}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventData.id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
