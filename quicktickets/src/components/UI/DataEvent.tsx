@@ -299,13 +299,13 @@ const EventData: React.FC<EventDataProps> = ({
           <h2 className="text-xl font-semibold text-gray-700 mb-3">
             Description
           </h2>
-          <p className="text-gray-600">{description}</p>
-          {creatorName && (
+           <p className="text-gray-600">{description}</p>
+          {/*{creatorName && (
             <p className="text-sm text-gray-500 mt-4">
               Created by: <span className="font-semibold">{creatorName}</span>
-            </p>
-          )}
-        </div>
+            </p> */}
+          
+        </div> 
       </div>
     </main>
   );
