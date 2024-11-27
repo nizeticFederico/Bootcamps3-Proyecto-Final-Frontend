@@ -18,6 +18,7 @@ const CameraPage = () => {
           qrScanner = new QrScanner(videoRef.current, (result: any) => {
             setQrResult(result.data); // Captura el resultado del QR
             stopScanner();
+            handleRedirect(result.data);
           }, {
             preferredCamera: 'environment' // Usa la cámara trasera
           });
@@ -44,6 +45,16 @@ const CameraPage = () => {
       qrScanner?.destroy(); // Limpieza al desmontar
     };
   }, [cameraEnabled]);
+
+  const handleRedirect = (url: string) => {
+    // Verifica si la URL es válida y comienza con "http"
+    if (url.startsWith("http://") || url.startsWith("https://")) {
+      window.location.href = url;  // Redirección directa
+      // O, si usas React Router: navigate(url);
+    } else {
+      alert("QR no válido: No es un enlace.");  // Manejo de error básico
+    }
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 p-4">
