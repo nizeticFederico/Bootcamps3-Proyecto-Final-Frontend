@@ -74,7 +74,7 @@ const EventData: React.FC<EventDataProps> = ({
   const [creatorName, setCreatorName] = useState<string | null>(null);
 
   // Obtener el nombre del creador
-  useEffect(() => {
+  /*useEffect(() => {
     const fetchCreatorName = async () => {
       try {
         console.log("Sending request to /creator-name with eventId:", _id);
@@ -105,7 +105,7 @@ const EventData: React.FC<EventDataProps> = ({
 
     fetchCreatorName();
   }, [_id]);
-
+*/
   const handleEditEvent = () => {
     const query = new URLSearchParams({
       _id,
