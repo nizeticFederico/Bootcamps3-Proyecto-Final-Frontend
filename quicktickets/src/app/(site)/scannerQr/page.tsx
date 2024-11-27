@@ -7,17 +7,24 @@ const CameraPage = () => {
   const [cameraEnabled, setCameraEnabled] = useState(false);
 
   useEffect(() => {
-    if (cameraEnabled) {
-      navigator.mediaDevices
-        .getUserMedia({ video: true })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-          }
-        })
-        .catch((error) => {
-          console.error("Error al acceder a la cámara: ", error);
+    const enableCamera = async () => {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: { exact: "environment" }, // Seleccionar la cámara trasera
+          },
         });
+
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+      } catch (error) {
+        console.error("Error al acceder a la cámara: ", error);
+      }
+    };
+
+    if (cameraEnabled) {
+      enableCamera();
     } else {
       if (videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
