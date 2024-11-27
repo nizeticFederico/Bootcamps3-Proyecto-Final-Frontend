@@ -48,7 +48,7 @@ const TicketStatusSimple = () => {
         setStatus("Used");
       }
 
-      setEventTitle(data.event?.name || "Unknown Event");
+      setEventTitle(data.eventName || "Unknown Event");
     } catch (error) {
       console.error("Error fetching ticket status:", error);
       setStatus("Error");
