@@ -26,7 +26,7 @@ const EventCard: React.FC<EventCardProps> = ({
   imageUrl,
   dateTime,
   price,
-  capacity,
+  /* capacity, */
   category,
   location,
   latitude,
