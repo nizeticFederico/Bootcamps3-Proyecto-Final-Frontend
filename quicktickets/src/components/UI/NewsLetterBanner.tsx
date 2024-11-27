@@ -9,7 +9,7 @@ const NewsletterBanner = () => {
   const handleSubscription = async () => {
     setLoading(true);
     try {
-      const response = await fetch("http://localhost:3001/user/subscription", {
+      const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/subscription", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

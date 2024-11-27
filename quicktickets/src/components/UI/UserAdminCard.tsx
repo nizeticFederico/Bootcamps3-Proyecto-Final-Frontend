@@ -27,12 +27,14 @@ export default function UserCard() {
     if (status === "authenticated") {
       const fetchUsers = async () => {
         try {
-          const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/all-customers`, {
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              'token': `${session?.accessToken}`,
-              'ngrok-skip-browser-warning': '1',
+          const response = await fetch(
+            `https://kit-rich-starling.ngrok-free.app/user/all-customers`,
+            {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                token: `${session?.accessToken}`,
+              },
             }
           );
 
@@ -57,13 +59,16 @@ export default function UserCard() {
 
   const deleteEvent = async (userId: string) => {
     try {
-      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/full-delete/${userId}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          'token': `${session?.accessToken}`,
-        },
-      });
+      const response = await fetch(
+        `https://kit-rich-starling.ngrok-free.app/user/full-delete/${userId}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+        }
+      );
 
       if (response.ok) {
         setUsers(users.filter((user) => user._id !== userId));
@@ -102,8 +107,51 @@ export default function UserCard() {
     );
 
     try {
-      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/toggle-status/`, {
-        method: 'PATCH',
+      const response = await fetch(
+        `https://kit-rich-starling.ngrok-free.app/user/toggle-status/`,
+        {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+          body: JSON.stringify({
+            userId,
+          }),
+        }
+      );
+
+      if (response.ok) {
+        toast.success(
+          `User status ${updatedStatus ? "activated" : "deactivated"}`
+        );
+      } else {
+        toast.error("Error updating user status");
+        setUsers(
+          users.map((user) =>
+            user._id === userId ? { ...user, is_active: !updatedStatus } : user
+          )
+        );
+      }
+    } catch (error) {
+      console.error("Error updating user status:", error);
+      toast.error("Error updating user status");
+      setUsers(
+        users.map((user) =>
+          user._id === userId ? { ...user, is_active: !updatedStatus } : user
+        )
+      );
+    }
+  };
+
+  const handleChangeRole = async (
+    userId: string,
+    firstName: string,
+    lastName: string
+  ) => {
+    try {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/user/new-admin`, {
+        method: "PATCH",
         headers: {
           "Content-Type": "application/json",
           token: `${session?.accessToken}`,
