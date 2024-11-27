@@ -133,7 +133,7 @@ export default function LogIn() {
               )}
             </button>
 
-            <Link href="http://localhost:3000/auth" className="text-sm text-gray-500">
+            <Link href="/auth" className="text-sm text-gray-500">
               Forgot your password?
             </Link>
 
