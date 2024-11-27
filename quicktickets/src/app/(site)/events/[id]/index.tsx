@@ -44,7 +44,7 @@ export default function EventPage({ id }: EventPageProps) {
       }
     }
       fetchEvent();
-  }, []);
+  }, [id]);
 
   if (loading) return <p>Loading event...</p>;
   if (!event) return <p>Event not found.</p>;
