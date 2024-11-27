@@ -19,7 +19,7 @@ const TicketStatusSimple = () => {
 
     const fetchTicketStatus = async () => {
       try {
-        const response = await fetch("https://kit-rich-starling.ngrok-free.app/ticket/status", {
+        const response = await fetch("http://localhost:3001/ticket/status", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
