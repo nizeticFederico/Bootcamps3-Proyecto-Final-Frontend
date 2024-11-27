@@ -1,35 +1,24 @@
 "use client"
 
-import { useEffect, useState } from "react";
+
+import React from "react";
 import EventPage from ".";
 
 export default function Events({ params }: { params: { id: string } }) {
-  const [id, setId] = useState<string | null>(null);
+  // Usamos React.use() para desempaquetar (unwrap) la promesa de params
+  const resolvedParams = React.use(params);
 
-  useEffect(() => {
-    const fetchParams = async () => {
-      try {
-        const resolvedParams = await params; // Esperamos que `params` se resuelva
-        setId(resolvedParams.id); // Ahora que `params` se resolvió, podemos usar `id`
-      } catch (error) {
-        console.error("Error resolving params:", error);
-      }
-    };
-
-    fetchParams();
-  }, [params]); // Dependencia de `params`
-
-  if (!id) {
-    return <div>Loading...</div>; // Muestra un mensaje de carga si `id` aún no está disponible
-  }
+  // Ahora, puedes acceder de forma segura a `resolvedParams.id`
+  const id = resolvedParams?.id;
 
   return <EventPage id={id} />;
 }
 
-//import EventPage from ".";
+
+/*import EventPage from ".";
 
 
-/*export default function Events({ params }: { params: { id: string } }) {
+export default function Events({ params }: { params: { id: string } }) {
   const { id } = params; 
 
   return <EventPage id={id} />;

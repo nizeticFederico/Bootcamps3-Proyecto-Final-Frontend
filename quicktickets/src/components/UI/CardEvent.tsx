@@ -43,7 +43,7 @@ const EventCard: React.FC<EventCardProps> = ({
   };
 
   return (
-    <div onClick={handleCardClick} className="cursor-pointer flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
+    <div onClick={() => {router.push(`/events/${_id}`)}} className="cursor-pointer flex border rounded-md shadow-md overflow-hidden bg-white mb-8">
       <div className="w-1/2 h-full overflow-hidden rounded relative">
         <Image
           src={imageUrl}
