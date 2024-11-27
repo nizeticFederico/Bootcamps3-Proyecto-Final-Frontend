@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { FaCheckCircle } from "react-icons/fa";
+import Link from "next/link";
 
 const Page: React.FC = () => {
   const searchParams = useSearchParams();
@@ -72,18 +73,12 @@ const Page: React.FC = () => {
           about the event.
         </p>
 
-        {/* <div className="flex justify-center items-center space-x-4 mb-6">
-          <div className="text-gray-600">
-            <strong>Event ID:</strong> {eventId}
-          </div>
-          <div className="text-gray-600">
-            <strong>Quantity:</strong> {quantity}
-          </div>
-        </div> */}
-
-        <button className="bg-yellow-500 text-white font-semibold py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 ease-in-out">
-          Go to your dashboard
-        </button>
+        <Link href="/tickets" className="bg-yellow-500 text-white font-semibold py-2 px-4 rounded shadow-md hover:shadow-lg transition duration-300 ease-in-out">
+        Go to your dashboard
+        </Link>
+       
+          
+        
       </div>
     </div>
   );

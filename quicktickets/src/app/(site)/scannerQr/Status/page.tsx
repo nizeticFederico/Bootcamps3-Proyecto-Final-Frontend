@@ -19,7 +19,7 @@ const TicketStatusSimple = () => {
 
     const fetchTicketStatus = async () => {
       try {
-        const response = await fetch("http://localhost:3001/ticket/status", {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/ticket/status", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const TicketStatusSimple = () => {
       </div>
 
       <div className="mt-6 w-full flex justify-center">
-        <Link href="http://localhost:3000/scannerQr">
+        <Link href="/scannerQr">
           <button className="px-6 py-3 bg-blue-500 text-white font-semibold rounded-lg shadow hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 flex items-center justify-center gap-2">
             <FaArrowLeft className="text-white" /> Go back
           </button>
