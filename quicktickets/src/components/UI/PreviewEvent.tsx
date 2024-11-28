@@ -39,6 +39,24 @@ const PreviewEvent: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
 
+  useEffect(() => {
+    const fetchCreatorName = async () => {
+      if (eventData?.creatorId) {
+        try {
+          const response = await fetch(`/event/creator-name?creatorId=${eventData.creatorId}`);
+          const data = await response.json();
+          if (data?.creatorName) {
+            setEventData((prev) => ({ ...prev, creatorName: data.creatorName }));
+          }
+        } catch (error) {
+          console.error("Error al obtener creatorName:", error);
+        }
+      }
+    };
+  
+    fetchCreatorName();
+  }, [eventData?.creatorId]);
+
   // Cargar datos del evento desde Local Storage o query params
   useEffect(() => {
     try {
@@ -321,7 +339,7 @@ const PreviewEvent: React.FC = () => {
             />
           </div>
         </div>
-        {/* <div>
+        <div>
           <h3 className="text-xl font-semibold text-gray-700 mb-3">
             Hosted by
           </h3>
@@ -339,7 +357,7 @@ const PreviewEvent: React.FC = () => {
               </div>
             </div>
           </div>
-        </div> */}
+        </div>
         <div>
           <h3 className="text-xl font-semibold text-gray-700">
             Event Description

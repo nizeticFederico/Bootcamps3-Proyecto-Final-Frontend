@@ -88,19 +88,35 @@ const AccountInfo = () => {
     country: "",
     imageUrl: "", 
   });
-  const [loading, setLoading] = useState(true); 
+  const [loading, setLoading] = useState(true);
   const [profileImage, setProfileImage] = useState<string | null>(null); 
 
-  
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setProfileImage(reader.result as string);
-      reader.readAsDataURL(file); // Convertir a base64
+      const formData = new FormData();
+      formData.append("image", file);
+  
+      try {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/image/upload", {
+          method: "POST",
+          body: formData,
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          setProfileImage(data.url.secure_url);
+          setFormData({ ...formData, imageUrl: data.url.secure_url });
+          toast.success("Imagen cargada correctamente.");
+        } else {
+          toast.error("Error al cargar la imagen.");
+        }
+      } catch (error) {
+        console.error("Error subiendo la imagen:", error);
+        toast.error("Error al cargar la imagen.");
+      }
     }
   };
-
   
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
     setFormData({ ...formData, [field]: e.target.value });
@@ -120,6 +136,8 @@ const AccountInfo = () => {
 
       if (response.ok) {
         const data = await response.json();
+        console.log("Datos del usuario:", data);
+
         setFormData({
           first_name: data.first_name || "",
           last_name: data.last_name || "",
@@ -141,7 +159,6 @@ const AccountInfo = () => {
     }
   };
 
-  
   useEffect(() => {
     if (session?.accessToken) {
       fetchUserData();
@@ -153,8 +170,9 @@ const AccountInfo = () => {
     e.preventDefault();
 
     try {
-      
       const finalData = { ...formData, imageUrl: profileImage || formData.imageUrl };
+
+      console.log("Datos a enviar:", finalData);
 
       const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/update", {
         method: "PUT",
@@ -165,18 +183,23 @@ const AccountInfo = () => {
         body: JSON.stringify(finalData),
       });
 
-      if (response.ok) {
-        toast.success("Profile updated successfully!");
+      const responseData = await response.json(); // Obtener los datos del cuerpo de la respuesta
+
+      console.log("Respuesta del servidor después de actualización:", responseData);
+
+      if (response.ok && responseData.success) {
+        toast.success("Perfil actualizado correctamente.");
       } else {
-        toast.error("Failed to update profile");
+        toast.error(`No se pudo actualizar el perfil: ${responseData.message || 'Error desconocido'}`);
       }
     } catch (error) {
-      console.error("Error updating profile:", error);
+      console.error("Error actualizando el perfil:", error);
+      toast.error("Error al actualizar el perfil.");
     }
   };
 
   if (loading) {
-    return <div>Loading...</div>; 
+    return <div>Loading...</div>;
   }
 
   return (
@@ -195,8 +218,8 @@ const AccountInfo = () => {
               src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover rounded-full"
-              width={40}
-              height={40}
+              width={80} // Ajustar tamaño para mejor visualización
+              height={80}
             />
           ) : (
             <span className="text-gray-500 text-3xl font-bold flex items-center justify-center ">
@@ -212,6 +235,7 @@ const AccountInfo = () => {
           <span className="absolute bottom-0 right-0 bg-gray-300 rounded-full p-1"></span>
         </label>
       </div>
+
 
       <form onSubmit={handleSubmit}>
         {/* Profile Information Section */}
