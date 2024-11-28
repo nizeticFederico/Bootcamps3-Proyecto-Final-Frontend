@@ -21,6 +21,7 @@ const TicketStatusSimple = () => {
     }
   }, [ticketId]);
 
+  console.log("Token:", session?.accessToken);
   const fetchTicketStatus = async () => {
     try {
       const response = await fetch(
