@@ -189,7 +189,6 @@ const EventData: React.FC<EventDataProps> = ({
             <p className="text-gray-600">{category}</p>
           </div>
           <div className="flex items-center space-x-4">
-            <FaRegStar className="h-6 w-6 text-gray-400 cursor-pointer" />
             <div className="relative">
               <FaShareAlt
                 className="h-6 w-6 text-gray-400 cursor-pointer"
