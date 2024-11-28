@@ -42,6 +42,7 @@ const NavBar = () => {
       <div className="flex items-center justify-start space-x-0">
         {/* Ícono */}
         <div className="w-40 h-12 relative">
+        <Link href="/">
           <Image
             src="/assets/images/icons/icon.svg"
             alt="IconoQuickTickets"
@@ -49,6 +50,7 @@ const NavBar = () => {
             className="object-contain"
             sizes="(max-width: 768px) 10vw, 5vw"
           />
+          </Link>
         </div>
         {/* Logo */}
         <div className="hidden md:block w-40 h-12 relative">
