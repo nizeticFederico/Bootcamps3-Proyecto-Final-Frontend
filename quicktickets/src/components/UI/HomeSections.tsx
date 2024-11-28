@@ -92,8 +92,8 @@ export default function HomeSections({ section }: HomeSectionsProps) {
       className="flex flex-col items-center min-h-screen bg-white"
     >
       <div className="flex flex-row w-full max-w-screen-xl">
-        <div className="flex-grow ml-4 p-10">
-          <div className="flex my-4">
+        <div className="flex-grow ml-4 p-10 pt-0">
+          <div className="flex mb-4">
             <h3>{section.title}</h3>
           </div>
 
