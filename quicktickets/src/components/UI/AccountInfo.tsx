@@ -4,6 +4,7 @@ import { useSession } from "next-auth/react";
 import Image from "next/image";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
+
 import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
@@ -78,16 +79,125 @@ const Account = () => {
 /* AccountInfo Section */
 
 const AccountInfo = () => {
-  const [profileImage, setProfileImage] = useState<string | null>(null);
+  const { data: session, status } = useSession();
+  const [formData, setFormData] = useState({
+    first_name: "",
+    last_name: "",
+    phone: "",
+    state: "",
+    country: "",
+    imageUrl: "", 
+  });
+  const [loading, setLoading] = useState(true);
+  const [profileImage, setProfileImage] = useState<string | null>(null); 
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => setProfileImage(reader.result as string);
-      reader.readAsDataURL(file);
+      const form = new FormData();
+      form.append("image", file);
+  
+      try {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/image/upload", {
+          method: "POST",
+          body: form,
+        });
+  
+        if (response.ok) {
+          const data = await response.json();
+          setProfileImage(data.url.secure_url);
+          setFormData({ ...formData, imageUrl: data.url.secure_url });
+          
+        } else {
+          toast.error("Error");
+        }
+      } catch (error) {
+        console.error("Error uploading image:", error);
+        toast.error("Error to charge de image.");
+      }
     }
   };
+  
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
+    setFormData({ ...formData, [field]: e.target.value });
+  };
+
+
+  const fetchUserData = async () => {
+    try {
+      const response = await fetch('https://kit-rich-starling.ngrok-free.app/user/information', {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
+          'ngrok-skip-browser-warning': '1',
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+
+        setFormData({
+          first_name: data.first_name || "",
+          last_name: data.last_name || "",
+          phone: data.phone || "",
+          state: data.state || "",
+          country: data.country || "",
+          imageUrl: data.imageUrl || "",
+        });
+        
+        setProfileImage(data.imageUrl || null); 
+      } else {
+        toast.error("Error to obtain user data.");
+      }
+    } catch (error) {
+      toast.error("Error fetching user data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (session?.accessToken) {
+      fetchUserData();
+    }
+  }, [session]);
+
+  
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const finalData = { ...formData, imageUrl: profileImage };
+
+      const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/update", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          token: `${session?.accessToken}`,
+        },
+        body: JSON.stringify(finalData),
+      });
+
+      const responseData = await response.json(); // Obtener los datos del cuerpo de la respuesta
+
+      console.log("Respuesta del servidor después de actualización:", responseData);
+
+      if (response.ok) {
+        toast.success("Profile updated");
+      } else {
+        toast.error(`Error to update profile: ${responseData.message || 'Error'}`);
+      }
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      toast.error("Error updating profile.");
+    }
+  };
+
+  if (loading) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <div className="p-6 max-w-4xl mx-auto">
       <h2 className="text-3xl font-bold mb-4">Account Information</h2>
@@ -104,8 +214,8 @@ const AccountInfo = () => {
               src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover rounded-full"
-              width={40}
-              height={40}
+              width={80} 
+              height={80}
             />
           ) : (
             <span className="text-gray-500 text-3xl font-bold flex items-center justify-center ">
@@ -122,7 +232,8 @@ const AccountInfo = () => {
         </label>
       </div>
 
-      <form>
+
+      <form onSubmit={handleSubmit}>
         {/* Profile Information Section */}
         <div className="mb-6">
           <h3 className="flex justify-center font-semibold text-1xl mb-4">
@@ -130,38 +241,24 @@ const AccountInfo = () => {
           </h3>
 
           <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">
-              First Name:
-            </label>
+            <label className="w-32 text-gray-700 text-right pr-4">First Name:</label>
             <input
               type="text"
               className="border p-2 w-3/4 bg-gray-100"
-              // value={firstName}
-              readOnly
+              value={formData.first_name}
+              onChange={(e) => handleInputChange(e, "first_name")}
             />
           </div>
 
           <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">
-              Last Name:
-            </label>
+            <label className="w-32 text-gray-700 text-right pr-4">Last Name:</label>
             <input
               type="text"
               className="border p-2 w-3/4 bg-gray-100"
-              // value={lastName}
-              readOnly
+              value={formData.last_name}
+              onChange={(e) => handleInputChange(e, "last_name")}
             />
           </div>
-
-          {/* <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">Website:</label>
-            <input type="text" className="border p-2 w-3/4" />
-          </div>
-
-          <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">Company:</label>
-            <input type="text" className="border p-2 w-3/4" />
-          </div> */}
         </div>
 
         {/* Contact Details Section */}
@@ -170,43 +267,45 @@ const AccountInfo = () => {
             Contact Details
           </h3>
           <span className="font-light flex text-center justify-center text-sm mb-4">
-            These details are private and only used to contact you for ticketing
-            or prizes.
+            These details are private and only used to contact you for ticketing or prizes.
           </span>
 
           <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">
-              Phone Number:
-            </label>
-            <input type="text" className="border p-2 w-3/4" />
+            <label className="w-32 text-gray-700 text-right pr-4">Phone Number:</label>
+            <input
+              type="text"
+              className="border p-2 w-3/4"
+              value={formData.phone}
+              onChange={(e) => handleInputChange(e, "phone")}
+            />
           </div>
-
-          {/* <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">Address:</label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div> */}
 
           <div className="flex items-center mb-4 justify-center">
             <label className="w-32 text-gray-700 text-right pr-4">State:</label>
-            <input type="text" className="border p-2 w-3/4" />
+            <input
+              type="text"
+              className="border p-2 w-3/4"
+              value={formData.state}
+              onChange={(e) => handleInputChange(e, "state")}
+            />
           </div>
 
           <div className="flex items-center mb-4 justify-center">
-            <label className="w-32 text-gray-700 text-right pr-4">
-              Country:
-            </label>
-            <input type="text" className="border p-2 w-3/4" />
+            <label className="w-32 text-gray-700 text-right pr-4">Country:</label>
+            <input
+              type="text"
+              className="border p-2 w-3/4"
+              value={formData.country}
+              onChange={(e) => handleInputChange(e, "country")}
+            />
           </div>
-
-          {/* <div className="flex items-center mb-4 justify-center">
-          <label className="w-32 text-gray-700 text-right pr-4">Pincode:</label>
-          <input type="text" className="border p-2 w-3/4" />
-        </div> */}
         </div>
 
-        {/* Save Button */}
         <div className="flex justify-center mt-6">
-          <button className="bg-blue-950 text-white rounded py-2 px-4 mt-4">
+          <button
+            type="submit"
+            className="bg-blue-950 text-white rounded py-2 px-4 mt-4"
+          >
             Save My Profile
           </button>
         </div>
@@ -214,6 +313,8 @@ const AccountInfo = () => {
     </div>
   );
 };
+
+
 
 /* ChangeEmail Section */
 

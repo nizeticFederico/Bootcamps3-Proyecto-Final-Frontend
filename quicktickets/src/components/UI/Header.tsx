@@ -21,8 +21,6 @@ const NavBar = () => {
   const router = useRouter();
   const isAdmin = session?.user?.role === "admin";
 
-  console.log(session);
-
   useEffect(() => {}, [session]);
 
   const toggleDropdown = () => {
