@@ -30,7 +30,7 @@ const TicketStatusSimple = () => {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            token: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiI2NzQ3YWU5NjhmOGQzMjY3MTE4NzVlOWUiLCJlbWFpbCI6InBhYmxvbmljb2xhc21AaG90bWFpbC5jb20iLCJyb2xlIjoidmVyaWZpZXIiLCJpYXQiOjE3MzI3NTMzMjgsImV4cCI6MTczMzAxMjUyOH0.Pb3L79f_jM1o5-Ftfkivx3tTH4tW--aFneZ_i0ugLgI",
+            token: `${session?.accessToken || ""}`,
           },
           body: JSON.stringify({ ticketId }), // Usamos el ticketId desde la query
         }
