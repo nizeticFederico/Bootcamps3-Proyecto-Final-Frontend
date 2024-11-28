@@ -94,26 +94,26 @@ const AccountInfo = () => {
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const formData = new FormData();
-      formData.append("image", file);
+      const form = new FormData();
+      form.append("image", file);
   
       try {
         const response = await fetch("https://kit-rich-starling.ngrok-free.app/image/upload", {
           method: "POST",
-          body: formData,
+          body: form,
         });
   
         if (response.ok) {
           const data = await response.json();
           setProfileImage(data.url.secure_url);
           setFormData({ ...formData, imageUrl: data.url.secure_url });
-          toast.success("Imagen cargada correctamente.");
+          
         } else {
-          toast.error("Error al cargar la imagen.");
+          toast.error("Error");
         }
       } catch (error) {
-        console.error("Error subiendo la imagen:", error);
-        toast.error("Error al cargar la imagen.");
+        console.error("Error uploading image:", error);
+        toast.error("Error to charge de image.");
       }
     }
   };
@@ -136,7 +136,6 @@ const AccountInfo = () => {
 
       if (response.ok) {
         const data = await response.json();
-        console.log("Datos del usuario:", data);
 
         setFormData({
           first_name: data.first_name || "",
@@ -149,11 +148,10 @@ const AccountInfo = () => {
         
         setProfileImage(data.imageUrl || null); 
       } else {
-        toast.error("Error al obtener los datos del usuario.");
+        toast.error("Error to obtain user data.");
       }
     } catch (error) {
-      console.error("Error fetching user data:", error);
-      toast.error("Error al obtener los datos del usuario.");
+      toast.error("Error fetching user data.");
     } finally {
       setLoading(false);
     }
@@ -170,7 +168,7 @@ const AccountInfo = () => {
     e.preventDefault();
 
     try {
-      const finalData = { ...formData, imageUrl: profileImage || formData.imageUrl };
+      const finalData = { ...formData, imageUrl: profileImage };
 
       console.log("Datos a enviar:", finalData);
 
@@ -187,14 +185,14 @@ const AccountInfo = () => {
 
       console.log("Respuesta del servidor después de actualización:", responseData);
 
-      if (response.ok && responseData.success) {
-        toast.success("Perfil actualizado correctamente.");
+      if (response.ok) {
+        toast.success("Profile updated");
       } else {
-        toast.error(`No se pudo actualizar el perfil: ${responseData.message || 'Error desconocido'}`);
+        toast.error(`Error to update profile: ${responseData.message || 'Error'}`);
       }
     } catch (error) {
-      console.error("Error actualizando el perfil:", error);
-      toast.error("Error al actualizar el perfil.");
+      console.error("Error updating profile:", error);
+      toast.error("Error updating profile.");
     }
   };
 
@@ -218,7 +216,7 @@ const AccountInfo = () => {
               src={profileImage}
               alt="Profile"
               className="w-full h-full object-cover rounded-full"
-              width={80} // Ajustar tamaño para mejor visualización
+              width={80} 
               height={80}
             />
           ) : (
