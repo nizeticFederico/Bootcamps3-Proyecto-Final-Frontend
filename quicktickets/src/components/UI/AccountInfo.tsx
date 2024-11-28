@@ -170,8 +170,6 @@ const AccountInfo = () => {
     try {
       const finalData = { ...formData, imageUrl: profileImage };
 
-      console.log("Datos a enviar:", finalData);
-
       const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/update", {
         method: "PUT",
         headers: {
