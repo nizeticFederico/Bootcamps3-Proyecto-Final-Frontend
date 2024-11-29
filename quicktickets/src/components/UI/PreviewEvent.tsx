@@ -358,12 +358,6 @@ const PreviewEvent: React.FC = () => {
             />
           </div>
         </div>
-        <div className="flex items-center space-x-4 border-l-4 border-blue-500 pl-4 bg-gray-50">
-          <div>
-            <h3 className="text-lg font-semibold text-blue-600">Hosted by</h3>
-            <p className="text-gray-800">{userData ? `${userData.firstName} ${userData.lastName}` : "Unknown Host"}</p>
-          </div>
-        </div>
         <div>
           <h3 className="text-xl font-semibold text-gray-700">
             Event Description
