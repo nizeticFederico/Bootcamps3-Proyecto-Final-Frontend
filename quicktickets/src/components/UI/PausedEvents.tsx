@@ -83,7 +83,7 @@ export default function PausedEventCard() {
 
   const deleteEvent = async (eventId: string) => {
     try {
-      const response = await fetch(`http://localhost:3001/event/${eventId}`, {
+      const response = await fetch(`https://kit-rich-starling.ngrok-free.app/event/${eventId}`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",

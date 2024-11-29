@@ -28,6 +28,8 @@ interface EventData {
   latitude: number;
   longitude: number;
   creatorId: string;
+  firstName?: string
+  lastName?: string
 }
 
 const PreviewEvent: React.FC = () => {
@@ -38,24 +40,41 @@ const PreviewEvent: React.FC = () => {
   const [eventData, setEventData] = useState<EventData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [status, setStatus] = useState<number | null>(null);
+  const [userData, setUserData] = useState<{
+    firstName: string;
+    lastName: string;
+
+  } | null>(null); // Estado para los datos del usuario
 
   useEffect(() => {
-    const fetchCreatorName = async () => {
-      if (eventData?.creatorId) {
-        try {
-          const response = await fetch(`/event/creator-name?creatorId=${eventData.creatorId}`);
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch("https://kit-rich-starling.ngrok-free.app/user/information/", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            token: `${session?.accessToken}`,
+          },
+        });
+        if (response.ok) {
           const data = await response.json();
-          if (data?.creatorName) {
-            setEventData((prev) => ({ ...prev, creatorName: data.creatorName }));
-          }
-        } catch (error) {
-          console.error("Error al obtener creatorName:", error);
+          console.log("Datos del usuario obtenidos:", data);
+          setUserData({
+            firstName: data.first_name,
+            lastName: data.last_name,
+          });
+        } else {
+          console.error("Error al obtener datos del usuario:", response.statusText);
         }
+      } catch (error) {
+        console.error("Error en la solicitud de datos del usuario:", error);
       }
     };
   
-    fetchCreatorName();
-  }, [eventData?.creatorId]);
+    if (session) {
+      fetchUserData();
+    }
+  }, [session]);
 
   // Cargar datos del evento desde Local Storage o query params
   useEffect(() => {
@@ -339,23 +358,10 @@ const PreviewEvent: React.FC = () => {
             />
           </div>
         </div>
-        <div>
-          <h3 className="text-xl font-semibold text-gray-700 mb-3">
-            Hosted by
-          </h3>
-          <div className="flex items-center space-x-4">
-            <div className="h-10 w-10 rounded-full bg-gray-300"></div>
-            <div>
-              <p className="font-semibold">{creatorId}</p>
-              <div className="flex space-x-2">
-                <button className="px-3 py-1 text-sm border rounded-md">
-                  Contact
-                </button>
-                <button className="px-3 py-1 text-sm border rounded-md">
-                  Follow
-                </button>
-              </div>
-            </div>
+        <div className="flex items-center space-x-4 border-l-4 border-blue-500 pl-4 bg-gray-50">
+          <div>
+            <h3 className="text-lg font-semibold text-blue-600">Hosted by</h3>
+            <p className="text-gray-800">{userData ? `${userData.firstName} ${userData.lastName}` : "Unknown Host"}</p>
           </div>
         </div>
         <div>

@@ -8,7 +8,6 @@ import {
   FaMapMarkerAlt,
   FaCalendarAlt,
   FaRegClock,
-  FaRegStar,
   FaShareAlt,
   FaTicketAlt,
   FaWhatsapp,
@@ -30,6 +29,8 @@ interface EventDataProps {
   longitude: number;
   creatorId: string;
   availability: number;
+  creatorFullName: string;
+  creatorImageUrl: string;
 }
 
 const EventData: React.FC<EventDataProps> = ({
@@ -45,6 +46,8 @@ const EventData: React.FC<EventDataProps> = ({
   longitude,
   creatorId,
   availability,
+  creatorFullName,
+  creatorImageUrl,
 }) => {
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -294,11 +297,27 @@ const EventData: React.FC<EventDataProps> = ({
         <div>
           <h2 className="text-xl font-semibold text-gray-700 mb-3">Description</h2>
           <p className="text-gray-600">{description}</p>
-          {/* {creatorName && (
-            <p className="text-sm text-gray-500 mt-4">
-              Created by: <span className="font-semibold">{creatorName}</span>
-            </p>
-          )} */}
+          <div className="mt-6">
+            <h3 className="text-xl font-semibold text-gray-700 mb-3">
+              Hosted by
+            </h3>
+          <div className="flex items-center space-x-4">
+            <div className="h-10 w-10">
+              <Image
+                src={creatorImageUrl}
+                alt="Event"
+                className="w-full h-full object-cover rounded-full"
+                width={800}
+                height={400}
+              />
+            </div>
+            <div>
+              <p className="font-semibold">{creatorFullName }</p>
+              <div className="flex space-x-2">
+              </div>
+            </div>
+          </div>
+        </div>
         </div>
       </div>
     </main>
