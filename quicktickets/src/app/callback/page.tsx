@@ -1,18 +1,18 @@
 "use client";
 
-import { useRouter } from "next/router";
+import { useSearchParams } from "next/navigation"; // Usamos esta función para obtener los parámetros de la URL
 import { useEffect, useState } from "react";
 
 export default function CallbackPage() {
-  const router = useRouter();
+  const searchParams = useSearchParams();
   const [authCode, setAuthCode] = useState<string | null>(null);
 
   useEffect(() => {
-    // Asegúrate de que el código solo se capture en el cliente
-    if (router.query.code) {
-      setAuthCode(router.query.code as string); // Captura el código de autorización
+    const code = searchParams.get("code"); // Obtenemos el parámetro "code" de la URL
+    if (code) {
+      setAuthCode(code); // Captura el código de autorización
     }
-  }, [router.query.code]);
+  }, [searchParams]);
 
   useEffect(() => {
     if (authCode) {
