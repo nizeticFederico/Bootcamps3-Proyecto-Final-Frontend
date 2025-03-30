@@ -1,23 +1,21 @@
-"use client";
-
-import { useSearchParams } from "next/navigation"; // Usamos esta función para obtener los parámetros de la URL
+import { Suspense } from "react";
+import { useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
-export default function CallbackPage() {
+function CallbackComponent() {
   const searchParams = useSearchParams();
   const [authCode, setAuthCode] = useState<string | null>(null);
 
   useEffect(() => {
-    const code = searchParams.get("code"); // Obtenemos el parámetro "code" de la URL
+    const code = searchParams.get("code");
     if (code) {
-      setAuthCode(code); // Captura el código de autorización
+      setAuthCode(code);
     }
   }, [searchParams]);
 
   useEffect(() => {
     if (authCode) {
-      console.log("Authorization Code:", authCode); // Aquí es donde se mostrará el código
-      // Aquí podrías hacer una llamada para obtener el access token si lo necesitas
+      console.log("Authorization Code:", authCode); 
     }
   }, [authCode]);
 
@@ -30,5 +28,13 @@ export default function CallbackPage() {
         <p>Esperando el código de autorización...</p>
       )}
     </div>
+  );
+}
+
+export default function CallbackPage() {
+  return (
+    <Suspense fallback={<p>Cargando...</p>}>
+      <CallbackComponent />
+    </Suspense>
   );
 }
