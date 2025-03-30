@@ -8,6 +8,7 @@ export default function CallbackPage() {
   const [authCode, setAuthCode] = useState<string | null>(null);
 
   useEffect(() => {
+    // Asegúrate de que el código solo se capture en el cliente
     if (router.query.code) {
       setAuthCode(router.query.code as string); // Captura el código de autorización
     }
